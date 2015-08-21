@@ -1,0 +1,20 @@
+
+# Keys
+keys.fendirain.category=Fendirain
+keys.fendirain.charge=Charge
+keys.fendirain.release=Release
+
+# Items
+item.fendirain:fendi.name=Fendi Piece
+item.fendirain:redstoneInfusedFendi.name=Redstone Infused Fendi
+
+# Blocks
+tile.fendirain:fendiOre.name=Fendi Ore
+tile.fendirain:fendiBlockOld.name=Fendi Old
+tile.fendirain:fendiBlock.name=Fendi
+
+# Creative Tabs
+itemGroup.fendirain=Fendirain
+
+# Mobs
+entity.fendinain.name=Fendinain
