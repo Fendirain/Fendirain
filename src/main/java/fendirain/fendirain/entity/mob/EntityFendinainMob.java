@@ -63,7 +63,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         String biome = this.worldObj.getBiomeGenForCoords((int) this.posX, (int) this.posZ).biomeName;
         // Adds the proper type of saplings for the biome it's spawned in. Done this way for future compatibility with mods. May be changed later.
         if (biome != null) {
-            ArrayList<String> saplings = new ArrayList<>();
+            ArrayList<String> saplings = new ArrayList<String>();
             saplings.add(BiomeGenBase.extremeHills.biomeName);
             saplings.add(BiomeGenBase.extremeHillsEdge.biomeName);
             saplings.add(BiomeGenBase.extremeHillsPlus.biomeName);
@@ -381,7 +381,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     public ItemStack getRandomSlot() {
-        ArrayList<ItemStack> items = new ArrayList<>();
+        ArrayList<ItemStack> items = new ArrayList<ItemStack>();
         for (ItemStack item : inventory) {
             if (item != null) {
                 boolean contained = false;

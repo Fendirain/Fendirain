@@ -59,7 +59,7 @@ public class BlockFendi extends BlockContainer {
     @Override
     public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB axisAlignedBB, List list, Entity entity) {
 
-        ArrayList<AxisAlignedBB> axisAlignedBBArrayList = new ArrayList<>();
+        ArrayList<AxisAlignedBB> axisAlignedBBArrayList = new ArrayList<AxisAlignedBB>();
 
         axisAlignedBBArrayList.add(getBoundingBox(x, y, z, 0.125F, 0.125F, 0.125F, 0.200F, 0.885F, 0.885F));
         axisAlignedBBArrayList.add(getBoundingBox(x, y, z, 0.125F, 0.125F, 0.125F, 0.885F, 0.885F, 0.200F));
