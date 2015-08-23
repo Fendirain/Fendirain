@@ -11,7 +11,7 @@ import net.minecraft.world.biome.BiomeGenBase;
 
 public class ModEntities {
 
-    public static ResourceLocation fendinainMobTexture = new ResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + "textures/mobs/fendirain.png");
+    public static ResourceLocation fendinainMobTexture = new ResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + "textures/mobs/fendinain.png");
 
     public static void init() {
         int id = 0;

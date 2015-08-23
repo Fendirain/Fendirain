@@ -53,19 +53,16 @@ public class BlockFendi extends BlockContainer {
 
     @Override
     public void setBlockBoundsBasedOnState(IBlockAccess iBlockAccess, int x, int y, int z) {
-        this.setBlockBounds(0.800F, 0.125F, 0.125F, 0.885F, 0.885F, 0.885F);
+        this.setBlockBounds(0.125F, 0.125F, 0.125F, 0.885F, 0.885F, 0.885F);
     }
 
     @Override
     public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB axisAlignedBB, List list, Entity entity) {
-
         ArrayList<AxisAlignedBB> axisAlignedBBArrayList = new ArrayList<AxisAlignedBB>();
-
         axisAlignedBBArrayList.add(getBoundingBox(x, y, z, 0.125F, 0.125F, 0.125F, 0.200F, 0.885F, 0.885F));
         axisAlignedBBArrayList.add(getBoundingBox(x, y, z, 0.125F, 0.125F, 0.125F, 0.885F, 0.885F, 0.200F));
         axisAlignedBBArrayList.add(getBoundingBox(x, y, z, 0.125F, 0.125F, 0.800F, 0.885F, 0.885F, 0.885F));
         axisAlignedBBArrayList.add(getBoundingBox(x, y, z, 0.800F, 0.125F, 0.125F, 0.885F, 0.885F, 0.885F));
-
         for (AxisAlignedBB aAxisAlignedBB : axisAlignedBBArrayList) {
             if (aAxisAlignedBB != null && axisAlignedBB.intersectsWith(aAxisAlignedBB)) //noinspection unchecked
                 list.add(aAxisAlignedBB);

@@ -1,5 +1,6 @@
 package fendirain.fendirain.entity.mob;
 
+import fendirain.fendirain.entity.AI.EntityFendinainAI.EntityAIBegPlayer;
 import fendirain.fendirain.entity.AI.EntityFendinainAI.EntityAICollectSaplings;
 import fendirain.fendirain.entity.AI.EntityFendinainAI.EntityAIPlantSapling;
 import fendirain.fendirain.reference.ConfigValues;
@@ -46,6 +47,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         this.tasks.addTask(1, new EntityAIPanic(this, 0.5D));
         this.tasks.addTask(2, entityAIPlantSapling);
         this.tasks.addTask(2, new EntityAICollectSaplings(this, 1F));
+        this.tasks.addTask(2, new EntityAIBegPlayer(this, 1F, this.rand));
         this.tasks.addTask(3, new EntityAIWander(this, 1F));
         this.tasks.addTask(4, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
     }
@@ -61,55 +63,86 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
 
     public void addNewSpawnInventory() {
         String biome = this.worldObj.getBiomeGenForCoords((int) this.posX, (int) this.posZ).biomeName;
+        int amountOfSaplings = rand.nextInt(this.getInventoryStackLimit()) + 1;
         // Adds the proper type of saplings for the biome it's spawned in. Done this way for future compatibility with mods. May be changed later.
         if (biome != null) {
             ArrayList<String> saplings = new ArrayList<String>();
+            // Mixed Oak or Spruce
             saplings.add(BiomeGenBase.extremeHills.biomeName);
             saplings.add(BiomeGenBase.extremeHillsEdge.biomeName);
             saplings.add(BiomeGenBase.extremeHillsPlus.biomeName);
-            saplings.add(BiomeGenBase.forest.biomeName);
-            saplings.add(BiomeGenBase.forestHills.biomeName);
             if (saplings.contains(biome)) {
-                this.putIntoInventory(new ItemStack(Blocks.sapling, this.maxStackSize, 0));
+                if (rand.nextInt(2) == 0) {
+                    // Oak Saplings
+                    this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 0));
+                } else {
+                    // Spruce Saplings
+                    this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 1));
+                }
             } else {
                 saplings.clear();
-                saplings.add(BiomeGenBase.coldTaiga.biomeName);
-                saplings.add(BiomeGenBase.coldTaigaHills.biomeName);
-                saplings.add(BiomeGenBase.taiga.biomeName);
-                saplings.add(BiomeGenBase.taigaHills.biomeName);
-                saplings.add(BiomeGenBase.megaTaiga.biomeName);
-                saplings.add(BiomeGenBase.megaTaigaHills.biomeName);
+                // Mixed Birch or Oak
+                saplings.add(BiomeGenBase.forest.biomeName);
+                saplings.add(BiomeGenBase.forestHills.biomeName);
                 if (saplings.contains(biome)) {
-                    this.putIntoInventory(new ItemStack(Blocks.sapling, this.maxStackSize, 1));
+                    if (rand.nextInt(10) == 0) {
+                        // Birch Saplings
+                        this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 2));
+                    } else {
+                        // Oak Saplings
+                        this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 0));
+                    }
                 } else {
                     saplings.clear();
-                    saplings.add(BiomeGenBase.birchForest.biomeName);
-                    saplings.add(BiomeGenBase.birchForestHills.biomeName);
+                    // No pure oak saplings, Space left for future mod compatibility
                     if (saplings.contains(biome)) {
-                        this.putIntoInventory(new ItemStack(Blocks.sapling, this.maxStackSize, 2));
+                        // Oak Saplings
+                        this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 0));
                     } else {
                         saplings.clear();
-                        saplings.add(BiomeGenBase.jungle.biomeName);
-                        saplings.add(BiomeGenBase.jungleEdge.biomeName);
-                        saplings.add(BiomeGenBase.jungleHills.biomeName);
+                        saplings.add(BiomeGenBase.coldTaiga.biomeName);
+                        saplings.add(BiomeGenBase.coldTaigaHills.biomeName);
+                        saplings.add(BiomeGenBase.taiga.biomeName);
+                        saplings.add(BiomeGenBase.taigaHills.biomeName);
+                        saplings.add(BiomeGenBase.megaTaiga.biomeName);
+                        saplings.add(BiomeGenBase.megaTaigaHills.biomeName);
                         if (saplings.contains(biome)) {
-                            this.putIntoInventory(new ItemStack(Blocks.sapling, this.maxStackSize, 3));
+                            // Spruce Saplings
+                            this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 1));
                         } else {
                             saplings.clear();
-                            saplings.add(BiomeGenBase.savanna.biomeName);
-                            saplings.add(BiomeGenBase.savannaPlateau.biomeName);
+                            saplings.add(BiomeGenBase.birchForest.biomeName);
+                            saplings.add(BiomeGenBase.birchForestHills.biomeName);
                             if (saplings.contains(biome)) {
-                                this.putIntoInventory(new ItemStack(Blocks.sapling, this.maxStackSize, 4));
+                                // Birch Saplings
+                                this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 2));
                             } else {
                                 saplings.clear();
-                                saplings.add(BiomeGenBase.roofedForest.biomeName);
+                                saplings.add(BiomeGenBase.jungle.biomeName);
+                                saplings.add(BiomeGenBase.jungleEdge.biomeName);
+                                saplings.add(BiomeGenBase.jungleHills.biomeName);
                                 if (saplings.contains(biome)) {
-                                    this.putIntoInventory(new ItemStack(Blocks.sapling, this.maxStackSize, 5));
+                                    // Jungle Saplings
+                                    this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 3));
+                                } else {
+                                    saplings.clear();
+                                    saplings.add(BiomeGenBase.savanna.biomeName);
+                                    saplings.add(BiomeGenBase.savannaPlateau.biomeName);
+                                    if (saplings.contains(biome)) {
+                                        // Acacia Saplings
+                                        this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 4));
+                                    } else {
+                                        saplings.clear();
+                                        saplings.add(BiomeGenBase.roofedForest.biomeName);
+                                        if (saplings.contains(biome)) {
+                                            // Roofed Oak Saplings
+                                            this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 5));
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
-
                 }
             }
         }
