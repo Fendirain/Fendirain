@@ -1,5 +1,7 @@
-package fendirain.fendirain.client.models;
+package fendirain.fendirain.client.models.mobs;
 
+import fendirain.fendirain.client.models.blocks.ModelFendirain;
+import fendirain.fendirain.entity.mob.EntityFendinainMob;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
@@ -51,14 +53,14 @@ public class ModelFendinainMob extends ModelFendirain {
         this.leftArm1.setRotationPoint(-2.8F, -1.0F, 0.0F);
         this.leftArm1.addBox(0.0F, -0.5F, -0.5F, 1, 1, 1, 0.0F);
         this.leftArm2 = new ModelRenderer(this, 21, 0);
-        this.leftArm2.setRotationPoint(0.1F, -0.5F, 0.0F);
-        this.leftArm2.addBox(-0.5F, 0.0F, -0.5F, 1, 3, 1, 0.0F);
+        this.leftArm2.setRotationPoint(0.1F, 0.0F, 0.0F);
+        this.leftArm2.addBox(-0.5F, -0.50F, -0.5F, 1, 3, 1, 0.0F);
         this.rightArm1 = new ModelRenderer(this, 26, 5);
         this.rightArm1.setRotationPoint(2.0F, -1.0F, 0.0F);
         this.rightArm1.addBox(0.0F, -0.5F, -0.5F, 1, 1, 1, 0.0F);
         this.rightArm2 = new ModelRenderer(this, 26, 0);
-        this.rightArm2.setRotationPoint(0.7F, -0.5F, 0.0F);
-        this.rightArm2.addBox(-0.5F, 0.0F, -0.5F, 1, 3, 1, 0.0F);
+        this.rightArm2.setRotationPoint(0.7F, 0.0F, 0.0F);
+        this.rightArm2.addBox(-0.5F, -0.5F, -0.5F, 1, 3, 1, 0.0F);
         this.leftLeg = new ModelRenderer(this, 21, 0);
         this.leftLeg.setRotationPoint(-1.1F, 2.4F, 0.1F);
         this.leftLeg.addBox(-0.5F, 0.0F, -0.5F, 1, 3, 1, 0.0F);
@@ -90,13 +92,21 @@ public class ModelFendinainMob extends ModelFendirain {
     public void setRotationAngles(float time, float walkSpeed, float otherAngle, float rotationYaw, float rotationPitch, float scale, Entity entity) {
         this.head.rotateAngleY = rotationYaw / (180F / (float) Math.PI);
         this.head.rotateAngleX = rotationPitch / (180F / (float) Math.PI);
-        this.leftArm1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 2.0F * walkSpeed * 0.5F;
-        this.leftArm1.rotateAngleZ = 0.0F;
         this.rightArm1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 2.0F * walkSpeed * 0.5F;
         this.rightArm1.rotateAngleZ = 0.0F;
         this.leftLeg.rotateAngleX = MathHelper.cos(time * 0.6662F) * 1.4F * walkSpeed;
         this.leftLeg.rotateAngleY = 0.0F;
         this.rightLeg.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 1.4F * walkSpeed;
         this.rightLeg.rotateAngleY = 0.0F;
+        EntityFendinainMob entityFendinainMob = (EntityFendinainMob) entity;
+        if (entityFendinainMob.getHeldItem() != null) {
+            this.leftArm2.rotateAngleX = -70.43F;
+        } else {
+            if (this.leftArm1.rotateAngleX == -70.43F) {
+                this.leftArm1.rotateAngleX = 0;
+            }
+            this.leftArm1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 2.0F * walkSpeed * 0.5F;
+            this.leftArm1.rotateAngleZ = 0.0F;
+        }
     }
 }

@@ -32,14 +32,14 @@ public class EntityAIPlantSapling extends EntityAIBase {
 
     @Override
     public void startExecuting() {
-        ItemStack itemToPlace = entity.getRandomSlot();
+        ItemStack itemToPlace = entity.getItemToPlace();
         if (itemToPlace != null) {
             World world = entity.worldObj;
             int posX = (int) entity.posX, posY = (int) entity.posY, posZ = (int) entity.posZ;
             Block blockToPlaceOn = world.getBlock(posX, posY - 1, posZ);
             if (BlockSapling.getBlockFromItem(itemToPlace.getItem()).canPlaceBlockAt(world, posX, posY, posZ) && (blockToPlaceOn == Blocks.grass || blockToPlaceOn == Blocks.dirt || blockToPlaceOn == Blocks.farmland)) {
                 world.setBlock(posX, posY, posZ, BlockSapling.getBlockFromItem(itemToPlace.getItem()), itemToPlace.getItemDamage(), 3);
-                entity.removeItemFromInventory(itemToPlace, 1);
+                entity.removeItemFromInventory(itemToPlace, 1, true);
                 timeSinceLastPlacement = 0;
             }
         }

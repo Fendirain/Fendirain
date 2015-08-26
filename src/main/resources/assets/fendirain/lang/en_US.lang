@@ -5,8 +5,7 @@ keys.fendirain.charge=Charge
 keys.fendirain.release=Release
 
 # Items
-item.fendirain:fendi.name=Fendi Piece
-item.fendirain:redstoneInfusedFendi.name=Redstone Infused Fendi
+item.fendirain:fendiPiece.name=Fendi Piece
 
 # Blocks
 tile.fendirain:fendiOre.name=Fendi Ore

@@ -1,4 +1,4 @@
-package fendirain.fendirain.client.models;
+package fendirain.fendirain.client.models.blocks;
 
 import net.minecraft.client.model.ModelBase;
 

@@ -56,7 +56,7 @@ public class Fendirain {
         FMLCommonHandler.instance().bus().register(new KeyInputEventHandler());
 
         // Initialize all mod recipes
-        Recipes.init();
+        ModRecipes.init();
 
         LogHelper.info("Initialization Complete");
     }

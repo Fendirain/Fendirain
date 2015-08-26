@@ -19,7 +19,7 @@ public class BlockFendiOre extends BlockFendirain {
 
     @Override
     public Item getItemDropped(int metadata, Random rand, int fortune) {
-        return ModItems.fendi;
+        return ModItems.fendiPiece;
     }
 
     @Override

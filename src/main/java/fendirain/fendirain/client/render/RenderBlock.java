@@ -1,6 +1,6 @@
 package fendirain.fendirain.client.render;
 
-import fendirain.fendirain.client.models.ModelFendirain;
+import fendirain.fendirain.client.models.blocks.ModelFendirain;
 import fendirain.fendirain.reference.Reference;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;

@@ -4,6 +4,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import fendirain.fendirain.creativetab.CreativeTabFendirain;
 import fendirain.fendirain.entity.tile.TileFendiBlock;
+import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.reference.Reference;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -11,6 +12,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.Explosion;
@@ -21,16 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlockFendi extends BlockContainer {
-
-    public BlockFendi(Material material) {
-        super(material);
-        this.setHardness(2.0F);
-        this.setResistance(5.0F);
-        this.setHarvestLevel("pickAxe", 3);
-        this.setBlockName("fendiBlock");
-        this.setBlockTextureName("fendiBlock");
-        this.setCreativeTab(CreativeTabFendirain.FENDIRAIN_TAB);
-    }
 
     public BlockFendi() {
         super(Material.rock);
@@ -140,6 +132,18 @@ public class BlockFendi extends BlockContainer {
 
     @Override
     public boolean canBeReplacedByLeaves(IBlockAccess world, int x, int y, int z) {
+        return false;
+    }
+
+    @Override
+    public boolean onBlockActivated(World world, int blockX, int blockY, int blockZ, EntityPlayer player, int metaData, float playerX, float playerY, float playerZ) {
+        ItemStack itemStack = player.getCurrentEquippedItem();
+        TileFendiBlock tileFendiBlock = (TileFendiBlock) world.getTileEntity(blockX, blockY, blockZ);
+        if (itemStack != null && itemStack.getItem() == ModItems.fendiPiece && tileFendiBlock.getCurrentAmount() != tileFendiBlock.getAmountNeededToComplete()) {
+            player.getHeldItem().stackSize -= 1;
+            tileFendiBlock.addToCurrentAmount(1);
+            return true;
+        }
         return false;
     }
 }

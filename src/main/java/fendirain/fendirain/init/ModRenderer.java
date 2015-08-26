@@ -1,7 +1,7 @@
 package fendirain.fendirain.init;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
-import fendirain.fendirain.client.models.ModelFendiBlock;
+import fendirain.fendirain.client.models.blocks.ModelFendiBlock;
 import fendirain.fendirain.client.render.RenderBlock;
 import fendirain.fendirain.client.render.RenderTileEntityAsItem;
 import fendirain.fendirain.entity.tile.TileFendiBlock;
