@@ -1,8 +1,8 @@
 package fendirain.fendirain.entity.mob;
 
-import fendirain.fendirain.entity.AI.EntityFendinainAI.EntityAIBegPlayer;
-import fendirain.fendirain.entity.AI.EntityFendinainAI.EntityAICollectSaplings;
-import fendirain.fendirain.entity.AI.EntityFendinainAI.EntityAIPlantSapling;
+import fendirain.fendirain.entity.mob.EntityFendinainAI.EntityAIBegPlayer;
+import fendirain.fendirain.entity.mob.EntityFendinainAI.EntityAICollectSaplings;
+import fendirain.fendirain.entity.mob.EntityFendinainAI.EntityAIPlantSapling;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.reference.Reference;
 import fendirain.fendirain.utility.LogHelper;

@@ -18,15 +18,26 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.7.10-Alpha_0.1.2"
+ext.configFile = file "build.properties"
+
+configFile.withReader {
+    def prop = new Properties()
+    prop.load(it)
+    project.ext.config = new ConfigSlurper().parse prop
+}
+
+version = config.mc_version + "-" + config.release_type + "_" + config.mod_version
 //noinspection GroovyUnusedAssignment
 group = "com.fendirain.fendirain"
 //noinspection GroovyUnusedAssignment
 archivesBaseName = "Fendirain"
 
 minecraft {
-    version = "1.7.10-10.13.4.1492-1.7.10"
+    version = config.mc_version + "-" + config.forge_version + "-" + config.mc_version
     runDir = "eclipse"
+
+    replaceIn "reference/Reference.java"
+    replace "@MOD_VERSION@", config.mod_version
 }
 
 //noinspection GroovyAssignabilityCheck

@@ -1,4 +1,4 @@
-package fendirain.fendirain.entity.AI.EntityFendinainAI;
+package fendirain.fendirain.entity.mob.EntityFendinainAI;
 
 import fendirain.fendirain.entity.mob.EntityFendinainMob;
 import net.minecraft.block.Block;
