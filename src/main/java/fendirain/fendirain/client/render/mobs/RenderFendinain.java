@@ -33,9 +33,9 @@ public class RenderFendinain extends RenderLiving {
         if (itemstack != null && itemstack.getItem() != null && itemstack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemstack.getItem()) == Blocks.sapling) {
             GL11.glPushMatrix();
             this.model.leftArm2.postRender(-1.2F);
-            GL11.glTranslatef(-0.0365F, 0.446F, 0.88F);
+            GL11.glTranslatef(-0.0365F, 0.9722F, -0.21F);
             GL11.glScalef(0.25F, 0.25F, 0.25F);
-            GL11.glRotatef(-10.0F, 1.0F, 0.0F, 0.0F);
+            GL11.glRotatef(-80.0F, 1.0F, 0.0F, 0.0F);
             GL11.glRotatef(40.0F, 0.0F, 1.0F, 0.0F);
             GL11.glRotatef(2.0F, 0.0F, 0.0F, 1.0F);
             this.renderManager.itemRenderer.renderItem(entity, itemstack, 0);

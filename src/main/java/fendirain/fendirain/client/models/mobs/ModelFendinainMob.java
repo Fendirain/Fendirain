@@ -100,8 +100,8 @@ public class ModelFendinainMob extends ModelFendirain {
         this.rightLeg.rotateAngleY = 0.0F;
         EntityFendinainMob entityFendinainMob = (EntityFendinainMob) entity;
         if (entityFendinainMob.getHeldItem() != null) {
-            if (this.leftArm2.rotateAngleX != -70.43F) {
-                this.leftArm2.rotateAngleX = -70.43F;
+            if (this.leftArm1.rotateAngleX != -70.43F) {
+                this.leftArm1.rotateAngleX = -70.43F;
             }
         } else {
             if (this.leftArm1.rotateAngleX == -70.43F) {
