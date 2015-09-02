@@ -1,8 +1,8 @@
-package fendirain.fendirain.entity.mob;
+package fendirain.fendirain.common.entity.mob.EntityFendinain;
 
-import fendirain.fendirain.entity.mob.EntityFendinainAI.EntityAIBegPlayer;
-import fendirain.fendirain.entity.mob.EntityFendinainAI.EntityAICollectSaplings;
-import fendirain.fendirain.entity.mob.EntityFendinainAI.EntityAIPlantSapling;
+import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAIBegPlayer;
+import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAICollectSaplings;
+import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAIPlantSapling;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.reference.Reference;
 import fendirain.fendirain.utility.LogHelper;
@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class EntityFendinainMob extends EntityCreature implements IInventory {
-
     private final int inventorySize = 6, maxStackSize = 12;
     public EntityAICollectSaplings entityAICollectSaplings;
     private ItemStack[] inventory = new ItemStack[inventorySize];
@@ -390,10 +389,11 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     @Override
-    public boolean isItemValidForSlot(int i1, ItemStack itemStack) {
+    public boolean isItemValidForSlot(int slot, ItemStack itemStack) {
         return itemStack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemStack.getItem()) == Blocks.sapling;
     }
 
+    @Override
     public void readFromNBT(NBTTagCompound nbtTagCompound) {
         super.readFromNBT(nbtTagCompound);
         NBTTagList nbttaglist = nbtTagCompound.getTagList("Items", 10);

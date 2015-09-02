@@ -1,4 +1,4 @@
-package fendirain.fendirain.entity.tile;
+package fendirain.fendirain.common.entity.tile;
 
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -36,8 +36,8 @@ public class TileFendiBlock extends TileFendirain {
 
     @Override
     public void updateEntity() {
-        if (currentAmount > 1) {
+        /*if (currentAmount > 1) {
             // Nothing yet
-        }
+        }*/
     }
 }

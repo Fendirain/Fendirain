@@ -1,4 +1,4 @@
-package fendirain.fendirain.block;
+package fendirain.fendirain.common.block;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

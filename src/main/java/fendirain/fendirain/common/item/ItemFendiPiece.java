@@ -1,4 +1,4 @@
-package fendirain.fendirain.item;
+package fendirain.fendirain.common.item;
 
 public class ItemFendiPiece extends ItemFendirain {
 

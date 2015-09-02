@@ -1,7 +1,7 @@
 package fendirain.fendirain.client.models.mobs;
 
 import fendirain.fendirain.client.models.blocks.ModelFendirain;
-import fendirain.fendirain.entity.mob.EntityFendinainMob;
+import fendirain.fendirain.common.entity.mob.EntityFendinain.EntityFendinainMob;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;

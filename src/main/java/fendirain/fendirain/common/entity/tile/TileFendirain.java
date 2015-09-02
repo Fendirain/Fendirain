@@ -1,4 +1,4 @@
-package fendirain.fendirain.entity.tile;
+package fendirain.fendirain.common.entity.tile;
 
 import net.minecraft.tileentity.TileEntity;
 

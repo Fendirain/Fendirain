@@ -2,14 +2,14 @@
 {
   "modid": "Fendirain",
   "name": "Fendirain",
-  "description": "WIP Mod, Currently adds a Mob that collects & plants saplings.",
+  "description": "Make your world feel alive.",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "http://www.curse.com/mc-mods/Minecraft/235251-fendirain",
   "updateUrl": "",
   "authorList": ["Fendirain"],
-  "credits": "Pahimar's LMR & EE3, Vaskii's Botania, OpenBlocks, and other open source mods (To be added).",
-  "logoFile": "",
+  "credits": "'#minecraftforge' IRC, Pahimar's LMR & EE3, Vaskii's Botania, OpenBlocks, and other open source mods (To be added).",
+  "logoFile": "assets\fendirain\textures\logo\logo.png",
   "screenshots": [],
   "dependencies": []
 }

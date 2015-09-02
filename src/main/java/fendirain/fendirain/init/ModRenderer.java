@@ -4,7 +4,7 @@ import cpw.mods.fml.client.registry.ClientRegistry;
 import fendirain.fendirain.client.models.blocks.ModelFendiBlock;
 import fendirain.fendirain.client.render.RenderBlock;
 import fendirain.fendirain.client.render.RenderTileEntityAsItem;
-import fendirain.fendirain.entity.tile.TileFendiBlock;
+import fendirain.fendirain.common.entity.tile.TileFendiBlock;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;

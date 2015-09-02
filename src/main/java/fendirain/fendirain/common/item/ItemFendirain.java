@@ -1,4 +1,4 @@
-package fendirain.fendirain.item;
+package fendirain.fendirain.common.item;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

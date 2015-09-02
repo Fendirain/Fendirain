@@ -1,6 +1,6 @@
-package fendirain.fendirain.entity.mob.EntityFendinainAI;
+package fendirain.fendirain.common.entity.mob.EntityFendinain.AI;
 
-import fendirain.fendirain.entity.mob.EntityFendinainMob;
+import fendirain.fendirain.common.entity.mob.EntityFendinain.EntityFendinainMob;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.entity.ai.EntityAIBase;

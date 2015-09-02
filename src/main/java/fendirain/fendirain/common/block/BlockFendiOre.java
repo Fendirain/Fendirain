@@ -1,4 +1,4 @@
-package fendirain.fendirain.block;
+package fendirain.fendirain.common.block;
 
 import fendirain.fendirain.init.ModItems;
 import net.minecraft.item.Item;

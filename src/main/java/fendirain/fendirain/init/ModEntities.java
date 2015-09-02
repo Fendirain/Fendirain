@@ -2,9 +2,9 @@ package fendirain.fendirain.init;
 
 import cpw.mods.fml.common.registry.EntityRegistry;
 import fendirain.fendirain.Fendirain;
-import fendirain.fendirain.entity.mob.EntityFendinainMob;
+import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
+import fendirain.fendirain.common.entity.mob.EntityFendinain.EntityFendinainMob;
 import fendirain.fendirain.reference.Reference;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -12,12 +12,14 @@ import net.minecraft.world.biome.BiomeGenBase;
 public class ModEntities {
 
     public static ResourceLocation fendinainMobTexture = new ResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + "textures/mobs/fendinain.png");
+    public static ResourceLocation fenderiumMobTexture = new ResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + "textures/mobs/fenderium.png");
 
     public static void init() {
-        int id = 0;
+        int entityID;
         // Fendinain
-        EntityRegistry.registerModEntity(EntityFendinainMob.class, "Fendinain", id, Fendirain.instance, 64, 3, false);
-        EntityList.addMapping(EntityFendinainMob.class, "Fendinain", id);
+        entityID = EntityRegistry.findGlobalUniqueEntityId();
+        EntityRegistry.registerGlobalEntityID(EntityFendinainMob.class, "Fendinain", entityID, 0x27624D, 0x212121);
+        EntityRegistry.registerModEntity(EntityFendinainMob.class, "Fendinain", entityID, Fendirain.instance, 64, 3, false);
         EntityRegistry.addSpawn(EntityFendinainMob.class, 200, 1, 1, EnumCreatureType.creature, BiomeGenBase.birchForest);
         EntityRegistry.addSpawn(EntityFendinainMob.class, 200, 1, 1, EnumCreatureType.creature, BiomeGenBase.birchForestHills);
         EntityRegistry.addSpawn(EntityFendinainMob.class, 200, 1, 1, EnumCreatureType.creature, BiomeGenBase.coldTaiga);
@@ -38,7 +40,9 @@ public class ModEntities {
         EntityRegistry.addSpawn(EntityFendinainMob.class, 150, 1, 1, EnumCreatureType.creature, BiomeGenBase.jungle);
         EntityRegistry.addSpawn(EntityFendinainMob.class, 150, 1, 1, EnumCreatureType.creature, BiomeGenBase.jungleEdge);
 
-
-        //EntityRegistry.registerModEntity(Class entityClass, String entityName, int entityID, Object Mod, int TrackingRange, int UpdateFreq, boolean sendsVelocityUpdates);
+        // Fenderium
+        entityID = EntityRegistry.findGlobalUniqueEntityId();
+        EntityRegistry.registerGlobalEntityID(EntityFendinainMob.class, "Fendinain", entityID, 0x24424D, 0x210021);
+        EntityRegistry.registerModEntity(EntityFenderiumMob.class, "Fenderium", entityID, Fendirain.instance, 64, 3, false);
     }
 }

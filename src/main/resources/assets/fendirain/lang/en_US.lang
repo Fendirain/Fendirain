@@ -5,7 +5,9 @@ keys.fendirain.charge=Charge
 keys.fendirain.release=Release
 
 # Items
+item.itemSpawnEggFendirain.name=Spawn
 item.fendirain:fendiPiece.name=Fendi Piece
+item.fendirain:treeClearer.name=Tree Clearer
 
 # Blocks
 tile.fendirain:fendiOre.name=Fendi Ore
@@ -17,3 +19,4 @@ itemGroup.fendirain=Fendirain
 
 # Mobs
 entity.fendinain.name=Fendinain
+entity.fenderium.name=Fenderium

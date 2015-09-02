@@ -1,9 +1,9 @@
 package fendirain.fendirain.init;
 
 import cpw.mods.fml.common.registry.GameRegistry;
-import fendirain.fendirain.block.BlockFendi;
-import fendirain.fendirain.block.BlockFendiOre;
-import fendirain.fendirain.block.BlockFendirain;
+import fendirain.fendirain.common.block.BlockFendi;
+import fendirain.fendirain.common.block.BlockFendiOre;
+import fendirain.fendirain.common.block.BlockFendirain;
 
 public class ModBlocks {
 

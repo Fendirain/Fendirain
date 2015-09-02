@@ -1,9 +1,9 @@
-package fendirain.fendirain.block;
+package fendirain.fendirain.common.block;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import fendirain.fendirain.common.entity.tile.TileFendiBlock;
 import fendirain.fendirain.creativetab.CreativeTabFendirain;
-import fendirain.fendirain.entity.tile.TileFendiBlock;
 import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.reference.Reference;
 import net.minecraft.block.BlockContainer;
