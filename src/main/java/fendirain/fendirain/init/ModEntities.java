@@ -18,7 +18,7 @@ public class ModEntities {
         int entityID;
         // Fendinain
         entityID = EntityRegistry.findGlobalUniqueEntityId();
-        EntityRegistry.registerGlobalEntityID(EntityFendinainMob.class, "Fendinain", entityID, 0x27624D, 0x212121);
+        EntityRegistry.registerGlobalEntityID(EntityFendinainMob.class, "fendinain", entityID, 0x27624D, 0x212121);
         EntityRegistry.registerModEntity(EntityFendinainMob.class, "Fendinain", entityID, Fendirain.instance, 64, 3, false);
         EntityRegistry.addSpawn(EntityFendinainMob.class, 200, 1, 1, EnumCreatureType.creature, BiomeGenBase.birchForest);
         EntityRegistry.addSpawn(EntityFendinainMob.class, 200, 1, 1, EnumCreatureType.creature, BiomeGenBase.birchForestHills);
@@ -42,7 +42,7 @@ public class ModEntities {
 
         // Fenderium
         entityID = EntityRegistry.findGlobalUniqueEntityId();
-        EntityRegistry.registerGlobalEntityID(EntityFendinainMob.class, "Fendinain", entityID, 0x24424D, 0x210021);
+        EntityRegistry.registerGlobalEntityID(EntityFenderiumMob.class, "fenderium", entityID, 0x24424D, 0x210021);
         EntityRegistry.registerModEntity(EntityFenderiumMob.class, "Fenderium", entityID, Fendirain.instance, 64, 3, false);
     }
 }

@@ -224,7 +224,7 @@ public class EntityAIChopTrees extends EntityAIBase {
                         world.destroyBlockInWorldPartially(entity.getEntityId(), currentlyBreaking.getPosX(), currentlyBreaking.getPosY(), currentlyBreaking.getPosZ(), -1);
                         world.setBlockToAir(currentlyBreaking.getPosX(), currentlyBreaking.getPosY(), currentlyBreaking.getPosZ());
                         world.playSoundAtEntity(entity, "dig.wood", 2, .5F);
-                        if (currentTreeBlocks.contains(currentlyBreaking)) {
+                        if (currentTreeBlocks != null && currentTreeBlocks.contains(currentlyBreaking)) {
                             currentTreeBlocks.remove(currentlyBreaking);
                         }
                         currentlyBreaking = null;
