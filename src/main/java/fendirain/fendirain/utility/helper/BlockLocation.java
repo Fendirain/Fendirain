@@ -8,12 +8,14 @@ public class BlockLocation {
     private final int posX;
     private final int posY;
     private final int posZ;
+    private final int damageValue;
 
-    public BlockLocation(Block block, int posX, int posY, int posZ) {
+    public BlockLocation(Block block, int posX, int posY, int posZ, int damageValue) {
         this.block = block;
         this.posX = posX;
         this.posY = posY;
         this.posZ = posZ;
+        this.damageValue = damageValue;
     }
 
     public Block getBlock() {
@@ -30,5 +32,9 @@ public class BlockLocation {
 
     public int getPosZ() {
         return posZ;
+    }
+
+    public int getDamageValue() {
+        return damageValue;
     }
 }

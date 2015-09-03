@@ -1,6 +1,7 @@
 package fendirain.fendirain.common.entity.mob.EntityFenderium.AI;
 
 import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
+import fendirain.fendirain.utility.LogHelper;
 import fendirain.fendirain.utility.helper.BlockLocation;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
@@ -17,8 +18,9 @@ public class EntityAIChopTrees extends EntityAIBase {
     private PathNavigate pathFinder;
     private float moveSpeed;
     private int currentProgress;
-    private int[] baseStumpBlock = null;
+    private BlockLocation baseStumpBlock = null;
     private BlockLocation currentlyBreaking = null;
+    private int treeLeafType;
     private boolean alreadyExecuting = false;
     private ArrayList<BlockLocation> currentTreeBlocks;
     private ArrayList<String> searchedList;
@@ -43,11 +45,8 @@ public class EntityAIChopTrees extends EntityAIBase {
                 for (int x = maxNegativeRange; x <= maxRange; x++) {
                     for (int z = maxNegativeRange; z <= maxRange; z++) {
                         if (entity.isItemValidForBreaking(world.getBlock(posX + x, posY + y, posZ + z)) && isTree(world, posX + x, posY + y, posZ + z)) {
-                            baseStumpBlock = new int[3];
-                            baseStumpBlock[0] = posX + x;
-                            baseStumpBlock[1] = posY + y;
-                            baseStumpBlock[2] = posZ + z;
-                            alreadyExecuting = true;
+                            Block block = world.getBlock(posX + x, posY + y, posZ + z);
+                            baseStumpBlock = new BlockLocation(block, posX + x, posY + y, posZ + z, block.getDamageValue(world, posX + x, posY + y, posZ + z));
                             return true;
                         }
                     }
@@ -66,6 +65,7 @@ public class EntityAIChopTrees extends EntityAIBase {
                 isWood = true;
             } else {
                 if (world.getBlock(posX, posY + pos, posZ) instanceof BlockLeaves) {
+                    treeLeafType = world.getBlock(posX, posY + pos, posZ).getDamageValue(world, posX, posY + pos, posZ);
                     return true;
                 }
                 isWood = false;
@@ -81,94 +81,58 @@ public class EntityAIChopTrees extends EntityAIBase {
         if (searchedList == null) {
             searchedList = new ArrayList<String>();
         }
-        Block block = world.getBlock(posX + 1, posY, posZ);
-        if (block instanceof BlockLog || block instanceof BlockLeaves) {
-            BlockLocation blockLocation = new BlockLocation(block, posX + 1, posY, posZ);
-            if (!searchedList.contains((posX + 1) + "." + posY + "." + posZ)) {
-                searchedList.add((posX + 1) + "." + posY + "." + posZ);
-                currentTreeBlocks.add(blockLocation);
-                getAllConnectingTreeBlocks(world, posX + 1, posY, posZ);
-            }
-        }
 
-        block = world.getBlock(posX - 1, posY, posZ);
-        if (block instanceof BlockLog || block instanceof BlockLeaves) {
-            BlockLocation blockLocation = new BlockLocation(block, posX - 1, posY, posZ);
-            if (!searchedList.contains((posX - 1) + "." + posY + "." + posZ)) {
-                searchedList.add((posX - 1) + "." + posY + "." + posZ);
-                currentTreeBlocks.add(blockLocation);
-                getAllConnectingTreeBlocks(world, posX - 1, posY, posZ);
-            }
+        if (!(posX > baseStumpBlock.getPosX() + 8 && posX < baseStumpBlock.getPosX() - 8 && posZ > baseStumpBlock.getPosZ() + 8 && posZ < baseStumpBlock.getPosZ() - 8)) {
+            checkBlocks(world, posX + 1, posY, posZ);
+            checkBlocks(world, posX - 1, posY, posZ);
+            checkBlocks(world, posX, posY + 1, posZ);
+            checkBlocks(world, posX, posY - 1, posZ);
+            checkBlocks(world, posX, posY, posZ + 1);
+            checkBlocks(world, posX, posY, posZ - 1);
         }
+    }
 
-        block = world.getBlock(posX, posY + 1, posZ);
-        if (block instanceof BlockLog || block instanceof BlockLeaves) {
-            BlockLocation blockLocation = new BlockLocation(block, posX, posY + 1, posZ);
-            if (!searchedList.contains(posX + "." + (posY + 1) + "." + posZ)) {
-                searchedList.add(posX + "." + (posY + 1) + "." + posZ);
+    private void checkBlocks(World world, int posX, int posY, int posZ) {
+        Block block = world.getBlock(posX, posY, posZ);
+        int damageValue = block.getDamageValue(world, posX, posY, posZ);
+        if ((block == baseStumpBlock.getBlock() && block.getDamageValue(world, posX, posY, posZ) == baseStumpBlock.getDamageValue()) || (block instanceof BlockLeaves && treeLeafType == damageValue)) {
+            BlockLocation blockLocation = new BlockLocation(block, posX, posY, posZ, block.getDamageValue(world, posX, posY, posZ));
+            if (!searchedList.contains(posX + "." + posY + "." + posZ)) {
+                searchedList.add(posX + "." + posY + "." + posZ);
                 currentTreeBlocks.add(blockLocation);
-                getAllConnectingTreeBlocks(world, posX, posY + 1, posZ);
-            }
-        }
-
-        block = world.getBlock(posX, posY - 1, posZ);
-        if (block instanceof BlockLog || block instanceof BlockLeaves) {
-            BlockLocation blockLocation = new BlockLocation(block, posX, posY - 1, posZ);
-            if (!searchedList.contains(posX + "." + (posY - 1) + "." + posZ)) {
-                searchedList.add(posX + "." + (posY - 1) + "." + posZ);
-                currentTreeBlocks.add(blockLocation);
-                getAllConnectingTreeBlocks(world, posX, posY - 1, posZ);
-            }
-        }
-
-        block = world.getBlock(posX, posY, posZ + 1);
-        if (block instanceof BlockLog || block instanceof BlockLeaves) {
-            BlockLocation blockLocation = new BlockLocation(block, posX, posY, posZ + 1);
-            if (!searchedList.contains(posX + "." + posY + "." + (posZ + 1))) {
-                searchedList.add(posX + "." + posY + "." + (posZ + 1));
-                currentTreeBlocks.add(blockLocation);
-                getAllConnectingTreeBlocks(world, posX, posY, posZ + 1);
-            }
-        }
-
-        block = world.getBlock(posX, posY, posZ - 1);
-        if (block instanceof BlockLog || block instanceof BlockLeaves) {
-            BlockLocation blockLocation = new BlockLocation(block, posX, posY, posZ - 1);
-            if (!searchedList.contains(posX + "." + posY + "." + (posZ - 1))) {
-                searchedList.add(posX + "." + posY + "." + (posZ - 1));
-                currentTreeBlocks.add(blockLocation);
-                getAllConnectingTreeBlocks(world, posX, posY, posZ - 1);
+                getAllConnectingTreeBlocks(world, posX, posY, posZ);
             }
         }
     }
 
     @Override
     public boolean continueExecuting() {
-        if (entity.isItemValidForBreaking(entity.worldObj.getBlock(baseStumpBlock[0], baseStumpBlock[1], baseStumpBlock[2]))) {
+        if (entity.isItemValidForBreaking(entity.worldObj.getBlock(baseStumpBlock.getPosX(), baseStumpBlock.getPosY(), baseStumpBlock.getPosZ()))) {
             return true;
         } else {
             baseStumpBlock = null;
             currentTreeBlocks = null;
             searchedList = null;
             alreadyExecuting = false;
+            treeLeafType = -1;
             return false;
         }
     }
 
     @Override
     public void startExecuting() {
-        pathFinder.tryMoveToXYZ(this.baseStumpBlock[0], this.baseStumpBlock[1], this.baseStumpBlock[2], this.moveSpeed);
+        pathFinder.tryMoveToXYZ(this.baseStumpBlock.getPosX(), this.baseStumpBlock.getPosY(), this.baseStumpBlock.getPosZ(), this.moveSpeed);
     }
 
     @Override
     public void resetTask() {
         World world = entity.worldObj;
         if (baseStumpBlock != null) {
-            if (entity.isItemValidForBreaking(world.getBlock(baseStumpBlock[0], baseStumpBlock[1], baseStumpBlock[2]))) {
+            if (entity.isItemValidForBreaking(world.getBlock(baseStumpBlock.getPosX(), baseStumpBlock.getPosY(), baseStumpBlock.getPosZ()))) {
                 boolean keepChecking;
                 int above = 1;
                 do {
-                    if (entity.isItemValidForBreaking(world.getBlock(baseStumpBlock[0], baseStumpBlock[1] + above, baseStumpBlock[2]))) {
+                    if (entity.isItemValidForBreaking(world.getBlock(baseStumpBlock.getPosX(), baseStumpBlock.getPosY() + above, baseStumpBlock.getPosZ()))) {
                         above++;
                         keepChecking = true;
                     } else {
@@ -176,14 +140,14 @@ public class EntityAIChopTrees extends EntityAIBase {
                         keepChecking = false;
                     }
                 } while (keepChecking);
-                world.destroyBlockInWorldPartially(entity.getEntityId(), baseStumpBlock[0], baseStumpBlock[1] + above, baseStumpBlock[2], -1);
+                world.destroyBlockInWorldPartially(entity.getEntityId(), baseStumpBlock.getPosX(), baseStumpBlock.getPosY() + above, baseStumpBlock.getPosZ(), -1);
             }
         }
     }
 
     private BlockLocation returnFurthestLog() {
         World world = entity.worldObj;
-        int posX = baseStumpBlock[0], posY = baseStumpBlock[1], posZ = baseStumpBlock[2];
+        int posX = baseStumpBlock.getPosX(), posY = baseStumpBlock.getPosY(), posZ = baseStumpBlock.getPosZ();
         if (entity.isItemValidForBreaking(world.getBlock(posX, posY, posZ))) {
             if (currentTreeBlocks == null) {
                 getAllConnectingTreeBlocks(world, posX, posY, posZ);
@@ -199,7 +163,7 @@ public class EntityAIChopTrees extends EntityAIBase {
             }
             BlockLocation result = null;
             for (BlockLocation blockLocation2 : currentTreeBlocks) {
-                if (result == null || blockLocation2.getPosY() > result.getPosY()) {
+                if (result == null || blockLocation2.getPosY() > result.getPosY() && (currentTreeBlocks.size() == 1 || (blockLocation2.getPosX() != baseStumpBlock.getPosX() && blockLocation2.getPosY() != baseStumpBlock.getPosY() && blockLocation2.getPosZ() != baseStumpBlock.getPosZ()))) {
                     result = blockLocation2;
                 }
             }
@@ -211,7 +175,7 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public void updateTask() {
         if (!entity.worldObj.isRemote) {
-            if (entity.getDistance(baseStumpBlock[0], baseStumpBlock[1], baseStumpBlock[2]) < 2) {
+            if (entity.getDistance(baseStumpBlock.getPosX(), baseStumpBlock.getPosY(), baseStumpBlock.getPosZ()) < 2) {
                 World world = entity.worldObj;
                 if (currentlyBreaking == null) {
                     currentlyBreaking = this.returnFurthestLog();
@@ -227,6 +191,7 @@ public class EntityAIChopTrees extends EntityAIBase {
                         if (currentTreeBlocks != null && currentTreeBlocks.contains(currentlyBreaking)) {
                             currentTreeBlocks.remove(currentlyBreaking);
                         }
+                        LogHelper.info(baseStumpBlock.getDamageValue());
                         currentlyBreaking = null;
                         currentProgress = 0;
                     } else if (currentProgress % 4 == 0) {
@@ -246,6 +211,6 @@ public class EntityAIChopTrees extends EntityAIBase {
 
     @Override
     public boolean isInterruptible() {
-        return false;
+        return true;
     }
 }
