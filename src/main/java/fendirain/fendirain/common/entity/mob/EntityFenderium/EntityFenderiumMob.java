@@ -28,8 +28,8 @@ import java.util.Arrays;
 
 public class EntityFenderiumMob extends EntityCreature implements IInventory {
     private final String name = "Fendinain";
-    private final int inventorySize = 6, maxStackSize = 12, range = 12;
-    private final EntityAIChopTrees entityAIChopTrees = new EntityAIChopTrees(this, 1.0F, 16 * 10);
+    private final int inventorySize = 6, maxStackSize = 28, range = 12;
+    private final EntityAIChopTrees entityAIChopTrees = new EntityAIChopTrees(this, 1.0F, 2);
     private ItemStack[] inventory = new ItemStack[inventorySize];
 
     public EntityFenderiumMob(World world) {
@@ -45,7 +45,10 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
 
     @Override
     public void updateAITick() {
-        this.entityAIChopTrees.decrementTimeToWaitUntilNextRun(1);
+        int time = this.entityAIChopTrees.getTimeToWaitUntilNextRun();
+        if (time > 0) {
+            this.entityAIChopTrees.setTimeToWaitUntilNextRun(--time);
+        }
     }
 
     @Override
@@ -72,8 +75,8 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                     }
                     if (!worldObj.isRemote) {
                         entityPlayer.addChatMessage(new ChatComponentText(Arrays.toString(printQueue)));
+                        LogHelper.info(Arrays.toString(printQueue));
                     }
-                    LogHelper.info(Arrays.toString(printQueue));
                     return true;
                 } else if (itemStack.getItem() == Items.diamond_axe) {
                     for (int slot = 0; slot < inventory.length; slot++) {
@@ -97,6 +100,11 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                         }
                     }
                     return true;
+                } else if (itemStack.getItem() == Items.paper) {
+                    if (!worldObj.isRemote) {
+                        entityPlayer.addChatComponentMessage(new ChatComponentText(String.valueOf((entityAIChopTrees.getTimeToWaitUntilNextRun() / 20)) + " seconds."));
+                    }
+                    LogHelper.info(entityAIChopTrees.getTimeToWaitUntilNextRun());
                 } // End Test / Debug Code
             }
         }
@@ -170,7 +178,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     }
 
     public void putIntoInventory(ItemStack itemStack) {
-        if ((itemStack != null && itemStack.stackSize > 0) && (itemStack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemStack.getItem()) == Blocks.sapling)) {
+        if ((itemStack != null && itemStack.stackSize > 0) && (itemStack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemStack.getItem()) == Blocks.log || Block.getBlockFromItem(itemStack.getItem()) == Blocks.log2)) {
             for (int slot = 0; slot < inventory.length; slot++) {
                 if (inventory[slot] == null) {
                     int amountToAdd;
@@ -339,6 +347,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                 this.inventory[j] = ItemStack.loadItemStackFromNBT(nbtTagCompound1);
             }
         }
+        this.entityAIChopTrees.setTimeToWaitUntilNextRun(nbtTagCompound.getInteger("EntityAIChopTrees_TimeToWaitUntilNextRun"));
     }
 
     @Override
@@ -354,6 +363,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
             }
         }
         nbtTagCompound.setTag("Items", nbttaglist);
+        nbtTagCompound.setInteger("EntityAIChopTrees_TimeToWaitUntilNextRun", this.entityAIChopTrees.getTimeToWaitUntilNextRun());
     }
 
     public int getMaxRange() {

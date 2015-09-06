@@ -6,6 +6,7 @@ import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockLog;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.world.World;
 
@@ -26,7 +27,6 @@ public class EntityAIChopTrees extends EntityAIBase {
     private ArrayList<BlockLocation> tempBlocksList;
     private ArrayList<String> searchedList;
     private int timeToWaitUntilNextRun = 0;
-    private int currentWaitTotal = 0;
 
     public EntityAIChopTrees(EntityFenderiumMob entity, float moveSpeed, int breakSpeedMultiplier) {
         this.entity = entity;
@@ -109,6 +109,18 @@ public class EntityAIChopTrees extends EntityAIBase {
             checkBlocks(world, posX, posY - 1, posZ);
             checkBlocks(world, posX, posY, posZ + 1);
             checkBlocks(world, posX, posY, posZ - 1);
+            checkBlocks(world, posX + 1, posY + 1, posZ);
+            checkBlocks(world, posX + 1, posY - 1, posZ);
+            checkBlocks(world, posX + 1, posY, posZ + 1);
+            checkBlocks(world, posX + 1, posY, posZ - 1);
+            checkBlocks(world, posX - 1, posY + 1, posZ);
+            checkBlocks(world, posX - 1, posY - 1, posZ);
+            checkBlocks(world, posX - 1, posY, posZ + 1);
+            checkBlocks(world, posX - 1, posY, posZ - 1);
+            checkBlocks(world, posX, posY + 1, posZ + 1);
+            checkBlocks(world, posX, posY + 1, posZ - 1);
+            checkBlocks(world, posX, posY - 1, posZ + 1);
+            checkBlocks(world, posX, posY - 1, posZ - 1);
         }
 
         if (originalPass) {
@@ -124,7 +136,7 @@ public class EntityAIChopTrees extends EntityAIBase {
                 validLogs.add(baseStumpBlock);
                 logsOnly.remove(baseStumpBlock);
                 ArrayList<String> validCoords = new ArrayList<String>();
-                for (String coord : this.getBlockAreaCoords(baseStumpBlock.getPosX(), baseStumpBlock.getPosY(), baseStumpBlock.getPosZ(), this.maxLogRange)) {
+                for (String coord : this.getBlockAreaCoords(baseStumpBlock.getPosX(), baseStumpBlock.getPosY(), baseStumpBlock.getPosZ())) {
                     validCoords.add(coord);
                 }
                 ArrayList<BlockLocation> added = new ArrayList<BlockLocation>();
@@ -132,7 +144,7 @@ public class EntityAIChopTrees extends EntityAIBase {
                     if (validCoords.contains(block.getPosX() + "." + block.getPosY() + "." + block.getPosZ())) {
                         validLogs.add(block);
                         added.add(block);
-                        for (String coord : this.getBlockAreaCoords(block.getPosX(), block.getPosY(), block.getPosZ(), this.maxLogRange)) {
+                        for (String coord : this.getBlockAreaCoords(block.getPosX(), block.getPosY(), block.getPosZ())) {
                             if (!validCoords.contains(coord)) {
                                 validCoords.add(coord);
                             }
@@ -150,7 +162,7 @@ public class EntityAIChopTrees extends EntityAIBase {
         }
     }
 
-    private ArrayList<String> getBlockAreaCoords(int posX, int posY, int posZ, int range) {
+    private ArrayList<String> getBlockAreaCoords(int posX, int posY, int posZ) {
         ArrayList<String> result = new ArrayList<String>();
         for (int y = posY - maxLogRange; y <= posY + maxLogRange; y++) {
             for (int x = posX - maxLogRange; x <= posX + maxLogRange; x++) {
@@ -175,7 +187,7 @@ public class EntityAIChopTrees extends EntityAIBase {
 
     @Override
     public boolean continueExecuting() {
-        if (entity.isItemValidForBreaking(entity.worldObj.getBlock(baseStumpBlock.getPosX(), baseStumpBlock.getPosY(), baseStumpBlock.getPosZ()))) {
+        if (baseStumpBlock != null && entity.isItemValidForBreaking(entity.worldObj.getBlock(baseStumpBlock.getPosX(), baseStumpBlock.getPosY(), baseStumpBlock.getPosZ())) && entity.isAnySpaceForItemPickup(new ItemStack(baseStumpBlock.getBlock(), 1, baseStumpBlock.getDamageValue()))) {
             return true;
         } else {
             baseStumpBlock = null;
@@ -184,8 +196,6 @@ public class EntityAIChopTrees extends EntityAIBase {
             searchedList = null;
             alreadyExecuting = false;
             treeLeaf = null;
-            timeToWaitUntilNextRun = currentWaitTotal;
-            currentWaitTotal = 0;
             return false;
         }
     }
@@ -251,15 +261,19 @@ public class EntityAIChopTrees extends EntityAIBase {
                     int breakProgress = (int) ((float) this.currentProgress / 240.0F * 10.0F);
                     world.destroyBlockInWorldPartially(entity.getEntityId(), currentlyBreaking.getPosX(), currentlyBreaking.getPosY(), currentlyBreaking.getPosZ(), breakProgress);
                     if (this.currentProgress >= 240) {
-                        world.destroyBlockInWorldPartially(entity.getEntityId(), currentlyBreaking.getPosX(), currentlyBreaking.getPosY(), currentlyBreaking.getPosZ(), -1);
-                        world.setBlockToAir(currentlyBreaking.getPosX(), currentlyBreaking.getPosY(), currentlyBreaking.getPosZ());
-                        world.playSoundAtEntity(entity, "dig.wood", 2, .5F);
-                        if (currentTreeBlocks != null && currentTreeBlocks.contains(currentlyBreaking)) {
-                            currentTreeBlocks.remove(currentlyBreaking);
+                        ItemStack itemStack = new ItemStack(currentlyBreaking.getBlock(), 1, currentlyBreaking.getDamageValue());
+                        if (entity.isAnySpaceForItemPickup(itemStack)) {
+                            entity.putIntoInventory(new ItemStack(currentlyBreaking.getBlock(), 1, currentlyBreaking.getDamageValue()));
+                            world.destroyBlockInWorldPartially(entity.getEntityId(), currentlyBreaking.getPosX(), currentlyBreaking.getPosY(), currentlyBreaking.getPosZ(), -1);
+                            world.setBlockToAir(currentlyBreaking.getPosX(), currentlyBreaking.getPosY(), currentlyBreaking.getPosZ());
+                            world.playSoundAtEntity(entity, "dig.wood", 2, .5F);
+                            if (currentTreeBlocks != null && currentTreeBlocks.contains(currentlyBreaking)) {
+                                currentTreeBlocks.remove(currentlyBreaking);
+                            }
+                            currentlyBreaking = null;
+                            timeToWaitUntilNextRun += 600;
+                            currentProgress = 0;
                         }
-                        currentlyBreaking = null;
-                        currentWaitTotal += 600;
-                        currentProgress = 0;
                     } else if (currentProgress % 4 == 0) {
                         world.playSoundAtEntity(entity, "dig.wood", 1, 1);
                     }
@@ -279,12 +293,13 @@ public class EntityAIChopTrees extends EntityAIBase {
         return true;
     }
 
-    public void decrementTimeToWaitUntilNextRun(int timeToRemove) {
-        if (timeToWaitUntilNextRun > 0) {
-            timeToWaitUntilNextRun -= timeToRemove;
-            if (timeToWaitUntilNextRun < 0) {
-                timeToWaitUntilNextRun = 0;
-            }
+    public int getTimeToWaitUntilNextRun() {
+        return timeToWaitUntilNextRun;
+    }
+
+    public void setTimeToWaitUntilNextRun(int timeToWaitUntilNextRun) {
+        if (!isAlreadyExecuting()) {
+            this.timeToWaitUntilNextRun = timeToWaitUntilNextRun;
         }
     }
 }
