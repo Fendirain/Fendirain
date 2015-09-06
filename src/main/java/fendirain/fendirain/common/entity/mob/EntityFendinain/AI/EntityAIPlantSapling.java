@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 import java.util.Random;
 
 public class EntityAIPlantSapling extends EntityAIBase {
-    public int timeSinceLastPlacement = 0;
+    private int timeSinceLastPlacement = 0;
     private EntityFendinainMob entity;
     private int minTimeToWaitToPlant, maxTimeToWaitToPlant;
 
@@ -43,5 +43,9 @@ public class EntityAIPlantSapling extends EntityAIBase {
                 timeSinceLastPlacement = 0;
             }
         }
+    }
+
+    public void addToTimeSinceLastPlacement(int timeToAdd) {
+        timeSinceLastPlacement += timeToAdd;
     }
 }

@@ -61,7 +61,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
             this.setCurrentItemOrArmor(0, this.getRandomSlot());
             firstUpdate = false;
         }
-        this.entityAIPlantSapling.timeSinceLastPlacement++;
+        this.entityAIPlantSapling.addToTimeSinceLastPlacement(1);
     }
 
     public void addNewSpawnInventory() {

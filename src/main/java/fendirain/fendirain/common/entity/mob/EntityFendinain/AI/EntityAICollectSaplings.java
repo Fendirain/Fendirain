@@ -35,7 +35,7 @@ public class EntityAICollectSaplings extends EntityAIBase {
             for (EntityItem item : items) {
                 if (!item.isDead && item.onGround) {
                     double dist = item.getDistanceToEntity(entity);
-                    if (dist < closestDistance && (entity.isValidForPickup(item.getEntityItem().getItem()) && entity.isAnySpaceForItemPickup(item.getEntityItem())) && !item.isInWater()) {
+                    if (dist < closestDistance && entity.getEntitySenses().canSee(item) && (entity.isValidForPickup(item.getEntityItem().getItem()) && entity.isAnySpaceForItemPickup(item.getEntityItem())) && !item.isInWater()) {
                         closest = item;
                         closestDistance = dist;
                     }

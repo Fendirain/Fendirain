@@ -2,7 +2,7 @@ package fendirain.fendirain.utility.helper;
 
 import net.minecraft.block.Block;
 
-public class BlockLocation {
+public class BlockLocation implements Comparable<BlockLocation> {
 
     private final Block block;
     private final int posX;
@@ -36,5 +36,11 @@ public class BlockLocation {
 
     public int getDamageValue() {
         return damageValue;
+    }
+
+    @SuppressWarnings("NullableProblems")
+    @Override
+    public int compareTo(BlockLocation blockLocation) {
+        return (Math.abs(this.getPosX() - blockLocation.getPosX())) + (Math.abs(this.getPosY() - blockLocation.getPosY())) + (Math.abs(this.getPosZ() - blockLocation.getPosZ()));
     }
 }

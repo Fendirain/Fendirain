@@ -30,7 +30,7 @@ public class EntityAIBegPlayer extends EntityAIBase {
         if (entity.worldObj != null) {
             EntityPlayer player = entity.worldObj.getClosestPlayerToEntity(entity, 8);
             if (player != null && player.getHeldItem() != null) {
-                if (entity.isValidForPickup(player.getHeldItem().getItem()) && entity.isAnySpaceForItemPickup(player.getHeldItem()) && !player.isInWater()) {
+                if (entity.getEntitySenses().canSee(player) && entity.isValidForPickup(player.getHeldItem().getItem()) && entity.isAnySpaceForItemPickup(player.getHeldItem()) && !player.isInWater()) {
                     targetEntity = player;
                     randInt = rand.nextInt(4);
                     return true;

@@ -29,7 +29,7 @@ import java.util.Arrays;
 public class EntityFenderiumMob extends EntityCreature implements IInventory {
     private final String name = "Fendinain";
     private final int inventorySize = 6, maxStackSize = 12, range = 12;
-    private final EntityAIChopTrees entityAIChopTrees = new EntityAIChopTrees(this, 1.0F, 16);
+    private final EntityAIChopTrees entityAIChopTrees = new EntityAIChopTrees(this, 1.0F, 16 * 10);
     private ItemStack[] inventory = new ItemStack[inventorySize];
 
     public EntityFenderiumMob(World world) {
@@ -41,6 +41,11 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         this.tasks.addTask(1, entityAIChopTrees);
         this.tasks.addTask(2, new EntityAIWander(this, 1.0F));
         this.targetTasks.addTask(0, new EntityAIHurtByTarget(this, false));
+    }
+
+    @Override
+    public void updateAITick() {
+        this.entityAIChopTrees.decrementTimeToWaitUntilNextRun(1);
     }
 
     @Override

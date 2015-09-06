@@ -1,29 +1,32 @@
 package fendirain.fendirain.common.entity.mob.EntityFenderium.AI;
 
 import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
-import fendirain.fendirain.utility.LogHelper;
 import fendirain.fendirain.utility.helper.BlockLocation;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockLog;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.init.Blocks;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class EntityAIChopTrees extends EntityAIBase {
-    private final int breakSpeedMultiplier;
+    private final int breakSpeedMultiplier, maxLogRange = 2;
     private EntityFenderiumMob entity;
     private PathNavigate pathFinder;
     private float moveSpeed;
     private int currentProgress;
     private BlockLocation baseStumpBlock = null;
     private BlockLocation currentlyBreaking = null;
-    private int treeLeafType;
+    private BlockLocation treeLeaf = null;
     private boolean alreadyExecuting = false;
     private ArrayList<BlockLocation> currentTreeBlocks;
+    private ArrayList<BlockLocation> tempBlocksList;
     private ArrayList<String> searchedList;
+    private int timeToWaitUntilNextRun = 0;
+    private int currentWaitTotal = 0;
 
     public EntityAIChopTrees(EntityFenderiumMob entity, float moveSpeed, int breakSpeedMultiplier) {
         this.entity = entity;
@@ -35,48 +38,65 @@ public class EntityAIChopTrees extends EntityAIBase {
 
     @Override
     public boolean shouldExecute() {
-        if (!pathFinder.noPath() || alreadyExecuting) {
+        if (!pathFinder.noPath() || alreadyExecuting || timeToWaitUntilNextRun > 0) {
             return false;
         }
         if (!entity.worldObj.isRemote) {
             World world = entity.worldObj;
-            int maxRange = entity.getMaxRange(), maxNegativeRange = -maxRange, posX = (int) entity.posX, posY = (int) entity.posY, posZ = (int) entity.posZ;
-            for (int y = maxNegativeRange + 8; y <= maxRange - 8; y++) {
-                for (int x = maxNegativeRange; x <= maxRange; x++) {
-                    for (int z = maxNegativeRange; z <= maxRange; z++) {
-                        if (entity.isItemValidForBreaking(world.getBlock(posX + x, posY + y, posZ + z)) && isTree(world, posX + x, posY + y, posZ + z)) {
-                            Block block = world.getBlock(posX + x, posY + y, posZ + z);
-                            baseStumpBlock = new BlockLocation(block, posX + x, posY + y, posZ + z, block.getDamageValue(world, posX + x, posY + y, posZ + z));
-                            return true;
+            int range = entity.getMaxRange();
+            BlockLocation closest = null;
+            double currentDist = -1.0;
+            for (int y = (int) entity.posY - range; y <= (int) entity.posY + range; y++) {
+                for (int x = (int) entity.posX - range; x <= (int) entity.posX + range; x++) {
+                    for (int z = (int) entity.posZ - range; z <= (int) entity.posZ + range; z++) {
+                        if (entity.isItemValidForBreaking(world.getBlock(x, y, z)) && isTree(world, x, y, z, false)) {
+                            BlockLocation blockLocation = new BlockLocation(world.getBlock(x, y, z), x, y, z, world.getBlock(x, y, z).getDamageValue(world, x, y, z));
+                            double dist = entity.getDistance(x, y, z);
+                            if (closest == null || currentDist == -1 || dist < currentDist) {
+                                currentDist = dist;
+                                closest = blockLocation;
+                            }
                         }
                     }
                 }
+            }
+            if (closest != null) {
+                isTree(world, closest.getPosX(), closest.getPosY(), closest.getPosZ(), true);
+                baseStumpBlock = closest;
+                return true;
             }
         }
         return false;
     }
 
-    private boolean isTree(World world, int posX, int posY, int posZ) {
-        boolean isWood;
-        int pos = 1;
-        do {
-            if (entity.isItemValidForBreaking(world.getBlock(posX, posY + pos, posZ))) {
-                pos++;
-                isWood = true;
-            } else {
-                if (world.getBlock(posX, posY + pos, posZ) instanceof BlockLeaves) {
-                    treeLeafType = world.getBlock(posX, posY + pos, posZ).getDamageValue(world, posX, posY + pos, posZ);
-                    return true;
+    private boolean isTree(World world, int posX, int posY, int posZ, Boolean setTreeLeaf) {
+        if (world.getBlock(posX, posY - 1, posZ) != Blocks.air) {
+            boolean isWood;
+            int pos = 1;
+            do {
+                if (entity.isItemValidForBreaking(world.getBlock(posX, posY + pos, posZ))) {
+                    pos++;
+                    isWood = true;
+                } else {
+                    if (world.getBlock(posX, posY + pos, posZ) instanceof BlockLeaves) {
+                        if (setTreeLeaf) {
+                            treeLeaf = new BlockLocation(world.getBlock(posX, posY + pos, posZ), posX, posY + pos, posZ, world.getBlock(posX, posY + pos, posZ).getDamageValue(world, posX, posY + pos, posZ));
+                        }
+                        return true;
+                    }
+                    isWood = false;
                 }
-                isWood = false;
-            }
-        } while (isWood);
+            } while (isWood);
+        }
         return false;
     }
 
-    private void getAllConnectingTreeBlocks(World world, int posX, int posY, int posZ) {
+    private void getAllConnectingTreeBlocks(World world, int posX, int posY, int posZ, boolean originalPass) {
         if (currentTreeBlocks == null) {
             currentTreeBlocks = new ArrayList<BlockLocation>();
+        }
+        if (tempBlocksList == null) {
+            tempBlocksList = new ArrayList<BlockLocation>();
         }
         if (searchedList == null) {
             searchedList = new ArrayList<String>();
@@ -90,17 +110,65 @@ public class EntityAIChopTrees extends EntityAIBase {
             checkBlocks(world, posX, posY, posZ + 1);
             checkBlocks(world, posX, posY, posZ - 1);
         }
+
+        if (originalPass) {
+            if (tempBlocksList != null) {
+                ArrayList<BlockLocation> logsOnly = new ArrayList<BlockLocation>();
+                for (BlockLocation blockLocation : tempBlocksList) {
+                    if (blockLocation.getBlock() instanceof BlockLog) {
+                        logsOnly.add(blockLocation);
+                    }
+                }
+                Collections.sort(logsOnly);
+                ArrayList<BlockLocation> validLogs = new ArrayList<BlockLocation>();
+                validLogs.add(baseStumpBlock);
+                logsOnly.remove(baseStumpBlock);
+                ArrayList<String> validCoords = new ArrayList<String>();
+                for (String coord : this.getBlockAreaCoords(baseStumpBlock.getPosX(), baseStumpBlock.getPosY(), baseStumpBlock.getPosZ(), this.maxLogRange)) {
+                    validCoords.add(coord);
+                }
+                ArrayList<BlockLocation> added = new ArrayList<BlockLocation>();
+                for (BlockLocation block : logsOnly) {
+                    if (validCoords.contains(block.getPosX() + "." + block.getPosY() + "." + block.getPosZ())) {
+                        validLogs.add(block);
+                        added.add(block);
+                        for (String coord : this.getBlockAreaCoords(block.getPosX(), block.getPosY(), block.getPosZ(), this.maxLogRange)) {
+                            if (!validCoords.contains(coord)) {
+                                validCoords.add(coord);
+                            }
+                        }
+                    }
+                }
+                for (BlockLocation remove : added) {
+                    if (logsOnly.contains(remove)) {
+                        logsOnly.remove(remove);
+                    }
+                }
+
+                currentTreeBlocks = validLogs;
+            }
+        }
+    }
+
+    private ArrayList<String> getBlockAreaCoords(int posX, int posY, int posZ, int range) {
+        ArrayList<String> result = new ArrayList<String>();
+        for (int y = posY - maxLogRange; y <= posY + maxLogRange; y++) {
+            for (int x = posX - maxLogRange; x <= posX + maxLogRange; x++) {
+                for (int z = posZ - maxLogRange; z <= posZ + maxLogRange; z++) {
+                    result.add(x + "." + y + "." + z);
+                }
+            }
+        }
+        return result;
     }
 
     private void checkBlocks(World world, int posX, int posY, int posZ) {
-        Block block = world.getBlock(posX, posY, posZ);
-        int damageValue = block.getDamageValue(world, posX, posY, posZ);
-        if ((block == baseStumpBlock.getBlock() && block.getDamageValue(world, posX, posY, posZ) == baseStumpBlock.getDamageValue()) || (block instanceof BlockLeaves && treeLeafType == damageValue)) {
-            BlockLocation blockLocation = new BlockLocation(block, posX, posY, posZ, block.getDamageValue(world, posX, posY, posZ));
+        BlockLocation block = new BlockLocation(world.getBlock(posX, posY, posZ), posX, posY, posZ, world.getBlock(posX, posY, posZ).getDamageValue(world, posX, posY, posZ));
+        if ((block.getBlock() == baseStumpBlock.getBlock() && block.getDamageValue() == baseStumpBlock.getDamageValue()) || (block.getBlock() == treeLeaf.getBlock() && block.getDamageValue() == treeLeaf.getDamageValue())) {
             if (!searchedList.contains(posX + "." + posY + "." + posZ)) {
                 searchedList.add(posX + "." + posY + "." + posZ);
-                currentTreeBlocks.add(blockLocation);
-                getAllConnectingTreeBlocks(world, posX, posY, posZ);
+                tempBlocksList.add(block);
+                getAllConnectingTreeBlocks(world, posX, posY, posZ, false);
             }
         }
     }
@@ -112,15 +180,21 @@ public class EntityAIChopTrees extends EntityAIBase {
         } else {
             baseStumpBlock = null;
             currentTreeBlocks = null;
+            tempBlocksList = null;
             searchedList = null;
             alreadyExecuting = false;
-            treeLeafType = -1;
+            treeLeaf = null;
+            timeToWaitUntilNextRun = currentWaitTotal;
+            currentWaitTotal = 0;
             return false;
         }
     }
 
     @Override
     public void startExecuting() {
+        if (!alreadyExecuting && currentTreeBlocks == null) {
+            getAllConnectingTreeBlocks(entity.worldObj, baseStumpBlock.getPosX(), baseStumpBlock.getPosY(), baseStumpBlock.getPosZ(), true);
+        }
         pathFinder.tryMoveToXYZ(this.baseStumpBlock.getPosX(), this.baseStumpBlock.getPosY(), this.baseStumpBlock.getPosZ(), this.moveSpeed);
     }
 
@@ -146,25 +220,17 @@ public class EntityAIChopTrees extends EntityAIBase {
     }
 
     private BlockLocation returnFurthestLog() {
-        World world = entity.worldObj;
-        int posX = baseStumpBlock.getPosX(), posY = baseStumpBlock.getPosY(), posZ = baseStumpBlock.getPosZ();
-        if (entity.isItemValidForBreaking(world.getBlock(posX, posY, posZ))) {
-            if (currentTreeBlocks == null) {
-                getAllConnectingTreeBlocks(world, posX, posY, posZ);
-                if (currentTreeBlocks != null) {
-                    ArrayList<BlockLocation> logsOnly = new ArrayList<BlockLocation>();
-                    for (BlockLocation blockLocation : currentTreeBlocks) {
-                        if (blockLocation.getBlock() instanceof BlockLog) {
-                            logsOnly.add(blockLocation);
-                        }
-                    }
-                    currentTreeBlocks = logsOnly;
-                } else return null;
-            }
+        if (!currentTreeBlocks.isEmpty()) {
             BlockLocation result = null;
-            for (BlockLocation blockLocation2 : currentTreeBlocks) {
-                if (result == null || blockLocation2.getPosY() > result.getPosY() && (currentTreeBlocks.size() == 1 || (blockLocation2.getPosX() != baseStumpBlock.getPosX() && blockLocation2.getPosY() != baseStumpBlock.getPosY() && blockLocation2.getPosZ() != baseStumpBlock.getPosZ()))) {
-                    result = blockLocation2;
+            int dist = -1;
+            for (BlockLocation block : currentTreeBlocks) {
+                int blockDist = block.compareTo(baseStumpBlock);
+                if (dist == -1) {
+                    dist = blockDist;
+                    result = block;
+                } else if (blockDist > dist || (dist == blockDist && block.getPosY() > result.getPosY())) {
+                    dist = blockDist;
+                    result = block;
                 }
             }
             return result;
@@ -191,8 +257,8 @@ public class EntityAIChopTrees extends EntityAIBase {
                         if (currentTreeBlocks != null && currentTreeBlocks.contains(currentlyBreaking)) {
                             currentTreeBlocks.remove(currentlyBreaking);
                         }
-                        LogHelper.info(baseStumpBlock.getDamageValue());
                         currentlyBreaking = null;
+                        currentWaitTotal += 600;
                         currentProgress = 0;
                     } else if (currentProgress % 4 == 0) {
                         world.playSoundAtEntity(entity, "dig.wood", 1, 1);
@@ -204,7 +270,6 @@ public class EntityAIChopTrees extends EntityAIBase {
         }
     }
 
-
     public boolean isAlreadyExecuting() {
         return alreadyExecuting;
     }
@@ -212,5 +277,14 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public boolean isInterruptible() {
         return true;
+    }
+
+    public void decrementTimeToWaitUntilNextRun(int timeToRemove) {
+        if (timeToWaitUntilNextRun > 0) {
+            timeToWaitUntilNextRun -= timeToRemove;
+            if (timeToWaitUntilNextRun < 0) {
+                timeToWaitUntilNextRun = 0;
+            }
+        }
     }
 }
