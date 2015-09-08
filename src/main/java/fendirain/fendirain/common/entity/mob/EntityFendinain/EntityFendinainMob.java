@@ -40,7 +40,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     public EntityFendinainMob(World world) {
         super(world);
         this.setSize(.39F, .85F);
-        this.entityAIPlantSapling = new EntityAIPlantSapling(this, 4800, 12000);
+        this.entityAIPlantSapling = new EntityAIPlantSapling(this, ConfigValues.fendinainMob_minTimeToWaitToPlant, ConfigValues.fendinainMob_maxTimeToWaitToPlant);
         this.entityAICollectSaplings = new EntityAICollectSaplings(this, 1F);
         firstUpdate = true;
         this.getNavigator().setCanSwim(true);
