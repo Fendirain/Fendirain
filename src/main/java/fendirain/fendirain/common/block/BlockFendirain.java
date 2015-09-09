@@ -11,12 +11,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 public class BlockFendirain extends Block {
 
     public BlockFendirain() {
-        this(Material.rock);
-        this.setCreativeTab(CreativeTabFendirain.FENDIRAIN_TAB);
-    }
-
-    public BlockFendirain(Material material) {
-        super(material);
+        super(Material.rock);
         this.setCreativeTab(CreativeTabFendirain.FENDIRAIN_TAB);
     }
 

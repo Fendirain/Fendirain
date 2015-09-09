@@ -9,8 +9,8 @@ import org.lwjgl.opengl.GL11;
 
 public class RenderBlock extends TileEntitySpecialRenderer {
 
-    private ResourceLocation texture;
-    private ModelFendirain model;
+    private final ResourceLocation texture;
+    private final ModelFendirain model;
 
     public RenderBlock(ModelFendirain modelBase, String texture) {
         this.model = modelBase;

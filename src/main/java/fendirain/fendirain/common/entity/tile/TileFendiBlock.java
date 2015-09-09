@@ -3,9 +3,8 @@ package fendirain.fendirain.common.entity.tile;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class TileFendiBlock extends TileFendirain {
+    private final int amountNeededToComplete = 8;
     private int currentAmount = 0;
-    private int amountNeededToComplete = 8;
-
 
     @Override
     public void readFromNBT(NBTTagCompound nbtTagCompound) {

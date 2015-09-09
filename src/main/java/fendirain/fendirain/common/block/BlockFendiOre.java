@@ -6,7 +6,7 @@ import net.minecraft.item.Item;
 import java.util.Random;
 
 public class BlockFendiOre extends BlockFendirain {
-    final int dropAmountMin = 0, dropChance = 16;
+    private final int dropAmountMin = 0, dropChance = 16;
 
     public BlockFendiOre() {
         super();

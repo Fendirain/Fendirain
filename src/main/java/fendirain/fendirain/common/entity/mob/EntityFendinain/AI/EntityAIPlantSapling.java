@@ -11,9 +11,9 @@ import net.minecraft.world.World;
 import java.util.Random;
 
 public class EntityAIPlantSapling extends EntityAIBase {
+    private final EntityFendinainMob entity;
+    private final int minTimeToWaitToPlant, maxTimeToWaitToPlant;
     private int timeSinceLastPlacement = 0;
-    private EntityFendinainMob entity;
-    private int minTimeToWaitToPlant, maxTimeToWaitToPlant;
 
     public EntityAIPlantSapling(EntityFendinainMob entity, int minTimeToWaitToPlant, int maxTimeToWaitToPlant) {
         this.entity = entity;
@@ -23,11 +23,7 @@ public class EntityAIPlantSapling extends EntityAIBase {
 
     @Override
     public boolean shouldExecute() {
-        return timeSinceLastPlacement > minTimeToWaitToPlant && (timeSinceLastPlacement > maxTimeToWaitToPlant || new Random().nextInt(80) == 0) && entity.isItemToPlace();
-    }
-
-    public boolean shouldExecuteIgnoreMin() {
-        return timeSinceLastPlacement > maxTimeToWaitToPlant || new Random().nextInt(10) == 0;
+        return timeSinceLastPlacement > minTimeToWaitToPlant && (timeSinceLastPlacement > maxTimeToWaitToPlant || new Random().nextInt(600) == 0) && entity.isItemToPlace();
     }
 
     @Override

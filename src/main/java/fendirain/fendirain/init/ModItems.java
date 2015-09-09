@@ -4,6 +4,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import fendirain.fendirain.common.item.ItemFendiPiece;
 import fendirain.fendirain.common.item.ItemFendirain;
 import fendirain.fendirain.common.item.ItemTreeClearer;
+import fendirain.fendirain.reference.ConfigValues;
 
 public class ModItems {
 
@@ -12,6 +13,8 @@ public class ModItems {
 
     public static void init() {
         GameRegistry.registerItem(fendiPiece, "fendiPiece");
-        GameRegistry.registerItem(leafClearer, "treeClearer");
+        if (ConfigValues.isDebugSettingsEnabled) {
+            GameRegistry.registerItem(leafClearer, "treeClearer");
+        }
     }
 }

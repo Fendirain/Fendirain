@@ -5,6 +5,13 @@ public class ConfigValues {
     public static boolean isDebugSettingsEnabled;
 
     // EntityFendinainMob
+    public static boolean fendinainMob_enableSpawning;
     public static int fendinainMob_minTimeToWaitToPlant;
     public static int fendinainMob_maxTimeToWaitToPlant;
+
+    // EntityFenderiumMob
+    public static boolean fenderiumMob_enableSpawning;
+    public static int fenderiumMob_breakSpeed;
+    public static boolean fenderiumMob_waitPerTreeOrLog;
+    public static int fenderiumMob_timePerBreak;
 }

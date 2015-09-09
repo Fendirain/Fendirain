@@ -91,7 +91,7 @@ public class BlockFendi extends BlockContainer {
         blockIcon = iconRegister.registerIcon(String.format("%s", getUnwrappedUnlocalizedName(this.getUnlocalizedName())));
     }
 
-    public String getUnwrappedUnlocalizedName(String unlocalizedName) {
+    private String getUnwrappedUnlocalizedName(String unlocalizedName) {
         return unlocalizedName.substring(unlocalizedName.indexOf(".") + 1);
     }
 

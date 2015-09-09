@@ -41,7 +41,7 @@ minecraft {
     replace "@MOD_VERSION@", config.mod_version
 }
 
-//noinspection GroovyAssignabilityCheck
+//noinspection GroovyAssignabilityCheck,GroovyMissingReturnStatement
 dependencies {
 
 }

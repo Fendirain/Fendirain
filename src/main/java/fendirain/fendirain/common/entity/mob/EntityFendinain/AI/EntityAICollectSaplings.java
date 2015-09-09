@@ -11,10 +11,10 @@ import java.util.List;
 
 public class EntityAICollectSaplings extends EntityAIBase {
 
-    private EntityFendinainMob entity;
-    private PathNavigate pathFinder;
+    private final EntityFendinainMob entity;
+    private final PathNavigate pathFinder;
+    private final double speed;
     private EntityItem targetItem = null;
-    private double speed;
 
     public EntityAICollectSaplings(EntityFendinainMob entity, double speed) {
         this.entity = entity;

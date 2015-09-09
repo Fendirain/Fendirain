@@ -14,7 +14,7 @@ import java.util.List;
 public class ModGuiConfig extends GuiConfig {
 
     public ModGuiConfig(GuiScreen guiScreen) {
-        super(guiScreen, getConfigElements(), Reference.MOD_ID, false, false, "Fendirain's Configuration");
+        super(guiScreen, getConfigElements(), Reference.MOD_ID, false, true, "Fendirain's Configuration");
     }
 
     private static List<IConfigElement> getConfigElements() {

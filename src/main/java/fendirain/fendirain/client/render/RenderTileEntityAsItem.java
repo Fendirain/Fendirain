@@ -8,9 +8,9 @@ import net.minecraftforge.client.IItemRenderer;
 import org.lwjgl.opengl.GL11;
 
 public class RenderTileEntityAsItem implements IItemRenderer {
-    TileEntitySpecialRenderer render;
+    final TileEntitySpecialRenderer render;
 
-    private TileEntity entity;
+    private final TileEntity entity;
 
     public RenderTileEntityAsItem(TileEntitySpecialRenderer render, TileEntity entity) {
         this.render = render;

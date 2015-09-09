@@ -7,8 +7,8 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderFenderium extends RenderLiving {
-    private ResourceLocation resourceLocation;
-    private ModelFenderiumMob model;
+    private final ResourceLocation resourceLocation;
+    private final ModelFenderiumMob model;
 
     public RenderFenderium(ModelFenderiumMob model, float float1, ResourceLocation resourceLocation) {
         super(model, float1);

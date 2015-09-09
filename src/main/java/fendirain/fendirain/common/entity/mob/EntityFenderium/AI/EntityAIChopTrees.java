@@ -12,27 +12,39 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 public class EntityAIChopTrees extends EntityAIBase {
-    private final int breakSpeedMultiplier, maxLogRange = 2;
-    private EntityFenderiumMob entity;
-    private PathNavigate pathFinder;
-    private float moveSpeed;
+    private final int maxLogRange, timePer, sightRange;
+    private final boolean doTimePerLog;
+    private final Random rand;
+    private final EntityFenderiumMob entity;
+    private final PathNavigate pathFinder;
+    private final float moveSpeed;
     private int currentProgress;
-    private BlockLocation baseStumpBlock = null;
-    private BlockLocation currentlyBreaking = null;
-    private BlockLocation treeLeaf = null;
-    private boolean alreadyExecuting = false;
+    private BlockLocation baseStumpBlock;
+    private BlockLocation currentlyBreaking;
+    private BlockLocation treeLeaf;
+    private boolean alreadyExecuting;
     private ArrayList<BlockLocation> currentTreeBlocks;
     private ArrayList<BlockLocation> tempBlocksList;
     private ArrayList<String> searchedList;
-    private int timeToWaitUntilNextRun = 0;
+    private int timeToWaitUntilNextRun;
 
-    public EntityAIChopTrees(EntityFenderiumMob entity, float moveSpeed, int breakSpeedMultiplier) {
+    public EntityAIChopTrees(EntityFenderiumMob entity, Random rand, int sightRange, float moveSpeed, boolean doTimePerLog, int timePer) {
+        this.maxLogRange = 3;
         this.entity = entity;
+        this.rand = rand;
+        this.sightRange = sightRange;
         this.moveSpeed = moveSpeed;
-        this.breakSpeedMultiplier = breakSpeedMultiplier;
+        this.doTimePerLog = doTimePerLog;
+        this.timePer = timePer;
         this.pathFinder = entity.getNavigator();
+        baseStumpBlock = null;
+        currentlyBreaking = null;
+        treeLeaf = null;
+        alreadyExecuting = false;
+        timeToWaitUntilNextRun = -3000;
         this.setMutexBits(1);
     }
 
@@ -41,7 +53,7 @@ public class EntityAIChopTrees extends EntityAIBase {
         if (!pathFinder.noPath() || alreadyExecuting || timeToWaitUntilNextRun > 0) {
             return false;
         }
-        if (!entity.worldObj.isRemote) {
+        if (!entity.worldObj.isRemote && (timeToWaitUntilNextRun <= -6000 || rand.nextInt(1000) == 1)) {
             World world = entity.worldObj;
             int range = entity.getMaxRange();
             BlockLocation closest = null;
@@ -102,7 +114,7 @@ public class EntityAIChopTrees extends EntityAIBase {
             searchedList = new ArrayList<String>();
         }
 
-        if (!(posX > baseStumpBlock.getPosX() + 8 && posX < baseStumpBlock.getPosX() - 8 && posZ > baseStumpBlock.getPosZ() + 8 && posZ < baseStumpBlock.getPosZ() - 8)) {
+        if (posX < baseStumpBlock.getPosX() + sightRange && posX > baseStumpBlock.getPosX() - sightRange && posZ < baseStumpBlock.getPosZ() + sightRange && posZ > baseStumpBlock.getPosZ() - sightRange) {
             checkBlocks(world, posX + 1, posY, posZ);
             checkBlocks(world, posX - 1, posY, posZ);
             checkBlocks(world, posX, posY + 1, posZ);
@@ -204,6 +216,7 @@ public class EntityAIChopTrees extends EntityAIBase {
     public void startExecuting() {
         if (!alreadyExecuting && currentTreeBlocks == null) {
             getAllConnectingTreeBlocks(entity.worldObj, baseStumpBlock.getPosX(), baseStumpBlock.getPosY(), baseStumpBlock.getPosZ(), true);
+            alreadyExecuting = true;
         }
         pathFinder.tryMoveToXYZ(this.baseStumpBlock.getPosX(), this.baseStumpBlock.getPosY(), this.baseStumpBlock.getPosZ(), this.moveSpeed);
     }
@@ -257,7 +270,7 @@ public class EntityAIChopTrees extends EntityAIBase {
                     currentlyBreaking = this.returnFurthestLog();
                 }
                 if (currentlyBreaking != null) {
-                    currentProgress = currentProgress + 1 + Math.abs(this.breakSpeedMultiplier);
+                    currentProgress = currentProgress + 1 + Math.abs(entity.getBreakSpeed());
                     int breakProgress = (int) ((float) this.currentProgress / 240.0F * 10.0F);
                     world.destroyBlockInWorldPartially(entity.getEntityId(), currentlyBreaking.getPosX(), currentlyBreaking.getPosY(), currentlyBreaking.getPosZ(), breakProgress);
                     if (this.currentProgress >= 240) {
@@ -271,7 +284,14 @@ public class EntityAIChopTrees extends EntityAIBase {
                                 currentTreeBlocks.remove(currentlyBreaking);
                             }
                             currentlyBreaking = null;
-                            timeToWaitUntilNextRun += 600;
+                            if (doTimePerLog) {
+                                if (timeToWaitUntilNextRun < 0) {
+                                    timeToWaitUntilNextRun = 0;
+                                }
+                                timeToWaitUntilNextRun += timePer;
+                            } else if (timeToWaitUntilNextRun != timePer) {
+                                timeToWaitUntilNextRun = timePer;
+                            }
                             currentProgress = 0;
                         }
                     } else if (currentProgress % 4 == 0) {
@@ -298,8 +318,6 @@ public class EntityAIChopTrees extends EntityAIBase {
     }
 
     public void setTimeToWaitUntilNextRun(int timeToWaitUntilNextRun) {
-        if (!isAlreadyExecuting()) {
-            this.timeToWaitUntilNextRun = timeToWaitUntilNextRun;
-        }
+        this.timeToWaitUntilNextRun = timeToWaitUntilNextRun;
     }
 }

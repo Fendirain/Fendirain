@@ -12,8 +12,8 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class RenderFendinain extends RenderLiving {
-    private ResourceLocation resourceLocation;
-    private ModelFendinainMob model;
+    private final ResourceLocation resourceLocation;
+    private final ModelFendinainMob model;
 
     public RenderFendinain(ModelFendinainMob model, float float1, ResourceLocation resourceLocation) {
         super(model, float1);

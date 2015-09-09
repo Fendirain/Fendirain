@@ -32,9 +32,9 @@ import java.util.Arrays;
 
 public class EntityFendinainMob extends EntityCreature implements IInventory {
     private final int inventorySize = 6, maxStackSize = 12;
-    public EntityAICollectSaplings entityAICollectSaplings;
+    private final EntityAICollectSaplings entityAICollectSaplings;
+    private final EntityAIPlantSapling entityAIPlantSapling;
     private ItemStack[] inventory = new ItemStack[inventorySize];
-    private EntityAIPlantSapling entityAIPlantSapling;
     private boolean firstUpdate;
 
     public EntityFendinainMob(World world) {
@@ -64,7 +64,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         this.entityAIPlantSapling.addToTimeSinceLastPlacement(1);
     }
 
-    public void addNewSpawnInventory() {
+    private void addNewSpawnInventory() {
         String biome = this.worldObj.getBiomeGenForCoords((int) this.posX, (int) this.posZ).biomeName;
         int amountOfSaplings = rand.nextInt(this.getInventoryStackLimit()) + 1;
         // Adds the proper type of saplings for the biome it's spawned in. Done this way for future compatibility with mods. May be changed later.
@@ -428,7 +428,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         return this.getHeldItem();
     }
 
-    public ItemStack getRandomSlot() {
+    private ItemStack getRandomSlot() {
         ArrayList<ItemStack> items = new ArrayList<ItemStack>();
         for (ItemStack item : inventory) {
             if (item != null) {

@@ -8,9 +8,9 @@ import java.util.Random;
 
 public class WorldGenCustom extends WorldGenerator {
 
-    private Block block;
-    private int blockMeta;
-    private Block target;
+    private final Block block;
+    private final int blockMeta;
+    private final Block target;
 
     public WorldGenCustom(Block block, int blockMeta, Block target) {
         this.block = block;

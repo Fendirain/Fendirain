@@ -8,11 +8,11 @@ import net.minecraft.pathfinding.PathNavigate;
 import java.util.Random;
 
 public class EntityAIBegPlayer extends EntityAIBase {
-    private EntityFendinainMob entity;
-    private PathNavigate pathFinder;
+    private final EntityFendinainMob entity;
+    private final PathNavigate pathFinder;
+    private final Random rand;
+    private final double speed;
     private EntityPlayer targetEntity = null;
-    private Random rand;
-    private double speed;
     private int randInt = 0;
 
     public EntityAIBegPlayer(EntityFendinainMob entity, double speed, Random rand) {

@@ -28,10 +28,19 @@ public class ConfigurationHandler {
 
     private static void loadConfiguration() {
         // Read in properties from configuration file - Most likely put it into a reference class.
-        ConfigValues.isGenerationEnabled = configuration.getBoolean("oreGeneration", CATEGORY_GENERAL, true, "Disable ore generation");
-        ConfigValues.isDebugSettingsEnabled = configuration.getBoolean("debug", CATEGORY_DEVELOPER, false, "Enables debug settings");
-        ConfigValues.fendinainMob_minTimeToWaitToPlant = configuration.getInt("Fendinain_MinTimeBetweenPlanting", CATEGORY_MOB, 4800, 0, Integer.MAX_VALUE, "The minimum amount of time the fendinain will wait to plant a sapling [Must be lower than Fendinain_MaxTimeBetweenPlanting]");
-        ConfigValues.fendinainMob_maxTimeToWaitToPlant = configuration.getInt("Fendinain_MaxTimeBetweenPlanting", CATEGORY_MOB, 12000, 0, Integer.MAX_VALUE, "The longest amount of time the fendinain will wait to plant a sapling (Assuming it is able to plant one) [Must be higher than Fendinain_MinTimeBetweenPlanting]");
+        ConfigValues.isGenerationEnabled = configuration.getBoolean("oreGeneration", CATEGORY_GENERAL, true, "Disable ore generation.");
+        ConfigValues.isDebugSettingsEnabled = configuration.getBoolean("debug", CATEGORY_DEVELOPER, false, "Enables debug settings.");
+
+        // EntityFendinainMob
+        ConfigValues.fendinainMob_enableSpawning = configuration.getBoolean("Fendinain_Spawning", CATEGORY_MOB, true, "Enables spawning of the Fendinain.");
+        ConfigValues.fendinainMob_minTimeToWaitToPlant = configuration.getInt("Fendinain_MinTimeBetweenPlanting", CATEGORY_MOB, 4800, 0, Integer.MAX_VALUE, "The minimum amount of time the Fendinain will wait to plant a sapling. [Must be lower than Fendinain_MaxTimeBetweenPlanting]");
+        ConfigValues.fendinainMob_maxTimeToWaitToPlant = configuration.getInt("Fendinain_MaxTimeBetweenPlanting", CATEGORY_MOB, 12000, 0, Integer.MAX_VALUE, "The longest amount of time the Fendinain will wait to plant a sapling (Assuming it is able to plant one). [Must be higher than Fendinain_MinTimeBetweenPlanting]");
+
+        // EntityFenderiumMob
+        ConfigValues.fenderiumMob_enableSpawning = configuration.getBoolean("Fenderium_Spawning", CATEGORY_MOB, true, "Enables spawning of the Fenderium.");
+        ConfigValues.fenderiumMob_breakSpeed = configuration.getInt("Fenderium_BreakSpeed", CATEGORY_MOB, 0, 0, Integer.MAX_VALUE, "The higher this setting, the faster the Fenderium will break logs (There is a limit to the speed, will do more testing for it later.");
+        ConfigValues.fenderiumMob_waitPerTreeOrLog = configuration.getBoolean("Fenderium_WaitPerLogOrTree", CATEGORY_MOB, true, "If true, Wait time will be added per a log broken. If false, it will wait the same amount of time per a tree broken no matter the size.");
+        ConfigValues.fenderiumMob_timePerBreak = configuration.getInt("Fenderium_TimePerBreak", CATEGORY_MOB, 30, 0, Integer.MAX_VALUE, "Amount of seconds to wait, either per a log or tree chopped, depending on the 'Fenderium_WaitPerLogOrTree' setting.");
 
         if (ConfigValues.fendinainMob_minTimeToWaitToPlant > ConfigValues.fendinainMob_maxTimeToWaitToPlant) {
             Minecraft.getMinecraft().crashed(new CrashReport("fendinainMob_minTimeToWaitToPlant is not lower than or equal too fendinainMob_maxTimeToWaitToPlant, Please correct.", new CannotProceedException()));
