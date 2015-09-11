@@ -10,9 +10,8 @@ item.fendirain:fendiPiece.name=Fendi Piece
 item.fendirain:treeClearer.name=Tree Clearer
 
 # Blocks
-tile.fendirain:fendiOre.name=Fendi Ore
-tile.fendirain:fendiBlockOld.name=Fendi Old
-tile.fendirain:fendiBlock.name=Fendi
+tile.fendirain:blockOreFendi.name=Fendi Ore
+tile.fendirain:blockFendi.name=Fendi
 
 # Creative Tabs
 itemGroup.fendirain=Fendirain

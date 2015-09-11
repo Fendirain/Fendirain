@@ -17,7 +17,7 @@ public class FendiOreGenerator implements IWorldGenerator {
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
         if (ConfigValues.isGenerationEnabled) {
-            Block blockToGenerate = ModBlocks.fendiOre;
+            Block blockToGenerate = ModBlocks.blockOreFendi;
             switch (world.provider.getDimensionId()) {
                 // Nether
                 case -1:
@@ -33,6 +33,7 @@ public class FendiOreGenerator implements IWorldGenerator {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void generateOres(World world, Random rand, Block blockToGenerate, Block blockToReplace, int chunkX, int chunkZ, int maxVienSize, int minHeight, int maxHeight, int chanceToGenerate) {
         int heightDiff = (maxHeight - minHeight) + 1;
         WorldGenCustom worldGenCustom = new WorldGenCustom(blockToGenerate, maxVienSize, BlockHelper.forBlock(blockToReplace));

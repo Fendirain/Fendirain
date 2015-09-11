@@ -28,7 +28,7 @@ public class BlockFendi extends BlockContainer {
         super(Material.rock);
         this.setHardness(2.0F);
         this.setResistance(5.0F);
-        this.setUnlocalizedName("fendiBlock");
+        this.setUnlocalizedName("blockFendi");
         this.setCreativeTab(CreativeTabFendirain.FENDIRAIN_TAB);
     }
 

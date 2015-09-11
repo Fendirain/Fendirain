@@ -8,6 +8,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
@@ -210,6 +211,13 @@ public class EntityAIChopTrees extends EntityAIBase {
             searchedList = null;
             alreadyExecuting = false;
             treeLeaf = null;
+            for (Object potion : entity.getActivePotionEffects()) {
+                PotionEffect potionEffect = (PotionEffect) potion;
+                if (potionEffect.getPotionID() == 3) {
+                    entity.removePotionEffect(3);
+                    break;
+                }
+            }
             return false;
         }
     }
@@ -226,21 +234,8 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public void resetTask() {
         World world = entity.worldObj;
-        if (baseStumpBlock != null) {
-            if (entity.isItemValidForBreaking(world.getBlockState(baseStumpBlock.getBlockPos()).getBlock())) {
-                boolean keepChecking;
-                int above = 1;
-                do {
-                    if (entity.isItemValidForBreaking(world.getBlockState(baseStumpBlock.getBlockPos()).getBlock())) {
-                        above++;
-                        keepChecking = true;
-                    } else {
-                        above--;
-                        keepChecking = false;
-                    }
-                } while (keepChecking);
-                world.sendBlockBreakProgress(entity.getEntityId(), baseStumpBlock.getBlockPos(), -1);
-            }
+        if (currentlyBreaking != null) {
+            world.sendBlockBreakProgress(entity.getEntityId(), currentlyBreaking.getBlockPos(), -1);
         }
     }
 
@@ -248,14 +243,22 @@ public class EntityAIChopTrees extends EntityAIBase {
         if (!currentTreeBlocks.isEmpty()) {
             BlockLocation result = null;
             int dist = -1;
+            ArrayList<BlockLocation> removeBlocks = new ArrayList<BlockLocation>();
             for (BlockLocation block : currentTreeBlocks) {
-                int blockDist = block.compareTo(baseStumpBlock);
-                if (dist == -1) {
-                    dist = blockDist;
-                    result = block;
-                } else if (blockDist > dist || (dist == blockDist && block.getBlockPos().getY() > result.getBlockPos().getY())) {
-                    dist = blockDist;
-                    result = block;
+                if (entity.worldObj.getBlockState(block.getBlockPos()).getBlock() == baseStumpBlock.getBlock()) {
+                    int blockDist = block.compareTo(baseStumpBlock);
+                    if (dist == -1) {
+                        dist = blockDist;
+                        result = block;
+                    } else if (blockDist > dist || (dist == blockDist && block.getBlockPos().getY() > result.getBlockPos().getY())) {
+                        dist = blockDist;
+                        result = block;
+                    }
+                } else removeBlocks.add(block);
+            }
+            for (BlockLocation remove : removeBlocks) {
+                if (currentTreeBlocks.contains(remove)) {
+                    currentTreeBlocks.remove(remove);
                 }
             }
             return result;
@@ -268,7 +271,15 @@ public class EntityAIChopTrees extends EntityAIBase {
         if (!entity.worldObj.isRemote) {
             if (entity.getDistance(baseStumpBlock.getBlockPos().getX(), baseStumpBlock.getBlockPos().getY(), baseStumpBlock.getBlockPos().getZ()) < 2) {
                 World world = entity.worldObj;
-                if (currentlyBreaking == null) {
+                if (currentlyBreaking == null || world.getBlockState(currentlyBreaking.getBlockPos()).getBlock() != currentlyBreaking.getBlock()) {
+                    if (currentlyBreaking != null) {
+                        world.sendBlockBreakProgress(entity.getEntityId(), currentlyBreaking.getBlockPos(), -1);
+                        if (currentTreeBlocks != null && currentTreeBlocks.contains(currentlyBreaking)) {
+                            currentTreeBlocks.remove(currentlyBreaking);
+                        }
+                        currentlyBreaking = null;
+                        currentProgress = 0;
+                    }
                     currentlyBreaking = this.returnFurthestLog();
                 }
                 if (currentlyBreaking != null) {

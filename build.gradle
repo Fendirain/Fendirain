@@ -13,7 +13,7 @@ configFile.withReader {
 
 version = config.mc_version + "-" + config.release_type + "_" + config.mod_version
 //noinspection GroovyUnusedAssignment
-group = "com.fendirain.fendirain"
+group = "fendirain.fendirain"
 //noinspection GroovyUnusedAssignment
 archivesBaseName = "Fendirain"
 

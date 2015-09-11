@@ -1,17 +1,17 @@
 package fendirain.fendirain.init;
 
 import fendirain.fendirain.common.block.BlockFendi;
-import fendirain.fendirain.common.block.BlockFendiOre;
 import fendirain.fendirain.common.block.BlockFendirain;
+import fendirain.fendirain.common.block.BlockOreFendi;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModBlocks {
 
-    public static final BlockFendirain fendiOre = new BlockFendiOre();
+    public static final BlockFendirain blockOreFendi = new BlockOreFendi();
     public static final BlockFendi blockFendi = new BlockFendi();
 
     public static void init() {
-        GameRegistry.registerBlock(fendiOre, "fendiOre");
-        GameRegistry.registerBlock(blockFendi, "fendiBlock");
+        GameRegistry.registerBlock(blockFendi, "blockFendi");
+        GameRegistry.registerBlock(blockOreFendi, "blockOreFendi");
     }
 }
