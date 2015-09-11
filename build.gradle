@@ -18,7 +18,7 @@ group = "com.fendirain.fendirain"
 archivesBaseName = "Fendirain"
 
 minecraft {
-    version = config.mc_version + "-" + config.forge_version + "-" + config.mc_version
+    version = config.mc_version + "-" + config.forge_version
     runDir = "run"
 
     replaceIn "reference/Reference.java"
