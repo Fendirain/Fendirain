@@ -1,7 +1,7 @@
 package fendirain.fendirain.utility;
 
-import cpw.mods.fml.common.FMLLog;
 import fendirain.fendirain.reference.Reference;
+import net.minecraftforge.fml.common.FMLLog;
 import org.apache.logging.log4j.Level;
 
 public class LogHelper {

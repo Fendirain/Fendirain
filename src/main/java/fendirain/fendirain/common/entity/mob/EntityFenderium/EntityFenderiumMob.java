@@ -20,8 +20,10 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
@@ -38,8 +40,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         super(world);
         this.setSize(.39F, .99F);
         entityAIChopTrees = new EntityAIChopTrees(this, rand, range, 1.0F, ConfigValues.fenderiumMob_waitPerTreeOrLog, ConfigValues.fenderiumMob_timePerBreak * 20);
-        this.getNavigator().setCanSwim(true);
-        this.getNavigator().setAvoidsWater(true);
+        ((PathNavigateGround) this.getNavigator()).setAvoidsWater(true);
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, entityAIChopTrees);
         this.tasks.addTask(2, new EntityAIWander(this, 1.0F));
@@ -144,11 +145,6 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     }
 
     @Override
-    public boolean isAIEnabled() {
-        return true;
-    }
-
-    @Override
     public void applyEntityAttributes() {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(25.0D);
@@ -157,7 +153,8 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
 
     @Override
     public boolean getCanSpawnHere() {
-        return super.getCanSpawnHere() && (worldObj.getBlock((int) this.posX, (int) this.posY - 1, (int) this.posZ) != Blocks.leaves || worldObj.getBlock((int) this.posX, (int) this.posY - 1, (int) this.posZ) != Blocks.leaves2);
+        Block block = worldObj.getBlockState(new BlockPos(this).down()).getBlock();
+        return super.getCanSpawnHere() && (block != Blocks.leaves || block != Blocks.leaves2);
     }
 
     @Override
@@ -322,16 +319,6 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     }
 
     @Override
-    public String getInventoryName() {
-        return null;
-    }
-
-    @Override
-    public boolean hasCustomInventoryName() {
-        return false;
-    }
-
-    @Override
     public int getInventoryStackLimit() {
         return maxStackSize;
     }
@@ -347,18 +334,37 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     }
 
     @Override
-    public void openInventory() {
-
+    public void openInventory(EntityPlayer entityPlayer) {
     }
 
     @Override
-    public void closeInventory() {
+    public void closeInventory(EntityPlayer entityPlayer) {
 
     }
 
     @Override
     public boolean isItemValidForSlot(int slot, ItemStack itemStack) {
         return itemStack.getItem() instanceof ItemBlock && (Block.getBlockFromItem(itemStack.getItem()) == Blocks.log || Block.getBlockFromItem(itemStack.getItem()) == Blocks.log2);
+    }
+
+    @Override
+    public int getField(int id) {
+        return 0;
+    }
+
+    @Override
+    public void setField(int id, int value) {
+
+    }
+
+    @Override
+    public int getFieldCount() {
+        return 0;
+    }
+
+    @Override
+    public void clear() {
+
     }
 
     public boolean isItemValidForBreaking(Block block) {

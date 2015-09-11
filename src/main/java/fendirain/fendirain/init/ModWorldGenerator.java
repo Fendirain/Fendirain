@@ -1,7 +1,7 @@
 package fendirain.fendirain.init;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import fendirain.fendirain.worldgen.FendiOreGenerator;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModWorldGenerator {
 

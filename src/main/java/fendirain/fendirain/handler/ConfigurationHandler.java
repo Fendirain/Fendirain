@@ -1,12 +1,12 @@
 package fendirain.fendirain.handler;
 
-import cpw.mods.fml.client.event.ConfigChangedEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.reference.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.naming.CannotProceedException;
 import java.io.File;

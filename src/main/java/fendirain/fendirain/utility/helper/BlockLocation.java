@@ -1,20 +1,17 @@
 package fendirain.fendirain.utility.helper;
 
 import net.minecraft.block.Block;
+import net.minecraft.util.BlockPos;
 
 public class BlockLocation implements Comparable<BlockLocation> {
 
     private final Block block;
-    private final int posX;
-    private final int posY;
-    private final int posZ;
+    private final BlockPos blockPos;
     private final int damageValue;
 
-    public BlockLocation(Block block, int posX, int posY, int posZ, int damageValue) {
+    public BlockLocation(Block block, BlockPos blockPos, int damageValue) {
         this.block = block;
-        this.posX = posX;
-        this.posY = posY;
-        this.posZ = posZ;
+        this.blockPos = blockPos;
         this.damageValue = damageValue;
     }
 
@@ -22,16 +19,8 @@ public class BlockLocation implements Comparable<BlockLocation> {
         return block;
     }
 
-    public int getPosX() {
-        return posX;
-    }
-
-    public int getPosY() {
-        return posY;
-    }
-
-    public int getPosZ() {
-        return posZ;
+    public BlockPos getBlockPos() {
+        return blockPos;
     }
 
     public int getDamageValue() {
@@ -41,6 +30,6 @@ public class BlockLocation implements Comparable<BlockLocation> {
     @SuppressWarnings("NullableProblems")
     @Override
     public int compareTo(BlockLocation blockLocation) {
-        return (Math.abs(this.getPosX() - blockLocation.getPosX())) + (Math.abs(this.getPosY() - blockLocation.getPosY())) + (Math.abs(this.getPosZ() - blockLocation.getPosZ()));
+        return (Math.abs(this.getBlockPos().getX() - blockLocation.getBlockPos().getX())) + (Math.abs(this.getBlockPos().getY() - blockLocation.getBlockPos().getY())) + (Math.abs(this.getBlockPos().getZ() - blockLocation.getBlockPos().getZ()));
     }
 }

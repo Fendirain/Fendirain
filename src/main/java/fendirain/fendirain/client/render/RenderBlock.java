@@ -18,7 +18,7 @@ public class RenderBlock extends TileEntitySpecialRenderer {
     }
 
     @Override
-    public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float f) {
+    public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float var2, int var3) {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
         GL11.glRotatef(180, 0F, 0F, 1F);

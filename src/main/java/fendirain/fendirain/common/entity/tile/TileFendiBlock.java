@@ -22,7 +22,7 @@ public class TileFendiBlock extends TileFendirain {
 
     public void addToCurrentAmount(int amountToAdd) {
         currentAmount += amountToAdd;
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        worldObj.markBlockForUpdate(pos);
     }
 
     public int getCurrentAmount() {
@@ -33,10 +33,10 @@ public class TileFendiBlock extends TileFendirain {
         return amountNeededToComplete;
     }
 
-    @Override
+    /*@Override
     public void updateEntity() {
-        /*if (currentAmount > 1) {
+        *//*if (currentAmount > 1) {
             // Nothing yet
-        }*/
-    }
+        }*//*
+    }*/
 }

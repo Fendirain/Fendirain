@@ -1,6 +1,9 @@
 package fendirain.fendirain.worldgen;
 
+import com.google.common.base.Predicate;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 
@@ -10,26 +13,26 @@ public class WorldGenCustom extends WorldGenerator {
 
     private final Block block;
     private final int blockMeta;
-    private final Block target;
+    private final Predicate<IBlockState> target;
 
-    public WorldGenCustom(Block block, int blockMeta, Block target) {
+    public WorldGenCustom(Block block, int blockMeta, Predicate<IBlockState> target) {
         this.block = block;
         this.blockMeta = blockMeta;
         this.target = target;
     }
 
     @Override
-    public boolean generate(World world, Random rand, int x, int y, int z) {
-        if (world.getBlock(x, y, z).isReplaceableOreGen(world, x, y, z, this.target)) {
-            world.setBlock(x, y, z, this.block, this.blockMeta, 2);
+    public boolean generate(World world, Random rand, BlockPos blockPos) {
+        if (world.getBlockState(blockPos).getBlock().isReplaceableOreGen(world, blockPos, target)) {
+            world.setBlockState(blockPos, this.block.getDefaultState());
             return true;
         }
         return false;
     }
 
-    public boolean generate(World world, Random rand, int x, int y, int z, int numberOfBlocks) {
-        if (world.getBlock(x, y, z).isReplaceableOreGen(world, x, y, z, this.target)) {
-            world.setBlock(x, y, z, this.block, this.blockMeta, 2);
+    public boolean generate(World world, Random rand, BlockPos blockPos, int numberOfBlocks) {
+        if (world.getBlockState(blockPos).getBlock().isReplaceableOreGen(world, blockPos, target)) {
+            world.setBlockState(blockPos, this.block.getStateFromMeta(this.blockMeta), 2);
             int lastDirection = -1;
             while (numberOfBlocks > 1) {
                 int randomInt = rand.nextInt(6);
@@ -38,25 +41,25 @@ public class WorldGenCustom extends WorldGenerator {
                 }
                 switch (randomInt) {
                     case 0:
-                        x++;
+                        blockPos.east();
                         break;
                     case 1:
-                        x--;
+                        blockPos.west();
                         break;
                     case 2:
-                        y++;
+                        blockPos.up();
                         break;
                     case 3:
-                        y--;
+                        blockPos.down();
                         break;
                     case 4:
-                        z++;
+                        blockPos.south();
                     case 5:
-                        z--;
+                        blockPos.north();
                         break;
                 }
-                if (world.getBlock(x, y, z).isReplaceableOreGen(world, x, y, z, this.target)) {
-                    world.setBlock(x, y, z, this.block, this.blockMeta, 2);
+                if (world.getBlockState(blockPos).getBlock().isReplaceableOreGen(world, blockPos, this.target)) {
+                    world.setBlockState(blockPos, this.block.getStateFromMeta(this.blockMeta), 2);
                 }
                 lastDirection = randomInt;
                 numberOfBlocks--;

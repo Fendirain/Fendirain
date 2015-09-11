@@ -1,22 +1,6 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
-    }
-    //noinspection GroovyAssignabilityCheck
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
-    }
+plugins {
+    id "net.minecraftforge.gradle.forge" version "2.0.1"
 }
-
-apply plugin: 'forge'
 
 ext.configFile = file "build.properties"
 
@@ -35,10 +19,12 @@ archivesBaseName = "Fendirain"
 
 minecraft {
     version = config.mc_version + "-" + config.forge_version + "-" + config.mc_version
-    runDir = "eclipse"
+    runDir = "run"
 
     replaceIn "reference/Reference.java"
     replace "@MOD_VERSION@", config.mod_version
+
+    mappings = config.mappings
 }
 
 //noinspection GroovyAssignabilityCheck,GroovyMissingReturnStatement

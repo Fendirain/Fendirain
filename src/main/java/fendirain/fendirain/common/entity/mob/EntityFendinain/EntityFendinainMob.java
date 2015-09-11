@@ -23,6 +23,8 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -43,8 +45,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         this.entityAIPlantSapling = new EntityAIPlantSapling(this, ConfigValues.fendinainMob_minTimeToWaitToPlant, ConfigValues.fendinainMob_maxTimeToWaitToPlant);
         this.entityAICollectSaplings = new EntityAICollectSaplings(this, 1F);
         firstUpdate = true;
-        this.getNavigator().setCanSwim(true);
-        this.getNavigator().setAvoidsWater(true);
+        ((PathNavigateGround) this.getNavigator()).setAvoidsWater(true);
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIPanic(this, 1.2F));
         this.tasks.addTask(2, entityAIPlantSapling);
@@ -65,7 +66,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     private void addNewSpawnInventory() {
-        String biome = this.worldObj.getBiomeGenForCoords((int) this.posX, (int) this.posZ).biomeName;
+        String biome = this.worldObj.getBiomeGenForCoords(new BlockPos(this.posX, this.posY, this.posZ)).biomeName;
         int amountOfSaplings = rand.nextInt(this.getInventoryStackLimit()) + 1;
         // Adds the proper type of saplings for the biome it's spawned in. Done this way for future compatibility with mods. May be changed later.
         if (biome != null) {
@@ -161,7 +162,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
 
     @Override
     public boolean getCanSpawnHere() {
-        return super.getCanSpawnHere() && (worldObj.getBlock((int) this.posX, (int) this.posY - 1, (int) this.posZ) != Blocks.leaves || worldObj.getBlock((int) this.posX, (int) this.posY - 1, (int) this.posZ) != Blocks.leaves2);
+        return super.getCanSpawnHere() && (worldObj.getBlockState(new BlockPos(this.posX, this.posY - 1, this.posZ)) != Blocks.leaves || worldObj.getBlockState(new BlockPos(this.posX, this.posY - 1, this.posZ)) != Blocks.leaves2);
     }
 
     @Override
@@ -260,11 +261,6 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     @Override
-    public boolean isAIEnabled() {
-        return true;
-    }
-
-    @Override
     public void dropFewItems(boolean wasHitRecently, int lootingLevel) {
         for (ItemStack itemStack : inventory) {
             if (itemStack != null) {
@@ -354,16 +350,6 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     @Override
-    public String getInventoryName() {
-        return null;
-    }
-
-    @Override
-    public boolean hasCustomInventoryName() {
-        return false;
-    }
-
-    @Override
     public int getInventoryStackLimit() {
         return maxStackSize;
     }
@@ -379,18 +365,38 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     @Override
-    public void openInventory() {
+    public void openInventory(EntityPlayer entityPlayer) {
 
     }
 
     @Override
-    public void closeInventory() {
+    public void closeInventory(EntityPlayer entityPlayer) {
 
     }
 
     @Override
     public boolean isItemValidForSlot(int slot, ItemStack itemStack) {
         return itemStack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemStack.getItem()) == Blocks.sapling;
+    }
+
+    @Override
+    public int getField(int id) {
+        return 0;
+    }
+
+    @Override
+    public void setField(int id, int value) {
+
+    }
+
+    @Override
+    public int getFieldCount() {
+        return 0;
+    }
+
+    @Override
+    public void clear() {
+
     }
 
     @Override

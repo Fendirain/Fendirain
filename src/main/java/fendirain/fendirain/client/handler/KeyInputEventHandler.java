@@ -1,9 +1,9 @@
 package fendirain.fendirain.client.handler;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.InputEvent;
 import fendirain.fendirain.reference.Key;
 import fendirain.fendirain.utility.LogHelper;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
 
 public class KeyInputEventHandler {
 

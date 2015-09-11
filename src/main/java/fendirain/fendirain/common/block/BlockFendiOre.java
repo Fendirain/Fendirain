@@ -1,6 +1,7 @@
 package fendirain.fendirain.common.block;
 
 import fendirain.fendirain.init.ModItems;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 
 import java.util.Random;
@@ -13,12 +14,11 @@ public class BlockFendiOre extends BlockFendirain {
         this.setHardness(3.0F);
         this.setResistance(5.0F);
         this.setStepSound(soundTypeStone);
-        this.setBlockName("fendiOre");
-        this.setBlockTextureName("fendiOre");
+        this.setUnlocalizedName("fendiOre");
     }
 
     @Override
-    public Item getItemDropped(int metadata, Random rand, int fortune) {
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return ModItems.fendiPiece;
     }
 
