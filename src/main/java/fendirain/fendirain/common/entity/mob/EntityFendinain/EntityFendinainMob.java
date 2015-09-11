@@ -200,10 +200,8 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                     LogHelper.info(Arrays.toString(printQueue));
                     return true;
                 } else if (itemStack.getItem() == Items.blaze_rod) {
-                /*if (entityAIPlantSapling.shouldExecuteIgnoreMin()) {*/
                     entityAIPlantSapling.startExecuting();
                     return true;
-                /*}*/
                 } else if (itemStack.getItem() == Items.diamond_axe) {
                     for (int slot = 0; slot < inventory.length; slot++) {
                         inventory[slot] = null;
@@ -501,40 +499,4 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
             }
         }
     }
-
-    /*public boolean canAttackClass(Class useClass)
-    {
-        return !(this.isPlayerCreated() && EntityPlayer.class.isAssignableFrom(useClass)) && super.canAttackClass(useClass);
-    }
-
-    public boolean isPlayerCreated()
-    {
-        return (this.dataWatcher.getWatchableObjectByte(16) & 1) != 0;
-    }
-
-    public void setPlayerCreated(boolean playerCreated)
-    {
-        byte b0 = this.dataWatcher.getWatchableObjectByte(16);
-
-        if (playerCreated)
-        {
-            this.dataWatcher.updateObject(16, (byte) (b0 | 1));
-        }
-        else
-        {
-            this.dataWatcher.updateObject(16, (byte) (b0 & -2));
-        }
-    }
-
-    public void writeEntityToNBT(NBTTagCompound nbtTagCompound)
-    {
-        super.writeEntityToNBT(nbtTagCompound);
-        nbtTagCompound.setBoolean("PlayerCreated", this.isPlayerCreated());
-    }
-
-    public void readEntityFromNBT(NBTTagCompound nbtTagCompound)
-    {
-        super.readEntityFromNBT(nbtTagCompound);
-        this.setPlayerCreated(nbtTagCompound.getBoolean("PlayerCreated"));
-    }*/
 }

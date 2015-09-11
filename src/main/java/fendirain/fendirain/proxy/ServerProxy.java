@@ -7,7 +7,6 @@ public class ServerProxy extends CommonProxy {
     }
 
     @Override
-    // Don't need to do anything on the server side.
     public void registerKeyBindings() {
     }
 }

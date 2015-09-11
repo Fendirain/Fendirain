@@ -19,7 +19,6 @@ public class ModEntities {
         if (ConfigValues.fendinainMob_enableSpawning) {
             registerSpawningInTreeBiomes(EntityFendinainMob.class, 1);
         }
-
         // Fenderium
         entityID = EntityRegistry.findGlobalUniqueEntityId();
         EntityRegistry.registerGlobalEntityID(EntityFenderiumMob.class, "fenderium", entityID, 0x24424D, 0x210021);

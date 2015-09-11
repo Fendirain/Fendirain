@@ -19,15 +19,12 @@ public class FendiOreGenerator implements IWorldGenerator {
         if (ConfigValues.isGenerationEnabled) {
             Block blockToGenerate = ModBlocks.blockOreFendi;
             switch (world.provider.getDimensionId()) {
-                // Nether
-                case -1:
+                case -1: // Nether
                     break;
-                // Over-world
-                case 0:
+                case 0: // Over-world
                     generateOres(world, random, blockToGenerate, Blocks.stone, chunkX, chunkZ, 4, 1, 88, 1);
                     break;
-                // End
-                case 1:
+                case 1: // End
                     break;
             }
         }

@@ -19,7 +19,6 @@ public class ConfigurationHandler {
     public static Configuration configuration;
 
     public static void init(File configFile) {
-        // Create the configuration object from the given configuration file
         if (configuration == null) {
             configuration = new Configuration(configFile);
             loadConfiguration();
@@ -27,7 +26,6 @@ public class ConfigurationHandler {
     }
 
     private static void loadConfiguration() {
-        // Read in properties from configuration file - Most likely put it into a reference class.
         ConfigValues.isGenerationEnabled = configuration.getBoolean("oreGeneration", CATEGORY_GENERAL, true, "Disable ore generation.");
         ConfigValues.isDebugSettingsEnabled = configuration.getBoolean("debug", CATEGORY_DEVELOPER, false, "Enables debug settings.");
 
@@ -46,7 +44,6 @@ public class ConfigurationHandler {
             Minecraft.getMinecraft().crashed(new CrashReport("fendinainMob_minTimeToWaitToPlant is not lower than or equal too fendinainMob_maxTimeToWaitToPlant, Please correct.", new CannotProceedException()));
         }
 
-        // Save the configuration file
         if (configuration.hasChanged()) {
             configuration.save();
         }
@@ -55,7 +52,6 @@ public class ConfigurationHandler {
     @SubscribeEvent
     public void onConfigurationChangedEvent(ConfigChangedEvent.OnConfigChangedEvent onConfigChangedEvent) {
         if (onConfigChangedEvent.modID.equalsIgnoreCase(Reference.MOD_ID)) {
-            // Re-sync configs
             loadConfiguration();
         }
     }

@@ -28,16 +28,10 @@ public class Fendirain {
         ConfigurationHandler.init(preInitializationEvent.getSuggestedConfigurationFile());
         FMLCommonHandler.instance().bus().register(new ConfigurationHandler());
 
-        // Initialize all keyBindings
         proxy.registerKeyBindings();
-
-        // Initialize all mod items
         ModItems.init();
-        // Initialize all mod blocks
         ModBlocks.init();
-        // Initialize all mod tile entities
         ModTileEntities.init();
-        // Initialize all mod world generators
         ModWorldGenerator.init();
 
         LogHelper.info("Pre-Initialization Complete");
@@ -47,19 +41,11 @@ public class Fendirain {
     public void init(FMLInitializationEvent initializationEvent) {
         // Register Gui's, Tile Entity's, Crafting recipes, other event handlers.
 
-        // Initialize all mod entities
         ModEntities.init();
-
-        // Initialize all mod renders;
         ModRenderer.init();
         proxy.registerRender();
-
-        // Register KeyInputEventHandler
         FMLCommonHandler.instance().bus().register(new KeyInputEventHandler());
-
-        // Initialize all mod recipes
         ModRecipes.init();
-
         LogHelper.info("Initialization Complete");
     }
 

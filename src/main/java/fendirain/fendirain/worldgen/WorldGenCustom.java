@@ -54,6 +54,7 @@ public class WorldGenCustom extends WorldGenerator {
                         break;
                     case 4:
                         blockPos.south();
+                        break;
                     case 5:
                         blockPos.north();
                         break;

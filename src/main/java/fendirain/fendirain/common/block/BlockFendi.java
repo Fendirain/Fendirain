@@ -69,11 +69,6 @@ public class BlockFendi extends BlockContainer {
         return AxisAlignedBB.fromBounds(x + x1, y + y1, z + z1, x + x2, y + y2, z + z2);
     }
 
-   /* @Override
-    public boolean renderAsNormalBlock() {
-        return false;
-    }*/
-
     @Override
     public boolean shouldSideBeRendered(IBlockAccess worldIn, BlockPos pos, EnumFacing side) {
         return false;
@@ -83,12 +78,6 @@ public class BlockFendi extends BlockContainer {
     public String getUnlocalizedName() {
         return String.format("tile.%s%s", Reference.MOD_ID.toLowerCase() + ":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
     }
-
-    /*@Override
-    @SideOnly(Side.CLIENT)
-    public void registerBlockIcons(IIconRegister iconRegister) {
-        blockIcon = iconRegister.registerIcon(String.format("%s", getUnwrappedUnlocalizedName(this.getUnlocalizedName())));
-    }*/
 
     private String getUnwrappedUnlocalizedName(String unlocalizedName) {
         return unlocalizedName.substring(unlocalizedName.indexOf(".") + 1);
