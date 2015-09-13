@@ -23,6 +23,7 @@ public class LayerHeldItem implements LayerRenderer {
         this.livingEntityRenderer = livingEntityRendererIn;
     }
 
+    @SuppressWarnings("deprecation")
     public void doRenderLayer(EntityLivingBase entityLivingBase, float f1, float f2, float partialTicks, float f3, float f4, float f5, float scale) {
         ItemStack itemstack = entityLivingBase.getHeldItem();
         if (itemstack != null && itemstack.getItem() != null) {
@@ -31,11 +32,11 @@ public class LayerHeldItem implements LayerRenderer {
                     GL11.glPushMatrix();
                     ModelFendinainMob model = (ModelFendinainMob) this.livingEntityRenderer.getMainModel();
                     model.leftArm2.postRender(-1.2F);
-                    GL11.glTranslatef(-0.0365F, 0.9722F, -0.21F);
-                    GL11.glScalef(0.25F, 0.25F, 0.25F);
-                    GL11.glRotatef(-80.0F, 1.0F, 0.0F, 0.0F);
-                    GL11.glRotatef(40.0F, 0.0F, 1.0F, 0.0F);
-                    GL11.glRotatef(2.0F, 0.0F, 0.0F, 1.0F);
+                    GL11.glTranslatef(-0.11F, 1.18F, -0.17F);
+                    GL11.glScalef(0.5F, 0.5F, 0.5F);
+                    GL11.glRotatef(-75.0F, 1.0F, 0.0F, 0.0F);
+                    GL11.glRotatef(0.0F, 0.0F, 1.0F, 0.0F);
+                    GL11.glRotatef(-90.0F, 0.0F, 0.0F, 1.0F);
                     Minecraft.getMinecraft().getItemRenderer().renderItem(entityLivingBase, itemstack, ItemCameraTransforms.TransformType.THIRD_PERSON);
                     GL11.glPopMatrix();
                 }
