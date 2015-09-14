@@ -7,11 +7,11 @@ import fendirain.fendirain.common.block.BlockFendirain;
 
 public class ModBlocks {
 
-    public static final BlockFendirain fendiOre = new BlockFendiOre();
+    public static final BlockFendirain blockOreFendi = new BlockFendiOre();
     public static final BlockFendi blockFendi = new BlockFendi();
 
     public static void init() {
-        GameRegistry.registerBlock(fendiOre, "fendiOre");
-        GameRegistry.registerBlock(blockFendi, "fendiBlock");
+        GameRegistry.registerBlock(blockOreFendi, "blockOreFendi");
+        GameRegistry.registerBlock(blockFendi, "blockFendi");
     }
 }

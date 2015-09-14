@@ -15,17 +15,14 @@ public class FendiOreGenerator implements IWorldGenerator {
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
         if (ConfigValues.isGenerationEnabled) {
-            Block blockToGenerate = ModBlocks.fendiOre;
+            Block blockToGenerate = ModBlocks.blockOreFendi;
             switch (world.provider.dimensionId) {
-                // Nether
-                case -1:
+                case -1: // Nether
                     break;
-                // Over-world
-                case 0:
+                case 0: // Over-world
                     generateOres(world, random, blockToGenerate, Blocks.stone, chunkX, chunkZ, 4, 1, 88, 1);
                     break;
-                // End
-                case 1:
+                case 1: // End
                     break;
             }
         }

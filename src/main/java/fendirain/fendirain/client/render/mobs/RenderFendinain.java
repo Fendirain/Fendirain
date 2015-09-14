@@ -1,6 +1,7 @@
 package fendirain.fendirain.client.render.mobs;
 
 import fendirain.fendirain.client.models.mobs.ModelFendinainMob;
+import fendirain.fendirain.reference.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.entity.Entity;
@@ -12,12 +13,12 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class RenderFendinain extends RenderLiving {
-    private final ResourceLocation resourceLocation;
+
+    private final static ResourceLocation resourceLocation = new ResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + "textures/mobs/fendinain.png");
     private final ModelFendinainMob model;
 
-    public RenderFendinain(ModelFendinainMob model, float float1, ResourceLocation resourceLocation) {
+    public RenderFendinain(ModelFendinainMob model, float float1) {
         super(model, float1);
-        this.resourceLocation = resourceLocation;
         this.model = model;
     }
 

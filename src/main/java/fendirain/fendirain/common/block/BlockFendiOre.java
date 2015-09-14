@@ -13,8 +13,8 @@ public class BlockFendiOre extends BlockFendirain {
         this.setHardness(3.0F);
         this.setResistance(5.0F);
         this.setStepSound(soundTypeStone);
-        this.setBlockName("fendiOre");
-        this.setBlockTextureName("fendiOre");
+        this.setBlockName("blockOreFendi");
+        this.setBlockTextureName("blockOreFendi");
     }
 
     @Override

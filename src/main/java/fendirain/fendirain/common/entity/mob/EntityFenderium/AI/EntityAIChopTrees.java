@@ -1,6 +1,7 @@
 package fendirain.fendirain.common.entity.mob.EntityFenderium.AI;
 
 import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
+import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.utility.helper.BlockLocation;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockLog;
@@ -8,6 +9,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -208,6 +210,15 @@ public class EntityAIChopTrees extends EntityAIBase {
             searchedList = null;
             alreadyExecuting = false;
             treeLeaf = null;
+            if (ConfigValues.isDebugSettingsEnabled) {
+                for (Object potion : entity.getActivePotionEffects()) {
+                    PotionEffect potionEffect = (PotionEffect) potion;
+                    if (potionEffect.getPotionID() == 3) {
+                        entity.removePotionEffect(3);
+                        break;
+                    }
+                }
+            }
             return false;
         }
     }
@@ -224,21 +235,8 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public void resetTask() {
         World world = entity.worldObj;
-        if (baseStumpBlock != null) {
-            if (entity.isItemValidForBreaking(world.getBlock(baseStumpBlock.getPosX(), baseStumpBlock.getPosY(), baseStumpBlock.getPosZ()))) {
-                boolean keepChecking;
-                int above = 1;
-                do {
-                    if (entity.isItemValidForBreaking(world.getBlock(baseStumpBlock.getPosX(), baseStumpBlock.getPosY() + above, baseStumpBlock.getPosZ()))) {
-                        above++;
-                        keepChecking = true;
-                    } else {
-                        above--;
-                        keepChecking = false;
-                    }
-                } while (keepChecking);
-                world.destroyBlockInWorldPartially(entity.getEntityId(), baseStumpBlock.getPosX(), baseStumpBlock.getPosY() + above, baseStumpBlock.getPosZ(), -1);
-            }
+        if (currentlyBreaking != null) {
+            world.destroyBlockInWorldPartially(entity.getEntityId(), currentlyBreaking.getPosX(), currentlyBreaking.getPosY(), currentlyBreaking.getPosZ(), -1);
         }
     }
 
@@ -246,14 +244,22 @@ public class EntityAIChopTrees extends EntityAIBase {
         if (!currentTreeBlocks.isEmpty()) {
             BlockLocation result = null;
             int dist = -1;
+            ArrayList<BlockLocation> removeBlocks = new ArrayList<BlockLocation>();
             for (BlockLocation block : currentTreeBlocks) {
-                int blockDist = block.compareTo(baseStumpBlock);
-                if (dist == -1) {
-                    dist = blockDist;
-                    result = block;
-                } else if (blockDist > dist || (dist == blockDist && block.getPosY() > result.getPosY())) {
-                    dist = blockDist;
-                    result = block;
+                if (entity.worldObj.getBlock(block.getPosX(), block.getPosY(), block.getPosZ()) == baseStumpBlock.getBlock()) {
+                    int blockDist = block.compareTo(baseStumpBlock);
+                    if (dist == -1) {
+                        dist = blockDist;
+                        result = block;
+                    } else if (blockDist > dist || (dist == blockDist && block.getPosY() > result.getPosY())) {
+                        dist = blockDist;
+                        result = block;
+                    }
+                } else removeBlocks.add(block);
+            }
+            for (BlockLocation remove : removeBlocks) {
+                if (currentTreeBlocks.contains(remove)) {
+                    currentTreeBlocks.remove(remove);
                 }
             }
             return result;
@@ -269,7 +275,15 @@ public class EntityAIChopTrees extends EntityAIBase {
                 if (currentlyBreaking == null) {
                     currentlyBreaking = this.returnFurthestLog();
                 }
-                if (currentlyBreaking != null) {
+                if (currentlyBreaking == null || world.getBlock(currentlyBreaking.getPosX(), currentlyBreaking.getPosY(), currentlyBreaking.getPosZ()) != currentlyBreaking.getBlock()) {
+                    if (currentlyBreaking != null) {
+                        world.destroyBlockInWorldPartially(entity.getEntityId(), currentlyBreaking.getPosX(), currentlyBreaking.getPosY(), currentlyBreaking.getPosZ(), -1);
+                        if (currentTreeBlocks != null && currentTreeBlocks.contains(currentlyBreaking)) {
+                            currentTreeBlocks.remove(currentlyBreaking);
+                        }
+                        currentlyBreaking = null;
+                        currentProgress = 0;
+                    }
                     currentProgress = currentProgress + 1 + Math.abs(entity.getBreakSpeed());
                     int breakProgress = (int) ((float) this.currentProgress / 240.0F * 10.0F);
                     world.destroyBlockInWorldPartially(entity.getEntityId(), currentlyBreaking.getPosX(), currentlyBreaking.getPosY(), currentlyBreaking.getPosZ(), breakProgress);

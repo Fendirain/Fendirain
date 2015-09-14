@@ -1,64 +1,50 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
+plugins {
+    id "net.minecraftforge.gradle.forge" version "2.0.1"
+
+    ext.configFile = file "build.properties"
+
+    configFile.withReader {
+        def prop = new Properties()
+        //noinspection GroovyAssignabilityCheck
+        prop.load(it)
+        project.ext.config = new ConfigSlurper().parse prop
     }
-    //noinspection GroovyAssignabilityCheck
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+
+    version = config.mc_version + "-" + config.release_type + "_" + config.mod_version
+//noinspection GroovyUnusedAssignment
+    group = "fendirain.fendirain"
+//noinspection GroovyUnusedAssignment
+    archivesBaseName = "Fendirain"
+
+    minecraft {
+        version = config.mc_version + "-" + config.forge_version + "-" + config.mc_version
+        runDir = "run"
+
+        replaceIn "reference/Reference.java"
+        replace "@MOD_VERSION@", config.mod_version
+
+        mappings = config.mappings
     }
-}
-
-apply plugin: 'forge'
-
-ext.configFile = file "build.properties"
-
-configFile.withReader {
-    def prop = new Properties()
-    //noinspection GroovyAssignabilityCheck
-    prop.load(it)
-    project.ext.config = new ConfigSlurper().parse prop
-}
-
-version = config.mc_version + "-" + config.release_type + "_" + config.mod_version
-//noinspection GroovyUnusedAssignment
-group = "com.fendirain.fendirain"
-//noinspection GroovyUnusedAssignment
-archivesBaseName = "Fendirain"
-
-minecraft {
-    version = config.mc_version + "-" + config.forge_version + "-" + config.mc_version
-    runDir = "eclipse"
-
-    replaceIn "reference/Reference.java"
-    replace "@MOD_VERSION@", config.mod_version
-}
 
 //noinspection GroovyAssignabilityCheck,GroovyMissingReturnStatement
-dependencies {
+    dependencies {
 
-}
+    }
 
 //noinspection GroovyAssignabilityCheck
-processResources
-        {
-            inputs.property "version", project.version
-            inputs.property "mcversion", project.minecraft.version
+    processResources
+            {
+                inputs.property "version", project.version
+                inputs.property "mcversion", project.minecraft.version
 
-            from(sourceSets.main.resources.srcDirs) {
-                include 'mcmod.info'
+                from(sourceSets.main.resources.srcDirs) {
+                    include 'mcmod.info'
 
-                expand 'version': project.version, 'mcversion': project.minecraft.version
+                    expand 'version': project.version, 'mcversion': project.minecraft.version
+                }
+
+                from(sourceSets.main.resources.srcDirs) {
+                    exclude 'mcmod.info'
+                }
             }
-
-            from(sourceSets.main.resources.srcDirs) {
-                exclude 'mcmod.info'
-            }
-        }
+}

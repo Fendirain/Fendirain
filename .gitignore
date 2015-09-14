@@ -15,4 +15,8 @@ hs_err_pid*
 /gradle
 /.gradle
 /build
-/eclipse
+/run
+/.idea
+Fendirain.iml
+Fendirain.ipr
+Fendirain.iws

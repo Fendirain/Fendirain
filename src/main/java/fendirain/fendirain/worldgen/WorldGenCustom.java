@@ -51,6 +51,7 @@ public class WorldGenCustom extends WorldGenerator {
                         break;
                     case 4:
                         z++;
+                        break;
                     case 5:
                         z--;
                         break;
