@@ -28,21 +28,13 @@ public class Fendirain {
         ConfigurationHandler.init(preInitializationEvent.getSuggestedConfigurationFile());
         FMLCommonHandler.instance().bus().register(new ConfigurationHandler());
 
-        // Initialize all keyBindings
         proxy.registerKeyBindings();
-
-        // Initialize all mod items
         ModItems.init();
-        // Initialize all mod blocks
         ModBlocks.init();
-        // Initialize all mod tile entities
         ModTileEntities.init();
-        // Initialize all mod entities
         ModEntities.init();
-        // Initialize all mod renders;
         ModRenderer.init();
         proxy.registerRender();
-        // Initialize all mod world generators
         ModWorldGenerator.init();
 
         LogHelper.info("Pre-Initialization Complete");

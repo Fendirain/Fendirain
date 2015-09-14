@@ -14,22 +14,25 @@ import java.util.List;
 
 
 public class ItemTreeClearer extends ItemFendirain {
+    private boolean alreadyWorking;
 
     public ItemTreeClearer() {
         super();
         this.maxStackSize = 1;
         this.setUnlocalizedName("treeClearer");
+        alreadyWorking = false;
     }
 
     @Override
     public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer entityPlayer) {
-        if (!world.isRemote) {
-            Block block;
+        if (!world.isRemote && !alreadyWorking) {
+            alreadyWorking = true;
+            int range = 20;
             int posX = (int) entityPlayer.posX, posY = (int) entityPlayer.posY, posZ = (int) entityPlayer.posZ;
-            for (int y = posY + 20; y >= posY - 20; y--) {
-                for (int x = posX - 20; x <= posX + 20; x++) {
-                    for (int z = posZ - 20; z <= posZ + 20; z++) {
-                        block = world.getBlock(x, y, z);
+            for (int y = posY + range; y >= posY - range; y--) {
+                for (int x = posX - range; x <= posX + range; x++) {
+                    for (int z = posZ - range; z <= posZ + range; z++) {
+                        Block block = world.getBlock(x, y, z);
                         if (block instanceof BlockLeaves || block instanceof BlockLog) {
                             world.setBlockToAir(x, y, z);
                         }
@@ -44,6 +47,7 @@ public class ItemTreeClearer extends ItemFendirain {
                 }
             }
         }
+        alreadyWorking = false;
         return itemStack;
     }
 

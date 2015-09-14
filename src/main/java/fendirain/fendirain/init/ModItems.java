@@ -9,12 +9,12 @@ import fendirain.fendirain.reference.ConfigValues;
 public class ModItems {
 
     public static final ItemFendirain fendiPiece = new ItemFendiPiece();
-    public static final ItemTreeClearer leafClearer = new ItemTreeClearer();
+    public static final ItemTreeClearer treeClearer = new ItemTreeClearer();
 
     public static void init() {
         GameRegistry.registerItem(fendiPiece, "fendiPiece");
         if (ConfigValues.isDebugSettingsEnabled) {
-            GameRegistry.registerItem(leafClearer, "treeClearer");
+            GameRegistry.registerItem(treeClearer, "treeClearer");
         }
     }
 }

@@ -10,7 +10,7 @@ public class CreativeTabFendirain {
     public static final CreativeTabs FENDIRAIN_TAB = new CreativeTabs(Reference.MOD_ID.toLowerCase()) {
         @Override
         public Item getTabIconItem() {
-            // Tab Picture
+            // Creative Tab Picture -- // TODO Change
             return ModItems.fendiPiece;
         }
     };

@@ -82,7 +82,9 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                     }
                     return true;
                 } else if (itemStack.getItem() == Items.blaze_rod) {
-                    entityAIChopTrees.setTimeToWaitUntilNextRun(-6000);
+                    if (entityAIChopTrees.isAlreadyExecuting()) {
+                        this.addPotionEffect(new PotionEffect(3, 99999, 9));
+                    } else entityAIChopTrees.setTimeToWaitUntilNextRun(-6000);
                     return true;
                 } else if (itemStack.getItem() == Items.diamond_axe) {
                     for (int slot = 0; slot < inventory.length; slot++) {

@@ -284,6 +284,9 @@ public class EntityAIChopTrees extends EntityAIBase {
                         currentlyBreaking = null;
                         currentProgress = 0;
                     }
+                    currentlyBreaking = this.returnFurthestLog();
+                }
+                if (currentlyBreaking != null) {
                     currentProgress = currentProgress + 1 + Math.abs(entity.getBreakSpeed());
                     int breakProgress = (int) ((float) this.currentProgress / 240.0F * 10.0F);
                     world.destroyBlockInWorldPartially(entity.getEntityId(), currentlyBreaking.getPosX(), currentlyBreaking.getPosY(), currentlyBreaking.getPosZ(), breakProgress);
