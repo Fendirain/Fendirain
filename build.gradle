@@ -33,25 +33,23 @@ dependencies {
 }
 
 //noinspection GroovyAssignabilityCheck
-processResources
-        {
-            inputs.property "version", project.version
-            inputs.property "mcversion", project.minecraft.version
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
 
-            from(sourceSets.main.resources.srcDirs) {
-                include 'mcmod.info'
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
 
-                expand 'version': project.version, 'mcversion': project.minecraft.version
-            }
+        expand 'version': project.version, 'mcversion': project.minecraft.version
+    }
 
-            from(sourceSets.main.resources.srcDirs) {
-                exclude 'mcmod.info'
-            }
-        }
-idea
-        {
-            module
-                    {
-                        inheritOutputDirs = true
-                    }
-        }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+}
