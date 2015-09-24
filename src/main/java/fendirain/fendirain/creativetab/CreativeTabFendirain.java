@@ -11,7 +11,7 @@ public class CreativeTabFendirain {
         @Override
         public Item getTabIconItem() {
             // Creative Tab Picture -- // TODO Change
-            return ModItems.fendiPiece;
+            return ModItems.itemFendiPiece;
         }
     };
 }

@@ -1,7 +1,7 @@
 {
     "parent":"builtin/generated",
     "textures": {
-        "layer0":"fendirain:items/treeClearer"
+        "layer0": "fendirain:items/itemTreeClearer"
     },
     "display": {
         "thirdperson": {

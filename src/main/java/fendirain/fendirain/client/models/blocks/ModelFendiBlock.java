@@ -3,6 +3,7 @@ package fendirain.fendirain.client.models.blocks;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
+// This is mainly just me messing around (and not fully finished + not properly textured). I will figure this out at a different time.
 public class ModelFendiBlock extends ModelFendirain {
     public ModelRenderer shape1;
     public ModelRenderer shape2;

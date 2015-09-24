@@ -9,7 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderFendinain extends RendererLivingEntity {
-    private final ResourceLocation resourceLocation = new ResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + "textures/mobs/fendinain.png");
+    private final static ResourceLocation resourceLocation = new ResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + "textures/mobs/fendinain.png");
 
     public RenderFendinain(RenderManager renderManager, ModelFendinainMob model, float f1) {
         super(renderManager, model, f1);

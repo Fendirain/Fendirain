@@ -26,11 +26,11 @@ public class ClientProxy extends CommonProxy {
         RenderingRegistry.registerEntityRenderingHandler(EntityFenderiumMob.class, new RenderFenderium(renderManager, new ModelFenderiumMob(), 0.0f));
 
         ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
-        itemModelMesher.register(ModItems.fendiPiece, 0, new ModelResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + "fendiPiece", "inventory"));
+        itemModelMesher.register(ModItems.itemFendiPiece, 0, new ModelResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + "itemFendiPiece", "inventory"));
         itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockFendi), 0, new ModelResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + "blockFendi", "inventory"));
         itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockOreFendi), 0, new ModelResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + "blockOreFendi", "inventory"));
         if (ConfigValues.isDebugSettingsEnabled) {
-            itemModelMesher.register(ModItems.treeClearer, 0, new ModelResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + "treeClearer", "inventory"));
+            itemModelMesher.register(ModItems.itemTreeClearer, 0, new ModelResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + "itemTreeClearer", "inventory"));
         }
     }
 

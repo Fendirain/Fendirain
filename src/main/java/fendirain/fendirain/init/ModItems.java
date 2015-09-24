@@ -8,13 +8,13 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModItems {
 
-    public static final ItemFendirain fendiPiece = new ItemFendiPiece();
-    public static final ItemTreeClearer treeClearer = new ItemTreeClearer();
+    public static final ItemFendirain itemFendiPiece = new ItemFendiPiece();
+    public static final ItemTreeClearer itemTreeClearer = new ItemTreeClearer();
 
     public static void init() {
-        GameRegistry.registerItem(fendiPiece, "fendiPiece");
+        GameRegistry.registerItem(itemFendiPiece, "itemFendiPiece");
         if (ConfigValues.isDebugSettingsEnabled) {
-            GameRegistry.registerItem(treeClearer, "treeClearer");
+            GameRegistry.registerItem(itemTreeClearer, "itemTreeClearer");
         }
     }
 }

@@ -4,6 +4,6 @@ public class ItemFendiPiece extends ItemFendirain {
 
     public ItemFendiPiece() {
         super();
-        this.setUnlocalizedName("fendiPiece");
+        this.setUnlocalizedName("itemFendiPiece");
     }
 }

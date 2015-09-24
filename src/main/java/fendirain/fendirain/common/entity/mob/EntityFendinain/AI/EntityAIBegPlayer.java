@@ -52,16 +52,16 @@ public class EntityAIBegPlayer extends EntityAIBase {
         if (entity.worldObj != null && targetEntity != null) {
             switch (randInt) {
                 case 0:
-                    pathFinder.tryMoveToXYZ(targetEntity.posX + (rand.nextInt(12) + 8), targetEntity.posY, targetEntity.posZ + (rand.nextInt(8) + 8), this.speed);
+                    pathFinder.tryMoveToXYZ(targetEntity.posX + (rand.nextInt(12) + 8), targetEntity.posY, targetEntity.posZ + (rand.nextInt(12) + 8), this.speed);
                     break;
                 case 1:
-                    pathFinder.tryMoveToXYZ(targetEntity.posX - (rand.nextInt(12) + 8), targetEntity.posY, targetEntity.posZ + (rand.nextInt(8) + 8), this.speed);
+                    pathFinder.tryMoveToXYZ(targetEntity.posX - (rand.nextInt(12) + 8), targetEntity.posY, targetEntity.posZ + (rand.nextInt(12) + 8), this.speed);
                     break;
                 case 2:
-                    pathFinder.tryMoveToXYZ(targetEntity.posX + (rand.nextInt(12) + 8), targetEntity.posY, targetEntity.posZ - (rand.nextInt(8) + 8), this.speed);
+                    pathFinder.tryMoveToXYZ(targetEntity.posX + (rand.nextInt(12) + 8), targetEntity.posY, targetEntity.posZ - (rand.nextInt(12) + 8), this.speed);
                     break;
                 case 3:
-                    pathFinder.tryMoveToXYZ(targetEntity.posX - (rand.nextInt(12) + 8), targetEntity.posY, targetEntity.posZ - (rand.nextInt(8) + 8), this.speed);
+                    pathFinder.tryMoveToXYZ(targetEntity.posX - (rand.nextInt(12) + 8), targetEntity.posY, targetEntity.posZ - (rand.nextInt(12) + 8), this.speed);
                     break;
             }
         }

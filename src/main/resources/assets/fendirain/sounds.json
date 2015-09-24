@@ -8,5 +8,10 @@
       "mob/fendirain/fendirainHurt3",
       "mob/fendirain/fendirainHurt4"
     ]
+  },
+  "mob.fenderium.hurt": {
+    "category": "neutral",
+    "sounds": [
+    ]
   }
 }

@@ -1,6 +1,7 @@
 package fendirain.fendirain.common.entity.mob.EntityFenderium;
 
 import fendirain.fendirain.common.entity.mob.EntityFenderium.AI.EntityAIChopTrees;
+import fendirain.fendirain.common.entity.mob.EntityFenderium.AI.EntityAIThrowWoodAtPlayer;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.reference.Reference;
 import fendirain.fendirain.utility.LogHelper;
@@ -9,13 +10,13 @@ import net.minecraft.block.BlockLog;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,7 +32,6 @@ import net.minecraft.world.World;
 import java.util.Arrays;
 
 public class EntityFenderiumMob extends EntityCreature implements IInventory {
-    private final String name = "Fendinain";
     private final int inventorySize = 6, maxStackSize = 28, range = 12, breakSpeed = ConfigValues.fenderiumMob_breakSpeed;
     private final EntityAIChopTrees entityAIChopTrees;
     private ItemStack[] inventory = new ItemStack[inventorySize];
@@ -44,7 +44,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, entityAIChopTrees);
         this.tasks.addTask(2, new EntityAIWander(this, 1.0F));
-        this.targetTasks.addTask(0, new EntityAIHurtByTarget(this, false));
+        this.tasks.addTask(3, new EntityAIThrowWoodAtPlayer(this, rand, 1.0F));
     }
 
     @Override
@@ -93,6 +93,11 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                     }
                     this.setCurrentItemOrArmor(0, null);
                     return true;
+                } else if (itemStack.getItem() == Items.nether_star) {
+                    for (int slot = 0; slot < inventory.length; slot++) {
+                        inventory[slot] = new ItemStack(Item.getItemFromBlock(Blocks.log), this.getInventoryStackLimit());
+                    }
+                    return true;
                 } else if (itemStack.getItem() == Items.wooden_axe) {
                     Boolean alreadyChanged = false;
                     for (int slot = 0; slot < inventory.length; slot++) {
@@ -130,8 +135,10 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                             LogHelper.info("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration());
                             entityPlayer.addChatMessage(new ChatComponentText("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration()));
                         }
-                        entityPlayer.addChatMessage(new ChatComponentText(Arrays.toString(printQueue)));
-                        LogHelper.info(Arrays.toString(printQueue));
+                        entityPlayer.addChatMessage(new ChatComponentText("Inventory: " + Arrays.toString(printQueue)));
+                        LogHelper.info("Inventory: " + Arrays.toString(printQueue));
+                        entityPlayer.addChatMessage(new ChatComponentText("Percent Full: " + this.getPercentageOfInventoryFull()));
+                        LogHelper.info("Percent Full: " + this.getPercentageOfInventoryFull());
                     }
                     return true;
                 } // End Test / Debug Code
@@ -232,6 +239,10 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         }
     }
 
+    public ItemStack[] getEntityInventory() {
+        return inventory;
+    }
+
     public boolean isAnySpaceForItemPickup(ItemStack item) {
         if (item != null) {
             for (ItemStack itemStack : inventory) {
@@ -265,6 +276,10 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                 }
             }
         }
+    }
+
+    public void clearInventory() {
+        inventory = new ItemStack[inventorySize];
     }
 
     @Override
@@ -371,6 +386,23 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
 
     public boolean isItemValidForBreaking(Block block) {
         return block instanceof BlockLog;
+    }
+
+    public int getPercentageOfInventoryFull() {
+        int maxSize = this.maxStackSize * this.inventorySize, inventoryAmount = 0;
+        boolean slotNull = false;
+        for (ItemStack itemStack : inventory) {
+            if (itemStack != null) {
+                inventoryAmount += itemStack.stackSize;
+            } else slotNull = true;
+        }
+        if (inventoryAmount > 0) {
+            int result = (inventoryAmount * 100) / maxSize;
+            if (!slotNull && result < 50) {
+                result = 50;
+            }
+            return result;
+        } else return 0;
     }
 
     @Override

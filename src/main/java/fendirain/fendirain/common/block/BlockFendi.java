@@ -127,7 +127,7 @@ public class BlockFendi extends BlockContainer {
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumFacing side, float hitX, float hitY, float hitZ) {
         ItemStack itemStack = player.getCurrentEquippedItem();
         TileFendiBlock tileFendiBlock = (TileFendiBlock) world.getTileEntity(pos);
-        if (itemStack != null && itemStack.getItem() == ModItems.fendiPiece && tileFendiBlock.getCurrentAmount() != tileFendiBlock.getAmountNeededToComplete()) {
+        if (itemStack != null && itemStack.getItem() == ModItems.itemFendiPiece && tileFendiBlock.getCurrentAmount() != tileFendiBlock.getAmountNeededToComplete()) {
             player.getHeldItem().stackSize -= 1;
             tileFendiBlock.addToCurrentAmount(1);
             return true;

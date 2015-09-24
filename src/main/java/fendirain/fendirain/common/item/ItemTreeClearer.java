@@ -20,7 +20,7 @@ public class ItemTreeClearer extends ItemFendirain {
     public ItemTreeClearer() {
         super();
         this.maxStackSize = 1;
-        this.setUnlocalizedName("treeClearer");
+        this.setUnlocalizedName("itemTreeClearer");
         alreadyWorking = false;
     }
 

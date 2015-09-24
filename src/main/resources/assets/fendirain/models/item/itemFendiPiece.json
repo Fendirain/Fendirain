@@ -1,7 +1,7 @@
 {
   "parent": "builtin/generated",
   "textures": {
-    "layer0": "fendirain:items/fendiPiece"
+    "layer0": "fendirain:items/itemFendiPiece"
   },
   "display": {
     "thirdperson": {
