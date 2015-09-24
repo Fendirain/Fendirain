@@ -33,6 +33,7 @@ public class Fendirain {
         ModBlocks.init();
         ModTileEntities.init();
         ModWorldGenerator.init();
+        ModEntities.init();
 
         LogHelper.info("Pre-Initialization Complete");
     }
@@ -41,9 +42,9 @@ public class Fendirain {
     public void init(FMLInitializationEvent initializationEvent) {
         // Register Gui's, Tile Entity's, Crafting recipes, other event handlers.
 
-        ModEntities.init();
         ModRenderer.init();
         proxy.registerRender();
+        proxy.registerModelMesher();
         FMLCommonHandler.instance().bus().register(new KeyInputEventHandler());
         ModRecipes.init();
         LogHelper.info("Initialization Complete");

@@ -7,6 +7,11 @@ public class ServerProxy extends CommonProxy {
     }
 
     @Override
+    public void registerModelMesher() {
+
+    }
+
+    @Override
     public void registerKeyBindings() {
     }
 }
