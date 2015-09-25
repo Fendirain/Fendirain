@@ -1,7 +1,7 @@
 package fendirain.fendirain.reference;
 
 public class Reference {
-    public static final String MOD_ID = "Fendirain";
+    public static final String MOD_ID = "fendirain";
     public static final String MOD_NAME = "Fendirain";
     public static final String VERSION = "@MOD_VERSION@";
     public static final String CLIENT_PROXY_CLASS = "fendirain.fendirain.proxy.ClientProxy";

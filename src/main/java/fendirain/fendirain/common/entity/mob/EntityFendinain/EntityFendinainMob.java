@@ -274,12 +274,12 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
 
     @Override
     public String getHurtSound() {
-        return Reference.MOD_ID.toLowerCase() + ":" + "mob.fendirain.hurt";
+        return Reference.MOD_ID + ":" + "mob.fendirain.hurt";
     }
 
     @Override
     public String getDeathSound() {
-        return Reference.MOD_ID.toLowerCase() + ":" + "mob.fendirain.hurt";
+        return Reference.MOD_ID + ":" + "mob.fendirain.hurt";
     }
 
     @Override

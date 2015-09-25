@@ -14,7 +14,7 @@ public class RenderBlock extends TileEntitySpecialRenderer {
 
     public RenderBlock(ModelFendirain modelBase, String texture) {
         this.model = modelBase;
-        this.texture = new ResourceLocation(Reference.MOD_ID.toLowerCase() + ":" + texture);
+        this.texture = new ResourceLocation(Reference.MOD_ID + ":" + texture);
     }
 
     @Override

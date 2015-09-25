@@ -76,7 +76,7 @@ public class BlockFendi extends BlockContainer {
 
     @Override
     public String getUnlocalizedName() {
-        return String.format("tile.%s%s", Reference.MOD_ID.toLowerCase() + ":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
+        return String.format("tile.%s%s", Reference.MOD_ID + ":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
     }
 
     private String getUnwrappedUnlocalizedName(String unlocalizedName) {

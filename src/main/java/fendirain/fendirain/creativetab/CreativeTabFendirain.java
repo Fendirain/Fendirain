@@ -7,7 +7,7 @@ import net.minecraft.item.Item;
 
 public class CreativeTabFendirain {
 
-    public static final CreativeTabs FENDIRAIN_TAB = new CreativeTabs(Reference.MOD_ID.toLowerCase()) {
+    public static final CreativeTabs FENDIRAIN_TAB = new CreativeTabs(Reference.MOD_ID) {
         @Override
         public Item getTabIconItem() {
             // Creative Tab Picture -- // TODO Change
