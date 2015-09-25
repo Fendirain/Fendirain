@@ -9,7 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderFenderium extends RenderLiving {
-    private final static ResourceLocation resourceLocation = new ResourceLocation(Reference.MOD_ID + ":" + "textures/mobs/fenderium.png");
+    private final static ResourceLocation resourceLocation = new ResourceLocation(Reference.MOD_ID, "textures/mobs/fenderium.png");
 
     public RenderFenderium(RenderManager renderManager, ModelFenderiumMob model, float f1) {
         super(renderManager, model, f1);
