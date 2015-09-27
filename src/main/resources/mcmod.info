@@ -9,7 +9,7 @@
   "updateUrl": "",
   "authorList": ["Fendirain"],
   "credits": "'#minecraftforge' IRC, Pahimar's LMR & EE3, Vaskii's Botania, OpenBlocks, and other open source mods (To be added).",
-  "logoFile": "assets\fendirain\textures\logo\logo.png",
+  "logoFile": "assets/fendirain/textures/logo/logo.png",
   "screenshots": [],
   "dependencies": []
 }
