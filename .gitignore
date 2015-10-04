@@ -19,4 +19,6 @@ hs_err_pid*
 /build
 /run
 /.idea
-Fendirain.iws
+/Fendirain.ipr
+/Fendirain.iml
+/Fendirain.iws
