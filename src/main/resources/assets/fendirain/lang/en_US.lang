@@ -17,5 +17,5 @@ tile.fendirain:blockFendi.name=Fendi
 itemGroup.fendirain=Fendirain
 
 # Mobs
-entity.fendinain.name=Fendinain
-entity.fenderium.name=Fenderium
+entity.fendirain.fendirain:fendinain.name=Fendinain
+entity.fendirain.fendirain:fenderium.name=Fenderium

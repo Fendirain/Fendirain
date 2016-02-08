@@ -1,6 +1,16 @@
-plugins {
-    id "net.minecraftforge.gradle.forge" version "2.0.1"
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+    }
 }
+apply plugin: 'net.minecraftforge.gradle.forge'
 
 ext.configFile = file "build.properties"
 
@@ -12,7 +22,6 @@ configFile.withReader {
 }
 
 version = config.mc_version + "-" + config.release_type + "_" + config.mod_version
-//noinspection GroovyUnusedAssignment
 group = "fendirain.fendirain"
 //noinspection GroovyUnusedAssignment
 archivesBaseName = "Fendirain"
@@ -27,7 +36,6 @@ minecraft {
     mappings = config.mappings
 }
 
-//noinspection GroovyAssignabilityCheck,GroovyMissingReturnStatement
 dependencies {
 
 }
@@ -37,7 +45,6 @@ compileJava {
     targetCompatibility = 1.6
 }
 
-//noinspection GroovyAssignabilityCheck
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version

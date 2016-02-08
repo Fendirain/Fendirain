@@ -18,7 +18,7 @@ public class ModGuiConfig extends GuiConfig {
     }
 
     private static List<IConfigElement> getConfigElements() {
-        List<IConfigElement> list = new ArrayList<IConfigElement>();
+        List<IConfigElement> list = new ArrayList<>();
         list.add(categoryElement(ConfigurationHandler.CATEGORY_GENERAL, "General", "General"));
         list.add(categoryElement(ConfigurationHandler.CATEGORY_DEVELOPER, "Developer", "Developer"));
         list.add(categoryElement(ConfigurationHandler.CATEGORY_MOB, "Mob", "Mob"));

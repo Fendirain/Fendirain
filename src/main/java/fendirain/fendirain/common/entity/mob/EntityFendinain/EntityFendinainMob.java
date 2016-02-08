@@ -24,6 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
@@ -56,12 +57,13 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     @Override
-    public void updateAITick() {
+    public void onLivingUpdate() {
         if (firstUpdate) {
             this.addNewSpawnInventory();
             this.setCurrentItemOrArmor(0, this.getRandomSlot());
             firstUpdate = false;
         }
+        super.onLivingUpdate();
         this.entityAIPlantSapling.addToTimeSinceLastPlacement(1);
     }
 
@@ -70,7 +72,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         int amountOfSaplings = rand.nextInt(this.getInventoryStackLimit()) + 1;
         // Adds the proper type of saplings for the biome it's spawned in. Done this way for future compatibility with mods. May be changed later.
         if (biome != null) {
-            ArrayList<String> saplings = new ArrayList<String>();
+            ArrayList<String> saplings = new ArrayList<>();
             // Mixed Oak or Spruce
             saplings.add(BiomeGenBase.extremeHills.biomeName);
             saplings.add(BiomeGenBase.extremeHillsEdge.biomeName);
@@ -98,9 +100,11 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                     }
                 } else {
                     saplings.clear();
-                    // No pure oak saplings, Space left for future mod compatibility
+                    saplings.add(BiomeGenBase.plains.biomeName);
                     if (saplings.contains(biome)) {
                         // Oak Saplings
+                        if (biome.matches(BiomeGenBase.plains.biomeName))
+                            this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings / 2, 0)); // Since its planes, It should start with less.
                         this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 0));
                     } else {
                         saplings.clear();
@@ -225,7 +229,32 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                     }
                     this.setCurrentItemOrArmor(0, this.getRandomSlot());
                     return true;
-                } // End Test / Debug Code
+                } else if (itemStack.getItem() == Items.paper) {
+                    String[] printQueue = new String[this.inventorySize];
+                    for (int slot = 0; slot < inventory.length; slot++) {
+                        if (inventory[slot] != null) {
+                            printQueue[slot] = (inventory[slot].getItem().getItemStackDisplayName(inventory[slot]) + "x" + inventory[slot].stackSize);
+                        } else {
+                            printQueue[slot] = (slot + " is null");
+                        }
+                    }
+                    if (!worldObj.isRemote) {
+                        entityPlayer.addChatMessage(new ChatComponentText("Health: " + this.getHealth()));
+                        entityPlayer.addChatMessage(new ChatComponentText("Last Placed: " + entityAIPlantSapling.getTimeSinceLastPlacement() + '/' + ConfigValues.fendinainMob_maxTimeToWaitToPlant + " (Max)"));
+                        LogHelper.info("Health: " + this.getHealth());
+                        LogHelper.info("Last Placed: " + entityAIPlantSapling.getTimeSinceLastPlacement() + '/' + ConfigValues.fendinainMob_maxTimeToWaitToPlant + " (Max)");
+                        for (Object object : this.getActivePotionEffects()) {
+                            PotionEffect potionEffect = (PotionEffect) object;
+                            LogHelper.info("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration());
+                            entityPlayer.addChatMessage(new ChatComponentText("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration()));
+                        }
+                        entityPlayer.addChatMessage(new ChatComponentText("Inventory: " + Arrays.toString(printQueue)));
+                        LogHelper.info("Inventory: " + Arrays.toString(printQueue));
+                        entityPlayer.addChatMessage(new ChatComponentText("Percent Full: " + this.getPercentageOfInventoryFull()));
+                        LogHelper.info("Percent Full: " + this.getPercentageOfInventoryFull());
+                    }
+                    return true;
+                }  // End Test / Debug Code
             }
         }
         return false;
@@ -331,12 +360,9 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     @Override
-    public ItemStack getStackInSlotOnClosing(int slot) {
-        if (this.inventory[slot] != null) {
-            ItemStack itemStack = this.inventory[slot];
-            this.inventory[slot] = null;
-            return itemStack;
-        } else return null;
+    public ItemStack removeStackFromSlot(int index) {
+        inventory[index] = null;
+        return null;
     }
 
     @Override
@@ -419,10 +445,10 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         NBTTagList nbttaglist = new NBTTagList();
         for (int i = 0; i < this.inventory.length; ++i) {
             if (this.inventory[i] != null) {
-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-                nbttagcompound1.setByte("Slot", (byte) i);
-                this.inventory[i].writeToNBT(nbttagcompound1);
-                nbttaglist.appendTag(nbttagcompound1);
+                NBTTagCompound nbtTagCompound1 = new NBTTagCompound();
+                nbtTagCompound1.setByte("Slot", (byte) i);
+                this.inventory[i].writeToNBT(nbtTagCompound1);
+                nbttaglist.appendTag(nbtTagCompound1);
             }
         }
         nbtTagCompound.setTag("Items", nbttaglist);
@@ -433,7 +459,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     private ItemStack getRandomSlot() {
-        ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+        ArrayList<ItemStack> items = new ArrayList<>();
         for (ItemStack item : inventory) {
             if (item != null) {
                 boolean contained = false;
@@ -498,5 +524,22 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                 }
             }
         }
+    }
+
+    public int getPercentageOfInventoryFull() {
+        int maxSize = this.maxStackSize * this.inventorySize, inventoryAmount = 0;
+        boolean slotNull = false;
+        for (ItemStack itemStack : inventory) {
+            if (itemStack != null) {
+                inventoryAmount += itemStack.stackSize;
+            } else slotNull = true;
+        }
+        if (inventoryAmount > 0) {
+            int result = (inventoryAmount * 100) / maxSize;
+            if (!slotNull && result < 50) {
+                result = 50;
+            }
+            return result;
+        } else return 0;
     }
 }

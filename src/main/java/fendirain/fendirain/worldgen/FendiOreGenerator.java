@@ -31,9 +31,9 @@ public class FendiOreGenerator implements IWorldGenerator {
     }
 
     @SuppressWarnings("unchecked")
-    private void generateOres(World world, Random rand, Block blockToGenerate, Block blockToReplace, int chunkX, int chunkZ, int maxVienSize, int minHeight, int maxHeight, int chanceToGenerate) {
+    private void generateOres(World world, Random rand, Block blockToGenerate, Block blockToReplace, int chunkX, int chunkZ, int maxVeinSize, int minHeight, int maxHeight, int chanceToGenerate) {
         int heightDiff = (maxHeight - minHeight) + 1;
-        WorldGenCustom worldGenCustom = new WorldGenCustom(blockToGenerate, maxVienSize, BlockHelper.forBlock(blockToReplace));
+        WorldGenCustom worldGenCustom = new WorldGenCustom(blockToGenerate, maxVeinSize, BlockHelper.forBlock(blockToReplace));
         for (int i = 1; i <= chanceToGenerate; i++) {
             if (rand.nextInt(4) == 1) {
                 BlockPos blockPos = new BlockPos(chunkX + rand.nextInt(16), minHeight + rand.nextInt(heightDiff), chunkZ + rand.nextInt(16));

@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BlockFendi extends BlockContainer {
 
@@ -49,15 +50,13 @@ public class BlockFendi extends BlockContainer {
 
     @Override
     public void addCollisionBoxesToList(World world, BlockPos blockPos, IBlockState iBlockState, AxisAlignedBB axisAlignedBB, List list, Entity entity) {
-        ArrayList<AxisAlignedBB> axisAlignedBBArrayList = new ArrayList<AxisAlignedBB>();
+        ArrayList<AxisAlignedBB> axisAlignedBBArrayList = new ArrayList<>();
         axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.125F, 0.125F, 0.125F, 0.200F, 0.885F, 0.885F));
         axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.125F, 0.125F, 0.125F, 0.885F, 0.885F, 0.200F));
         axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.125F, 0.125F, 0.800F, 0.885F, 0.885F, 0.885F));
         axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.800F, 0.125F, 0.125F, 0.885F, 0.885F, 0.885F));
-        for (AxisAlignedBB aAxisAlignedBB : axisAlignedBBArrayList) {
-            if (aAxisAlignedBB != null && axisAlignedBB.intersectsWith(aAxisAlignedBB)) //noinspection unchecked
-                list.add(aAxisAlignedBB);
-        }
+        //noinspection unchecked
+        list.addAll(axisAlignedBBArrayList.stream().filter(aAxisAlignedBB -> aAxisAlignedBB != null && axisAlignedBB.intersectsWith(aAxisAlignedBB)).collect(Collectors.toList()));
     }
 
     @Override

@@ -35,11 +35,16 @@ public class EntityAIPlantSapling extends EntityAIBase {
             int posX = (int) entity.posX, posY = (int) entity.posY, posZ = (int) entity.posZ;
             Block blockToPlaceOn = world.getBlockState(new BlockPos(posX, posY - 1, posZ)).getBlock();
             if (BlockSapling.getBlockFromItem(itemToPlace.getItem()).canPlaceBlockAt(world, new BlockPos(posX, posY, posZ)) && (blockToPlaceOn == Blocks.grass || blockToPlaceOn == Blocks.dirt || blockToPlaceOn == Blocks.farmland)) {
-                world.setBlockState(new BlockPos(posX, posY, posZ), BlockSapling.getBlockFromItem(itemToPlace.getItem()).getStateFromMeta(itemToPlace.getItemDamage()), 3);
-                entity.removeItemFromInventory(itemToPlace, 1, true);
-                timeSinceLastPlacement = 0;
+                if (world.setBlockState(new BlockPos(posX, posY, posZ), BlockSapling.getBlockFromItem(itemToPlace.getItem()).getStateFromMeta(itemToPlace.getItemDamage()), 3)) {
+                    entity.removeItemFromInventory(itemToPlace, 1, true);
+                    timeSinceLastPlacement = 0;
+                }
             }
         }
+    }
+
+    public int getTimeSinceLastPlacement() {
+        return timeSinceLastPlacement;
     }
 
     public void addToTimeSinceLastPlacement(int timeToAdd) {

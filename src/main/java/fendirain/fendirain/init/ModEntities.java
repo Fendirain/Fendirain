@@ -4,25 +4,23 @@ import fendirain.fendirain.Fendirain;
 import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
 import fendirain.fendirain.common.entity.mob.EntityFendinain.EntityFendinainMob;
 import fendirain.fendirain.reference.ConfigValues;
+import fendirain.fendirain.reference.EntityNames;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 public class ModEntities {
 
+    @SuppressWarnings("UnusedAssignment")
     public static void init() {
-        int entityID;
+
         // Fendinain
-        entityID = EntityRegistry.findGlobalUniqueEntityId();
-        EntityRegistry.registerGlobalEntityID(EntityFendinainMob.class, "fendinain", entityID, 0x27624D, 0x212121);
-        EntityRegistry.registerModEntity(EntityFendinainMob.class, "Fendinain", entityID, Fendirain.instance, 64, 3, false);
+        EntityRegistry.registerModEntity(EntityFendinainMob.class, EntityNames.EntityFendinain, 0, Fendirain.instance, 64, 3, true, 0x27624D, 0x212121);
         if (ConfigValues.fendinainMob_enableSpawning) {
             registerSpawningInTreeBiomes(EntityFendinainMob.class, 1);
         }
         // Fenderium
-        entityID = EntityRegistry.findGlobalUniqueEntityId();
-        EntityRegistry.registerGlobalEntityID(EntityFenderiumMob.class, "fenderium", entityID, 0x24424D, 0x210021);
-        EntityRegistry.registerModEntity(EntityFenderiumMob.class, "Fenderium", entityID, Fendirain.instance, 64, 3, false);
+        EntityRegistry.registerModEntity(EntityFenderiumMob.class, EntityNames.EntityFenderium, 1, Fendirain.instance, 64, 3, true, 0x24424D, 0x210021);
         if (ConfigValues.fenderiumMob_enableSpawning) {
             registerSpawningInTreeBiomes(EntityFenderiumMob.class, 2);
         }

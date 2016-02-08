@@ -1,12 +1,12 @@
 package fendirain.fendirain.common.item;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockLeaves;
-import net.minecraft.block.BlockLog;
+import net.minecraft.block.*;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
@@ -34,19 +34,15 @@ public class ItemTreeClearer extends ItemFendirain {
                 for (int x = posX - range; x <= posX + range; x++) {
                     for (int z = posZ - range; z <= posZ + range; z++) {
                         Block block = world.getBlockState(new BlockPos(x, y, z)).getBlock();
-                        if (block instanceof BlockLeaves || block instanceof BlockLog) {
+                        if (block instanceof BlockLeaves || block instanceof BlockLog || block instanceof BlockTallGrass || block instanceof BlockFlower || block instanceof BlockDoublePlant) {
                             world.setBlockToAir(new BlockPos(x, y, z));
                         }
                     }
                 }
             }
             @SuppressWarnings("unchecked")
-            List<EntityItem> items = entityPlayer.worldObj.getEntitiesWithinAABB(EntityItem.class, entityPlayer.getEntityBoundingBox());
-            for (EntityItem item : items) {
-                if ((int) item.getDistanceToEntity(entityPlayer) <= range && item.getEntityItem().getItem() instanceof ItemBlock && Block.getBlockFromItem(item.getEntityItem().getItem()) == Blocks.sapling) {
-                    item.setDead();
-                }
-            }
+            List<EntityItem> items = entityPlayer.worldObj.getEntitiesWithinAABB(EntityItem.class, entityPlayer.getEntityBoundingBox().expand(range, range, range));
+            items.stream().filter(item -> (int) item.getDistanceToEntity(entityPlayer) <= range && item.getEntityItem().getItem() instanceof ItemBlock && Block.getBlockFromItem(item.getEntityItem().getItem()) == Blocks.sapling || item.getEntityItem().getItem() instanceof ItemSeeds).forEach(Entity::setDead);
         }
         alreadyWorking = false;
         return itemStack;

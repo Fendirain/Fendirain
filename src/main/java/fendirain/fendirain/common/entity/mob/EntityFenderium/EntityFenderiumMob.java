@@ -48,10 +48,10 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     }
 
     @Override
-    public void updateAITick() {
-        int time = this.entityAIChopTrees.getTimeToWaitUntilNextRun();
-        if (!entityAIChopTrees.isAlreadyExecuting()) {
-            this.entityAIChopTrees.setTimeToWaitUntilNextRun(--time);
+    public void onLivingUpdate() {
+        super.onLivingUpdate();
+        if (!entityAIChopTrees.isAlreadyExecuting() && !(entityAIChopTrees.getTimeToWaitUntilNextRun() <= 0)) {
+            this.entityAIChopTrees.setTimeToWaitUntilNextRun(this.entityAIChopTrees.getTimeToWaitUntilNextRun() - 1);
         }
     }
 
@@ -85,7 +85,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                 } else if (itemStack.getItem() == Items.blaze_rod) {
                     if (entityAIChopTrees.isAlreadyExecuting()) {
                         this.addPotionEffect(new PotionEffect(3, 99999, 9));
-                    } else entityAIChopTrees.setTimeToWaitUntilNextRun(-6000);
+                    } else entityAIChopTrees.setTimeToWaitUntilNextRun(0);
                     return true;
                 } else if (itemStack.getItem() == Items.diamond_axe) {
                     for (int slot = 0; slot < inventory.length; slot++) {
@@ -319,12 +319,9 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     }
 
     @Override
-    public ItemStack getStackInSlotOnClosing(int slot) {
-        if (this.inventory[slot] != null) {
-            ItemStack itemStack = this.inventory[slot];
-            this.inventory[slot] = null;
-            return itemStack;
-        } else return null;
+    public ItemStack removeStackFromSlot(int index) {
+        inventory[index] = null;
+        return null;
     }
 
     @Override
@@ -428,10 +425,10 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         NBTTagList nbttaglist = new NBTTagList();
         for (int i = 0; i < this.inventory.length; ++i) {
             if (this.inventory[i] != null) {
-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-                nbttagcompound1.setByte("Slot", (byte) i);
-                this.inventory[i].writeToNBT(nbttagcompound1);
-                nbttaglist.appendTag(nbttagcompound1);
+                NBTTagCompound nbtTagCompound1 = new NBTTagCompound();
+                nbtTagCompound1.setByte("Slot", (byte) i);
+                this.inventory[i].writeToNBT(nbtTagCompound1);
+                nbttaglist.appendTag(nbtTagCompound1);
             }
         }
         nbtTagCompound.setTag("Items", nbttaglist);
