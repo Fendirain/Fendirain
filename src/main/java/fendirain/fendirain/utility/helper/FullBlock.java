@@ -3,19 +3,19 @@ package fendirain.fendirain.utility.helper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 
-public class Block implements Comparable<Block> {
+public class FullBlock implements Comparable<FullBlock> {
 
     private final net.minecraft.block.Block block;
     private final BlockPos blockPos;
     private final int damageValue;
 
-    public Block(net.minecraft.block.Block block, BlockPos blockPos, int damageValue) {
+    public FullBlock(net.minecraft.block.Block block, BlockPos blockPos, int damageValue) {
         this.block = block;
         this.blockPos = blockPos;
         this.damageValue = damageValue;
     }
 
-    public Block(NBTTagCompound nbtTagCompound) {
+    public FullBlock(NBTTagCompound nbtTagCompound) {
         block = net.minecraft.block.Block.getBlockFromName(nbtTagCompound.getString("blockMaterial"));
         blockPos = BlockPos.fromLong(nbtTagCompound.getLong("blockPos"));
         damageValue = nbtTagCompound.getInteger("blockDamageValue");
@@ -35,8 +35,12 @@ public class Block implements Comparable<Block> {
 
     @SuppressWarnings("NullableProblems")
     @Override
-    public int compareTo(Block block) {
-        return (Math.abs(this.getBlockPos().getX() - block.getBlockPos().getX())) + (Math.abs(this.getBlockPos().getY() - block.getBlockPos().getY())) + (Math.abs(this.getBlockPos().getZ() - block.getBlockPos().getZ()));
+    public int compareTo(FullBlock fullBlock) {
+        return (Math.abs(this.getBlockPos().getX() - fullBlock.getBlockPos().getX())) + (Math.abs(this.getBlockPos().getY() - fullBlock.getBlockPos().getY())) + (Math.abs(this.getBlockPos().getZ() - fullBlock.getBlockPos().getZ()));
+    }
+
+    public boolean isSameType(FullBlock fullBlock) {
+        return block == fullBlock.block;
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {

@@ -1,11 +1,8 @@
 package fendirain.fendirain.common.entity.mob.EntityFenderium.AI;
 
 import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
-import fendirain.fendirain.utility.helper.Block;
-import net.minecraft.block.BlockDirt;
-import net.minecraft.block.BlockGrass;
-import net.minecraft.block.BlockLeavesBase;
-import net.minecraft.block.BlockLog;
+import fendirain.fendirain.utility.helper.FullBlock;
+import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
@@ -27,11 +24,11 @@ public class EntityAIChopTrees extends EntityAIBase {
     private final float moveSpeed;
     private int currentBlockProgress;
     private double[] treeTargetBlockProgress;
-    private Block treeTargetBlock;
-    private Block currentlyBreaking;
-    private Block treeLeaf;
+    private FullBlock treeTargetFullBlock;
+    private FullBlock currentlyBreaking;
+    private FullBlock treeLeaf;
     private boolean alreadyExecuting;
-    private Set<Block> currentTree;
+    private Set<FullBlock> currentTree;
     private int timeToWaitUntilNextRun;
 
     public EntityAIChopTrees(EntityFenderiumMob entity, Random rand, int sightRange, float moveSpeed, boolean doTimePerLog, int timePer) {
@@ -43,7 +40,7 @@ public class EntityAIChopTrees extends EntityAIBase {
         this.doTimePerLog = doTimePerLog;
         this.timePer = timePer;
         this.pathFinder = entity.getNavigator();
-        treeTargetBlock = null;
+        treeTargetFullBlock = null;
         currentlyBreaking = null;
         treeLeaf = null;
         alreadyExecuting = false;
@@ -59,18 +56,18 @@ public class EntityAIChopTrees extends EntityAIBase {
         if (!entity.worldObj.isRemote && (timeToWaitUntilNextRun == 0 || rand.nextInt(1000) == 1)) {
             World world = entity.worldObj;
             int range = entity.getMaxRange();
-            Block closest = null;
+            FullBlock closest = null;
             double currentDist = -1.0;
             for (int y = (int) entity.posY - range; y <= (int) entity.posY + range; y++) {
                 for (int x = (int) entity.posX - range; x <= (int) entity.posX + range; x++) {
                     for (int z = (int) entity.posZ - range; z <= (int) entity.posZ + range; z++) {
                         BlockPos blockPos = new BlockPos(x, y, z);
                         if (entity.isItemValidForBreaking(world.getBlockState(blockPos).getBlock()) && isTree(world, blockPos, false)) {
-                            Block block = new Block(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
+                            FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
                             double dist = entity.getDistance(x, y, z);
                             if (closest == null || currentDist == -1 || dist < currentDist) {
                                 currentDist = dist;
-                                closest = block;
+                                closest = fullBlock;
                             }
                         }
                     }
@@ -78,7 +75,7 @@ public class EntityAIChopTrees extends EntityAIBase {
             }
             if (closest != null) {
                 isTree(world, closest.getBlockPos(), true);
-                treeTargetBlock = closest;
+                treeTargetFullBlock = closest;
                 return true;
             }
         }
@@ -86,9 +83,46 @@ public class EntityAIChopTrees extends EntityAIBase {
     }
 
     private boolean isTree(World world, BlockPos blockPos, Boolean setTreeLeaf) {
-        net.minecraft.block.Block block = world.getBlockState(blockPos.down()).getBlock();
+        Block block = world.getBlockState(blockPos.down()).getBlock();
         if (block != Blocks.air && (block instanceof BlockLog || block instanceof BlockGrass || block instanceof BlockDirt)) {
-            boolean isWood;
+            FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
+            Set<FullBlock> connectedBlocks = getBaseTree(world, fullBlock, new HashSet<>(), true);
+            Map<Integer, Integer> leaves = new HashMap<>();
+            final int[] logs = {0};
+            connectedBlocks.forEach(fullBlock1 -> {
+                if (fullBlock1.getBlock() instanceof BlockLog) logs[0]++;
+                else if (fullBlock1.getBlock() instanceof BlockLeavesBase) {
+                    if (!leaves.containsKey(fullBlock1.getDamageValue())) leaves.put(fullBlock1.getDamageValue(), 0);
+                    leaves.replace(fullBlock1.getDamageValue(), leaves.get(fullBlock1.getDamageValue()) + 1);
+                }
+            });
+
+            FullBlock leafBlock = null;
+            final int[] mostLeaves = {-1};
+            if (leaves.isEmpty()) return false;
+            else {
+                final int[] leafType = new int[1];
+                leaves.forEach((leafDamageValue, amountOfLeaves) -> {
+                    if (mostLeaves[0] == -1 || amountOfLeaves > mostLeaves[0]) {
+                        leafType[0] = leafDamageValue;
+                        mostLeaves[0] = amountOfLeaves;
+                    }
+                });
+                for (FullBlock fullBlock1 : connectedBlocks) {
+                    if (fullBlock1.getDamageValue() == leafType[0]) {
+                        leafBlock = fullBlock1;
+                        break;
+                    }
+                }
+                if (leafBlock == null) return false;
+            }
+
+            if (mostLeaves[0] > 4) {
+                if (setTreeLeaf) treeLeaf = leafBlock;
+                return true;
+            }
+
+            /*boolean isWood;
             int pos = 1;
             do {
                 if (entity.isItemValidForBreaking(world.getBlockState(blockPos.up(pos)).getBlock())) {
@@ -97,55 +131,101 @@ public class EntityAIChopTrees extends EntityAIBase {
                 } else {
                     if (world.getBlockState(blockPos.up(pos)).getBlock() instanceof BlockLeavesBase) {
                         if (setTreeLeaf) {
-                            treeLeaf = new Block(world.getBlockState(blockPos.up(pos)).getBlock(), blockPos.up(pos), world.getBlockState(blockPos.up(pos)).getBlock().getDamageValue(world, blockPos.up(pos)));
+                            treeLeaf = new FullBlock(world.getBlockState(blockPos.up(pos)).getBlock(), blockPos.up(pos), world.getBlockState(blockPos.up(pos)).getBlock().getDamageValue(world, blockPos.up(pos)));
                         }
                         return true;
                     }
                     isWood = false;
                 }
-            } while (isWood);
+            } while (isWood);*/
         }
         return false;
     }
 
-    private Set<Block> getAllConnectingTreeBlocks(World world, Block block, Set<String> searchedBlocks, boolean originalPass) {
-        Set<Block> blocks = new LinkedHashSet<>();
-        if (originalPass) blocks.add(treeTargetBlock);
-        if (block.getBlockPos().getX() < treeTargetBlock.getBlockPos().getX() + sightRange && block.getBlockPos().getX() > treeTargetBlock.getBlockPos().getX() - sightRange && block.getBlockPos().getZ() < treeTargetBlock.getBlockPos().getZ() + sightRange && block.getBlockPos().getZ() > treeTargetBlock.getBlockPos().getZ() - sightRange) {
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().up()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().north()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().east()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().south()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().west()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().down()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().north().east()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().north().west()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().north().up()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().north().up().east()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().north().up().west()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().north().down()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().north().down().east()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().north().down().west()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().up().east()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().up().west()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().down().east()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().down().west()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().south().east()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().south().west()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().south().up()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().south().up().east()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().south().up().west()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().south().down()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().south().down().east()));
-            blocks.addAll(checkBlocks(blocks, searchedBlocks, world, block.getBlockPos().south().down().west()));
+    private Set<FullBlock> getBaseTree(World world, FullBlock fullBlock, Set<Long> searchedBlocks, boolean originalPass) {
+        Set<FullBlock> baseTree = new LinkedHashSet<>();
+        if (originalPass) baseTree.add(fullBlock);
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().up()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().east()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().west()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().down()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().east()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().west()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().up()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().up().east()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().up().west()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().down()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().down().east()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().down().west()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().up().east()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().up().west()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().down().east()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().down().west()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().east()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().west()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().up()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().up().east()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().up().west()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().down()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().down().east()));
+        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().down().west()));
+        return baseTree;
+    }
+
+    private Set<FullBlock> checkLog(Set<Long> searchedBlocks, World world, BlockPos blockPos) {
+        Set<FullBlock> foundBlocks = new LinkedHashSet<>();
+        FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
+        if (fullBlock.getBlock() instanceof BlockLog || fullBlock.getBlock() instanceof BlockLeavesBase) {
+            if (!searchedBlocks.contains(blockPos.toLong())) {
+                searchedBlocks.add(blockPos.toLong());
+                foundBlocks.add(fullBlock);
+                if (fullBlock.getBlock() instanceof BlockLog)
+                    foundBlocks.addAll(getBaseTree(world, fullBlock, searchedBlocks, false));
+            }
+        }
+        return foundBlocks;
+    }
+
+    private Set<FullBlock> getAllConnectingTreeBlocks(World world, FullBlock fullBlock, Set<Long> searchedBlocks, boolean originalPass) {
+        Set<FullBlock> fullBlocks = new LinkedHashSet<>();
+        if (originalPass) fullBlocks.add(treeTargetFullBlock);
+        if (fullBlock.getBlockPos().getX() < treeTargetFullBlock.getBlockPos().getX() + sightRange && fullBlock.getBlockPos().getX() > treeTargetFullBlock.getBlockPos().getX() - sightRange && fullBlock.getBlockPos().getZ() < treeTargetFullBlock.getBlockPos().getZ() + sightRange && fullBlock.getBlockPos().getZ() > treeTargetFullBlock.getBlockPos().getZ() - sightRange) {
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().up()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().east()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().west()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().down()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().east()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().west()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().up()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().up().east()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().up().west()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().down()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().down().east()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().down().west()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().up().east()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().up().west()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().down().east()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().down().west()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().east()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().west()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().up()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().up().east()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().up().west()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().down()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().down().east()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().down().west()));
         }
 
         if (originalPass) {
-            if (!blocks.isEmpty()) {
-                Iterator<Block> iterator = blocks.iterator();
+            if (!fullBlocks.isEmpty()) {
+                Iterator<FullBlock> iterator = fullBlocks.iterator();
                 Set<String> validCoords = new HashSet<>();
                 while (iterator.hasNext()) {
-                    Block next = iterator.next();
+                    FullBlock next = iterator.next();
                     if (next.getBlock() instanceof BlockLeavesBase) iterator.remove();
                     else {
                         if (!validCoords.isEmpty() && !validCoords.contains(next.getBlockPos().toString())) {
@@ -156,19 +236,20 @@ public class EntityAIChopTrees extends EntityAIBase {
                 }
             }
         }
-        return blocks;
+        return fullBlocks;
     }
 
-    private Set<Block> checkBlocks(Set<Block> blocksList, Set<String> searchedBlocks, World world, BlockPos blockPos) {
-        Block block = new Block(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
-        if ((block.getBlock() == treeTargetBlock.getBlock() && block.getDamageValue() == treeTargetBlock.getDamageValue()) || (block.getBlock() == treeLeaf.getBlock() && block.getDamageValue() == treeLeaf.getDamageValue())) {
-            if (!searchedBlocks.contains(blockPos.toString())) {
-                searchedBlocks.add(blockPos.toString());
-                blocksList.add(block);
-                blocksList.addAll(getAllConnectingTreeBlocks(world, block, searchedBlocks, false));
+    private Set<FullBlock> checkBlocks(Set<Long> searchedBlocks, World world, BlockPos blockPos) {
+        Set<FullBlock> foundBlocks = new LinkedHashSet<>();
+        FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
+        if ((treeTargetFullBlock.isSameType(fullBlock) && fullBlock.getDamageValue() == treeTargetFullBlock.getDamageValue()) || (treeLeaf.isSameType(fullBlock) && fullBlock.getDamageValue() == treeLeaf.getDamageValue())) {
+            if (!searchedBlocks.contains(blockPos.toLong())) {
+                searchedBlocks.add(blockPos.toLong());
+                foundBlocks.add(fullBlock);
+                foundBlocks.addAll(getAllConnectingTreeBlocks(world, fullBlock, searchedBlocks, false));
             }
         }
-        return blocksList;
+        return foundBlocks;
     }
 
     private Set<String> getBlockAreaCoords(BlockPos blockPos) {
@@ -185,14 +266,15 @@ public class EntityAIChopTrees extends EntityAIBase {
 
     @Override
     public boolean continueExecuting() {
-        if (entity.worldObj.getBlockState(treeTargetBlock.getBlockPos()).getBlock() != treeTargetBlock.getBlock()) {
-            if (currentTree != null && currentTree.contains(treeTargetBlock)) currentTree.remove(treeTargetBlock);
-            treeTargetBlock = this.returnClosestLog(currentTree);
+        if (entity.worldObj.getBlockState(treeTargetFullBlock.getBlockPos()).getBlock() != treeTargetFullBlock.getBlock()) {
+            if (currentTree != null && currentTree.contains(treeTargetFullBlock))
+                currentTree.remove(treeTargetFullBlock);
+            treeTargetFullBlock = this.returnClosestLog(currentTree);
         }
-        if (treeTargetBlock != null && entity.isItemValidForBreaking(entity.worldObj.getBlockState(treeTargetBlock.getBlockPos()).getBlock()) && entity.isAnySpaceForItemPickup(new ItemStack(treeTargetBlock.getBlock(), 1, treeTargetBlock.getDamageValue()))) {
+        if (treeTargetFullBlock != null && entity.isItemValidForBreaking(entity.worldObj.getBlockState(treeTargetFullBlock.getBlockPos()).getBlock()) && entity.isAnySpaceForItemPickup(new ItemStack(treeTargetFullBlock.getBlock(), 1, treeTargetFullBlock.getDamageValue()))) {
             return true;
         } else {
-            treeTargetBlock = null;
+            treeTargetFullBlock = null;
             currentTree = null;
             alreadyExecuting = false;
             treeLeaf = null;
@@ -211,11 +293,11 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public void startExecuting() {
         if (!alreadyExecuting) {
-            currentTree = getAllConnectingTreeBlocks(entity.worldObj, treeTargetBlock, new HashSet<>(), true);
+            currentTree = getAllConnectingTreeBlocks(entity.worldObj, treeTargetFullBlock, new HashSet<>(), true);
             treeTargetBlockProgress = new double[]{(double) 10 / currentTree.size(), Double.valueOf(currentTree.size()), 0.0d};
             alreadyExecuting = true;
         }
-        pathFinder.tryMoveToXYZ(this.treeTargetBlock.getBlockPos().getX(), this.treeTargetBlock.getBlockPos().getY(), this.treeTargetBlock.getBlockPos().getZ(), this.moveSpeed);
+        pathFinder.tryMoveToXYZ(this.treeTargetFullBlock.getBlockPos().getX(), this.treeTargetFullBlock.getBlockPos().getY(), this.treeTargetFullBlock.getBlockPos().getZ(), this.moveSpeed);
     }
 
     @Override
@@ -223,51 +305,51 @@ public class EntityAIChopTrees extends EntityAIBase {
         World world = entity.worldObj;
         if (currentlyBreaking != null && world.getBlockState(currentlyBreaking.getBlockPos()).getBlock() == currentlyBreaking.getBlock())
             world.sendBlockBreakProgress(entity.getEntityId(), currentlyBreaking.getBlockPos(), -1);
-        if (treeTargetBlock != null && world.getBlockState(treeTargetBlock.getBlockPos()).getBlock() == treeTargetBlock.getBlock())
-            world.sendBlockBreakProgress(entity.getEntityId(), treeTargetBlock.getBlockPos(), -1);
+        if (treeTargetFullBlock != null && world.getBlockState(treeTargetFullBlock.getBlockPos()).getBlock() == treeTargetFullBlock.getBlock())
+            world.sendBlockBreakProgress(entity.getEntityId(), treeTargetFullBlock.getBlockPos(), -1);
     }
 
-    private Block returnFurthestLog(Set<Block> blocks) {
-        if (!blocks.isEmpty()) {
-            Block result = null;
+    private FullBlock returnFurthestLog(Set<FullBlock> fullBlocks) {
+        if (!fullBlocks.isEmpty()) {
+            FullBlock result = null;
             int dist = -1;
-            ArrayList<Block> removeBlocks = new ArrayList<>();
-            for (Block block : blocks) {
-                if (entity.worldObj.getBlockState(block.getBlockPos()).getBlock() == treeTargetBlock.getBlock()) {
-                    int blockDist = block.compareTo(treeTargetBlock);
+            ArrayList<FullBlock> removeFullBlocks = new ArrayList<>();
+            for (FullBlock fullBlock : fullBlocks) {
+                if (entity.worldObj.getBlockState(fullBlock.getBlockPos()).getBlock() == treeTargetFullBlock.getBlock()) {
+                    int blockDist = fullBlock.compareTo(treeTargetFullBlock);
                     if (dist == -1) {
                         dist = blockDist;
-                        result = block;
-                    } else if (blockDist > dist || (dist == blockDist && block.getBlockPos().getY() > result.getBlockPos().getY())) {
+                        result = fullBlock;
+                    } else if (blockDist > dist || (dist == blockDist && fullBlock.getBlockPos().getY() > result.getBlockPos().getY())) {
                         dist = blockDist;
-                        result = block;
+                        result = fullBlock;
                     }
-                } else removeBlocks.add(block);
+                } else removeFullBlocks.add(fullBlock);
             }
-            removeBlocks.stream().filter(blocks::contains).forEach(blocks::remove);
+            removeFullBlocks.stream().filter(fullBlocks::contains).forEach(fullBlocks::remove);
             return result;
         }
         return null;
     }
 
-    private Block returnClosestLog(Set<Block> blocks) {
-        if (!blocks.isEmpty()) {
-            Block result = null;
+    private FullBlock returnClosestLog(Set<FullBlock> fullBlocks) {
+        if (!fullBlocks.isEmpty()) {
+            FullBlock result = null;
             int dist = -1;
-            ArrayList<Block> removeBlocks = new ArrayList<>();
-            for (Block block : blocks) {
-                if (entity.worldObj.getBlockState(block.getBlockPos()).getBlock() == treeTargetBlock.getBlock()) {
-                    int blockDist = block.compareTo(treeTargetBlock);
+            ArrayList<FullBlock> removeFullBlocks = new ArrayList<>();
+            for (FullBlock fullBlock : fullBlocks) {
+                if (entity.worldObj.getBlockState(fullBlock.getBlockPos()).getBlock() == treeTargetFullBlock.getBlock()) {
+                    int blockDist = fullBlock.compareTo(treeTargetFullBlock);
                     if (dist == -1) {
                         dist = blockDist;
-                        result = block;
+                        result = fullBlock;
                     } else if (blockDist < dist) {
                         dist = blockDist;
-                        result = block;
+                        result = fullBlock;
                     }
-                } else removeBlocks.add(block);
+                } else removeFullBlocks.add(fullBlock);
             }
-            removeBlocks.stream().filter(blocks::contains).forEach(blocks::remove);
+            removeFullBlocks.stream().filter(fullBlocks::contains).forEach(fullBlocks::remove);
             return result;
         }
         return null;
@@ -276,7 +358,7 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public void updateTask() {
         if (!entity.worldObj.isRemote) {
-            if (entity.getDistance(treeTargetBlock.getBlockPos().getX(), treeTargetBlock.getBlockPos().getY(), treeTargetBlock.getBlockPos().getZ()) < 2) {
+            if (entity.getDistance(treeTargetFullBlock.getBlockPos().getX(), treeTargetFullBlock.getBlockPos().getY(), treeTargetFullBlock.getBlockPos().getZ()) < 2) {
                 World world = entity.worldObj;
                 if (currentlyBreaking == null || world.getBlockState(currentlyBreaking.getBlockPos()).getBlock() != currentlyBreaking.getBlock()) {
                     if (currentlyBreaking != null) {
@@ -291,12 +373,13 @@ public class EntityAIChopTrees extends EntityAIBase {
                 if (currentlyBreaking != null) {
                     currentBlockProgress = currentBlockProgress + 1 + Math.abs(entity.getBreakSpeed());
                     int breakProgress = (int) ((float) this.currentBlockProgress / 240.0F * 10.0F);
-                    if (treeTargetBlock != currentlyBreaking)
+                    if (treeTargetFullBlock != currentlyBreaking)
                         world.sendBlockBreakProgress(entity.getEntityId(), currentlyBreaking.getBlockPos(), breakProgress);
 
-                    world.sendBlockBreakProgress(entity.getEntityId(), treeTargetBlock.getBlockPos(), (int) treeTargetBlockProgress[2]);
-                    entity.getLookHelper().setLookPosition(treeTargetBlock.getBlockPos().getX(), treeTargetBlock.getBlockPos().getY(), treeTargetBlock.getBlockPos().getZ(), 0, 0);
-                    Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(treeTargetBlock.getBlockPos(), entity.getHorizontalFacing().getOpposite());
+                    Minecraft.getMinecraft().renderGlobal.sendBlockBreakProgress(entity.getEntityId(), treeTargetFullBlock.getBlockPos(), (int) treeTargetBlockProgress[2]);
+                    //world.sendBlockBreakProgress(entity.getEntityId(), treeTargetFullBlock.getBlockPos(), (int) treeTargetBlockProgress[2]);
+                    entity.getLookHelper().setLookPosition(treeTargetFullBlock.getBlockPos().getX(), treeTargetFullBlock.getBlockPos().getY(), treeTargetFullBlock.getBlockPos().getZ(), 0, 0);
+                    Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(treeTargetFullBlock.getBlockPos(), entity.getHorizontalFacing().getOpposite());
 
                     if (this.currentBlockProgress >= 240) {
                         ItemStack itemStack = new ItemStack(currentlyBreaking.getBlock(), 1, currentlyBreaking.getDamageValue());
@@ -360,7 +443,7 @@ public class EntityAIChopTrees extends EntityAIBase {
             nBTTagCompound.setDouble("treeTargetBlockProgress0", treeTargetBlockProgress[0]);
             nBTTagCompound.setDouble("treeTargetBlockProgress1", treeTargetBlockProgress[1]);
             nBTTagCompound.setDouble("treeTargetBlockProgress2", treeTargetBlockProgress[2]);
-            nBTTagCompound.setTag("targetTreeBlock", treeTargetBlock.writeToNBT(new NBTTagCompound()));
+            nBTTagCompound.setTag("targetTreeBlock", treeTargetFullBlock.writeToNBT(new NBTTagCompound()));
             nBTTagCompound.setTag("treeLeafBlock", treeLeaf.writeToNBT(new NBTTagCompound()));
             NBTTagCompound blocks = new NBTTagCompound();
             final int[] i = {0};
@@ -380,11 +463,11 @@ public class EntityAIChopTrees extends EntityAIBase {
             temp[1] = nbtTagCompound.getDouble("treeTargetBlockProgress1");
             temp[2] = nbtTagCompound.getDouble("treeTargetBlockProgress2");
             treeTargetBlockProgress = temp;
-            treeTargetBlock = new Block(nbtTagCompound.getCompoundTag("targetTreeBlock"));
-            treeLeaf = new Block(nbtTagCompound.getCompoundTag("treeLeafBlock"));
+            treeTargetFullBlock = new FullBlock(nbtTagCompound.getCompoundTag("targetTreeBlock"));
+            treeLeaf = new FullBlock(nbtTagCompound.getCompoundTag("treeLeafBlock"));
             NBTTagCompound treeBlocks = nbtTagCompound.getCompoundTag("currentTree");
-            Set<Block> currentTree = new LinkedHashSet<>(treeBlocks.getKeySet().size());
-            treeBlocks.getKeySet().forEach(key -> currentTree.add(new Block(treeBlocks.getCompoundTag(key))));
+            Set<FullBlock> currentTree = new LinkedHashSet<>(treeBlocks.getKeySet().size());
+            treeBlocks.getKeySet().forEach(key -> currentTree.add(new FullBlock(treeBlocks.getCompoundTag(key))));
             this.currentTree = currentTree;
         }
         timeToWaitUntilNextRun = nbtTagCompound.getInteger("timeToWaitUntilNextRun");
