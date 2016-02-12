@@ -121,23 +121,6 @@ public class EntityAIChopTrees extends EntityAIBase {
                 if (setTreeLeaf) treeLeaf = leafBlock;
                 return true;
             }
-
-            /*boolean isWood;
-            int pos = 1;
-            do {
-                if (entity.isItemValidForBreaking(world.getBlockState(blockPos.up(pos)).getBlock())) {
-                    pos++;
-                    isWood = true;
-                } else {
-                    if (world.getBlockState(blockPos.up(pos)).getBlock() instanceof BlockLeavesBase) {
-                        if (setTreeLeaf) {
-                            treeLeaf = new FullBlock(world.getBlockState(blockPos.up(pos)).getBlock(), blockPos.up(pos), world.getBlockState(blockPos.up(pos)).getBlock().getDamageValue(world, blockPos.up(pos)));
-                        }
-                        return true;
-                    }
-                    isWood = false;
-                }
-            } while (isWood);*/
         }
         return false;
     }
@@ -376,7 +359,6 @@ public class EntityAIChopTrees extends EntityAIBase {
                     if (treeTargetFullBlock != currentlyBreaking)
                         world.sendBlockBreakProgress(entity.getEntityId(), currentlyBreaking.getBlockPos(), breakProgress);
 
-                    Minecraft.getMinecraft().renderGlobal.sendBlockBreakProgress(entity.getEntityId(), treeTargetFullBlock.getBlockPos(), (int) treeTargetBlockProgress[2]);
                     //world.sendBlockBreakProgress(entity.getEntityId(), treeTargetFullBlock.getBlockPos(), (int) treeTargetBlockProgress[2]);
                     entity.getLookHelper().setLookPosition(treeTargetFullBlock.getBlockPos().getX(), treeTargetFullBlock.getBlockPos().getY(), treeTargetFullBlock.getBlockPos().getZ(), 0, 0);
                     Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(treeTargetFullBlock.getBlockPos(), entity.getHorizontalFacing().getOpposite());
