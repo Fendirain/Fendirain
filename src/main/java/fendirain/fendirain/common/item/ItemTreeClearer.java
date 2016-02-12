@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
@@ -42,7 +43,7 @@ public class ItemTreeClearer extends ItemFendirain {
             }
             @SuppressWarnings("unchecked")
             List<EntityItem> items = entityPlayer.worldObj.getEntitiesWithinAABB(EntityItem.class, entityPlayer.getEntityBoundingBox().expand(range, range, range));
-            items.stream().filter(item -> (int) item.getDistanceToEntity(entityPlayer) <= range && item.getEntityItem().getItem() instanceof ItemBlock && Block.getBlockFromItem(item.getEntityItem().getItem()) == Blocks.sapling || item.getEntityItem().getItem() instanceof ItemSeeds).forEach(Entity::setDead);
+            items.stream().filter(item -> (int) item.getDistanceToEntity(entityPlayer) <= range && item.getEntityItem().getItem() instanceof ItemBlock && Block.getBlockFromItem(item.getEntityItem().getItem()) == Blocks.sapling || item.getEntityItem().getItem() instanceof ItemSeeds || item.getEntityItem().getItem() == Items.apple).forEach(Entity::setDead);
         }
         alreadyWorking = false;
         return itemStack;

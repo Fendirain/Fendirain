@@ -416,23 +416,24 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                 this.inventory[j] = ItemStack.loadItemStackFromNBT(nbtTagCompound1);
             }
         }
+        entityAIChopTrees.readFromNBT(nbtTagCompound.getCompoundTag("entityAIChopTrees"));
         this.entityAIChopTrees.setTimeToWaitUntilNextRun(nbtTagCompound.getInteger("EntityAIChopTrees_TimeToWaitUntilNextRun"));
     }
 
     @Override
     public void writeToNBT(NBTTagCompound nbtTagCompound) {
         super.writeToNBT(nbtTagCompound);
-        NBTTagList nbttaglist = new NBTTagList();
+        NBTTagList nbtTagList = new NBTTagList();
         for (int i = 0; i < this.inventory.length; ++i) {
             if (this.inventory[i] != null) {
                 NBTTagCompound nbtTagCompound1 = new NBTTagCompound();
                 nbtTagCompound1.setByte("Slot", (byte) i);
                 this.inventory[i].writeToNBT(nbtTagCompound1);
-                nbttaglist.appendTag(nbtTagCompound1);
+                nbtTagList.appendTag(nbtTagCompound1);
             }
         }
-        nbtTagCompound.setTag("Items", nbttaglist);
-        nbtTagCompound.setInteger("EntityAIChopTrees_TimeToWaitUntilNextRun", this.entityAIChopTrees.getTimeToWaitUntilNextRun());
+        nbtTagCompound.setTag("Items", nbtTagList);
+        nbtTagCompound.setTag("entityAIChopTrees", entityAIChopTrees.writeToNBT());
     }
 
     public int getMaxRange() {
