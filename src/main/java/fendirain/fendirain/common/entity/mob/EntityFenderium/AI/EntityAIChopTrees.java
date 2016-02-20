@@ -2,15 +2,18 @@ package fendirain.fendirain.common.entity.mob.EntityFenderium.AI;
 
 import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
 import fendirain.fendirain.utility.helper.FullBlock;
-import net.minecraft.block.*;
+import fendirain.fendirain.utility.helper.LogHelper;
+import fendirain.fendirain.utility.tools.TreeChecker;
+import net.minecraft.block.BlockLeavesBase;
+import net.minecraft.block.BlockLog;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -30,6 +33,7 @@ public class EntityAIChopTrees extends EntityAIBase {
     private boolean alreadyExecuting;
     private Set<FullBlock> currentTree;
     private int timeToWaitUntilNextRun;
+    private boolean reloaded = false;
 
     public EntityAIChopTrees(EntityFenderiumMob entity, Random rand, int sightRange, float moveSpeed, boolean doTimePerLog, int timePer) {
         this.maxLogRange = 3;
@@ -50,6 +54,7 @@ public class EntityAIChopTrees extends EntityAIBase {
 
     @Override
     public boolean shouldExecute() {
+        if (reloaded) return true;
         if (alreadyExecuting || timeToWaitUntilNextRun > 0) {
             return false;
         }
@@ -58,11 +63,15 @@ public class EntityAIChopTrees extends EntityAIBase {
             int range = entity.getMaxRange();
             FullBlock closest = null;
             double currentDist = -1.0;
+
             for (int y = (int) entity.posY - range; y <= (int) entity.posY + range; y++) {
                 for (int x = (int) entity.posX - range; x <= (int) entity.posX + range; x++) {
                     for (int z = (int) entity.posZ - range; z <= (int) entity.posZ + range; z++) {
+                        Vec3 blockVector = new Vec3(x, y, z).subtract(entity.getPositionVector());
+                        Vec3 lookVector = entity.getLookVec();
+                        double degree = Math.acos(((blockVector.xCoord * lookVector.xCoord) + (blockVector.yCoord * lookVector.yCoord) + (blockVector.zCoord * lookVector.zCoord)) / (Math.sqrt((blockVector.xCoord * blockVector.xCoord) + (blockVector.yCoord * blockVector.yCoord) + (blockVector.zCoord * blockVector.zCoord)) * Math.sqrt((lookVector.xCoord * lookVector.xCoord) + (lookVector.yCoord * lookVector.yCoord) + (lookVector.zCoord * lookVector.zCoord)))) * 180 / Math.PI;
                         BlockPos blockPos = new BlockPos(x, y, z);
-                        if (entity.isItemValidForBreaking(world.getBlockState(blockPos).getBlock()) && isTree(world, blockPos, false)) {
+                        if (degree > 0 && degree < 80 && entity.isItemValidForBreaking(world.getBlockState(blockPos).getBlock()) && TreeChecker.isTree(world, blockPos) != null) {
                             FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
                             double dist = entity.getDistance(x, y, z);
                             if (closest == null || currentDist == -1 || dist < currentDist) {
@@ -74,101 +83,12 @@ public class EntityAIChopTrees extends EntityAIBase {
                 }
             }
             if (closest != null) {
-                isTree(world, closest.getBlockPos(), true);
+                treeLeaf = TreeChecker.isTree(world, closest.getBlockPos());
                 treeTargetFullBlock = closest;
                 return true;
             }
         }
         return false;
-    }
-
-    private boolean isTree(World world, BlockPos blockPos, Boolean setTreeLeaf) {
-        Block block = world.getBlockState(blockPos.down()).getBlock();
-        if (block != Blocks.air && (block instanceof BlockLog || block instanceof BlockGrass || block instanceof BlockDirt)) {
-            FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
-            Set<FullBlock> connectedBlocks = getBaseTree(world, fullBlock, new HashSet<>(), true);
-            Map<Integer, Integer> leaves = new HashMap<>();
-            final int[] logs = {0};
-            connectedBlocks.forEach(fullBlock1 -> {
-                if (fullBlock1.getBlock() instanceof BlockLog) logs[0]++;
-                else if (fullBlock1.getBlock() instanceof BlockLeavesBase) {
-                    if (!leaves.containsKey(fullBlock1.getDamageValue())) leaves.put(fullBlock1.getDamageValue(), 0);
-                    leaves.replace(fullBlock1.getDamageValue(), leaves.get(fullBlock1.getDamageValue()) + 1);
-                }
-            });
-
-            FullBlock leafBlock = null;
-            final int[] mostLeaves = {-1};
-            if (leaves.isEmpty()) return false;
-            else {
-                final int[] leafType = new int[1];
-                leaves.forEach((leafDamageValue, amountOfLeaves) -> {
-                    if (mostLeaves[0] == -1 || amountOfLeaves > mostLeaves[0]) {
-                        leafType[0] = leafDamageValue;
-                        mostLeaves[0] = amountOfLeaves;
-                    }
-                });
-                for (FullBlock fullBlock1 : connectedBlocks) {
-                    if (fullBlock1.getDamageValue() == leafType[0]) {
-                        leafBlock = fullBlock1;
-                        break;
-                    }
-                }
-                if (leafBlock == null) return false;
-            }
-
-            if (mostLeaves[0] > 4) {
-                if (setTreeLeaf) treeLeaf = leafBlock;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Set<FullBlock> getBaseTree(World world, FullBlock fullBlock, Set<Long> searchedBlocks, boolean originalPass) {
-        Set<FullBlock> baseTree = new LinkedHashSet<>();
-        if (originalPass) baseTree.add(fullBlock);
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().up()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().down()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().up()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().up().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().up().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().down()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().down().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().down().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().up().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().up().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().down().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().down().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().up()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().up().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().up().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().down()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().down().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().down().west()));
-        return baseTree;
-    }
-
-    private Set<FullBlock> checkLog(Set<Long> searchedBlocks, World world, BlockPos blockPos) {
-        Set<FullBlock> foundBlocks = new LinkedHashSet<>();
-        FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
-        if (fullBlock.getBlock() instanceof BlockLog || fullBlock.getBlock() instanceof BlockLeavesBase) {
-            if (!searchedBlocks.contains(blockPos.toLong())) {
-                searchedBlocks.add(blockPos.toLong());
-                foundBlocks.add(fullBlock);
-                if (fullBlock.getBlock() instanceof BlockLog)
-                    foundBlocks.addAll(getBaseTree(world, fullBlock, searchedBlocks, false));
-            }
-        }
-        return foundBlocks;
     }
 
     private Set<FullBlock> getAllConnectingTreeBlocks(World world, FullBlock fullBlock, Set<Long> searchedBlocks, boolean originalPass) {
@@ -279,6 +199,10 @@ public class EntityAIChopTrees extends EntityAIBase {
             currentTree = getAllConnectingTreeBlocks(entity.worldObj, treeTargetFullBlock, new HashSet<>(), true);
             treeTargetBlockProgress = new double[]{(double) 10 / currentTree.size(), Double.valueOf(currentTree.size()), 0.0d};
             alreadyExecuting = true;
+        } else if (reloaded) {
+            currentTree = getAllConnectingTreeBlocks(entity.worldObj, treeTargetFullBlock, new HashSet<>(), true);
+            LogHelper.info("Ran");
+            reloaded = false;
         }
         pathFinder.tryMoveToXYZ(this.treeTargetFullBlock.getBlockPos().getX(), this.treeTargetFullBlock.getBlockPos().getY(), this.treeTargetFullBlock.getBlockPos().getZ(), this.moveSpeed);
     }
@@ -356,9 +280,8 @@ public class EntityAIChopTrees extends EntityAIBase {
                 if (currentlyBreaking != null) {
                     currentBlockProgress = currentBlockProgress + 1 + Math.abs(entity.getBreakSpeed());
                     int breakProgress = (int) ((float) this.currentBlockProgress / 240.0F * 10.0F);
-                    if (treeTargetFullBlock != currentlyBreaking)
-                        world.sendBlockBreakProgress(entity.getEntityId(), currentlyBreaking.getBlockPos(), breakProgress);
-
+                    //if (treeTargetFullBlock != currentlyBreaking)
+                    world.sendBlockBreakProgress(entity.getEntityId(), currentlyBreaking.getBlockPos(), breakProgress);
                     //world.sendBlockBreakProgress(entity.getEntityId(), treeTargetFullBlock.getBlockPos(), (int) treeTargetBlockProgress[2]);
                     entity.getLookHelper().setLookPosition(treeTargetFullBlock.getBlockPos().getX(), treeTargetFullBlock.getBlockPos().getY(), treeTargetFullBlock.getBlockPos().getZ(), 0, 0);
                     Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(treeTargetFullBlock.getBlockPos(), entity.getHorizontalFacing().getOpposite());
@@ -418,22 +341,22 @@ public class EntityAIChopTrees extends EntityAIBase {
     }
 
     public NBTTagCompound writeToNBT() {
-        NBTTagCompound nBTTagCompound = new NBTTagCompound();
-        nBTTagCompound.setBoolean("alreadyExecuting", alreadyExecuting);
+        NBTTagCompound nbtTagCompound = new NBTTagCompound();
+        nbtTagCompound.setBoolean("alreadyExecuting", alreadyExecuting);
         if (alreadyExecuting) {
-            nBTTagCompound.setInteger("currentBlockProgress", currentBlockProgress);
-            nBTTagCompound.setDouble("treeTargetBlockProgress0", treeTargetBlockProgress[0]);
-            nBTTagCompound.setDouble("treeTargetBlockProgress1", treeTargetBlockProgress[1]);
-            nBTTagCompound.setDouble("treeTargetBlockProgress2", treeTargetBlockProgress[2]);
-            nBTTagCompound.setTag("targetTreeBlock", treeTargetFullBlock.writeToNBT(new NBTTagCompound()));
-            nBTTagCompound.setTag("treeLeafBlock", treeLeaf.writeToNBT(new NBTTagCompound()));
-            NBTTagCompound blocks = new NBTTagCompound();
+            nbtTagCompound.setInteger("currentBlockProgress", currentBlockProgress);
+            nbtTagCompound.setDouble("treeTargetBlockProgress0", treeTargetBlockProgress[0]);
+            nbtTagCompound.setDouble("treeTargetBlockProgress1", treeTargetBlockProgress[1]);
+            nbtTagCompound.setDouble("treeTargetBlockProgress2", treeTargetBlockProgress[2]);
+            nbtTagCompound.setTag("targetTreeBlock", treeTargetFullBlock.writeToNBT(new NBTTagCompound()));
+            nbtTagCompound.setTag("treeLeafBlock", treeLeaf.writeToNBT(new NBTTagCompound()));
+           /* NBTTagCompound blocks = new NBTTagCompound();
             final int[] i = {0};
             currentTree.forEach(block -> blocks.setTag("block" + i[0]++, block.writeToNBT(blocks)));
-            nBTTagCompound.setTag("currentTree", blocks);
+            nbtTagCompound.setTag("currentTree", blocks);*/
         }
-        nBTTagCompound.setInteger("timeToWaitUntilNextRun", timeToWaitUntilNextRun);
-        return nBTTagCompound;
+        nbtTagCompound.setInteger("timeToWaitUntilNextRun", timeToWaitUntilNextRun);
+        return nbtTagCompound;
     }
 
     public void readFromNBT(NBTTagCompound nbtTagCompound) {
@@ -447,11 +370,22 @@ public class EntityAIChopTrees extends EntityAIBase {
             treeTargetBlockProgress = temp;
             treeTargetFullBlock = new FullBlock(nbtTagCompound.getCompoundTag("targetTreeBlock"));
             treeLeaf = new FullBlock(nbtTagCompound.getCompoundTag("treeLeafBlock"));
-            NBTTagCompound treeBlocks = nbtTagCompound.getCompoundTag("currentTree");
+            /*NBTTagCompound treeBlocks = nbtTagCompound.getCompoundTag("currentTree");
             Set<FullBlock> currentTree = new LinkedHashSet<>(treeBlocks.getKeySet().size());
             treeBlocks.getKeySet().forEach(key -> currentTree.add(new FullBlock(treeBlocks.getCompoundTag(key))));
-            this.currentTree = currentTree;
+            this.currentTree = currentTree;*/
+            reloaded = true;
         }
         timeToWaitUntilNextRun = nbtTagCompound.getInteger("timeToWaitUntilNextRun");
+    }
+
+    public double getTreeTargetBlockProgress() {
+        return treeTargetBlockProgress[2];
+    }
+
+    public List<FullBlock> getBreakingBlocks() {
+        List<FullBlock> list = new LinkedList<>();
+        list.add(treeTargetFullBlock);
+        return list;
     }
 }

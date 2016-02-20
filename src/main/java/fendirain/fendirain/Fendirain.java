@@ -5,7 +5,7 @@ import fendirain.fendirain.handler.ConfigurationHandler;
 import fendirain.fendirain.init.*;
 import fendirain.fendirain.proxy.IProxy;
 import fendirain.fendirain.reference.Reference;
-import fendirain.fendirain.utility.LogHelper;
+import fendirain.fendirain.utility.helper.LogHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;

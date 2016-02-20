@@ -5,7 +5,7 @@ import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAICollectS
 import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAIPlantSapling;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.reference.Reference;
-import fendirain.fendirain.utility.LogHelper;
+import fendirain.fendirain.utility.helper.LogHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -27,6 +27,7 @@ import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 
@@ -252,12 +253,32 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                         LogHelper.info("Inventory: " + Arrays.toString(printQueue));
                         entityPlayer.addChatMessage(new ChatComponentText("Percent Full: " + this.getPercentageOfInventoryFull()));
                         LogHelper.info("Percent Full: " + this.getPercentageOfInventoryFull());
+                        int timesKilled;
+                        if (entityPlayer.getEntityData().hasKey("fendirainMobOne"))
+                            timesKilled = entityPlayer.getEntityData().getInteger("fendirainMobOne");
+                        else timesKilled = 0;
+                        entityPlayer.addChatMessage(new ChatComponentText("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s)."));
+                        LogHelper.info("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s).");
                     }
                     return true;
                 }  // End Test / Debug Code
             }
         }
         return false;
+    }
+
+    @Override
+    public void onDeath(DamageSource damageSource) {
+        super.onDeath(damageSource);
+        if (damageSource.getEntity() != null && damageSource.getEntity() instanceof EntityPlayer) {
+            EntityPlayer entityPlayer = (EntityPlayer) damageSource.getEntity();
+            NBTTagCompound nbtTagCompound = entityPlayer.getEntityData();
+            // Named as "fendirainMobOne" for simplicity in the future if I decide to change the mobs name.
+            if (nbtTagCompound.hasKey("fendirainMobOne"))
+                nbtTagCompound.setInteger("fendirainMobOne", nbtTagCompound.getInteger("fendirainMobOne") + 1);
+            else nbtTagCompound.setInteger("fendirainMobOne", 1);
+        }
+
     }
 
     public void putIntoInventory(ItemStack itemStack) {

@@ -1,7 +1,7 @@
 package fendirain.fendirain.client.handler;
 
 import fendirain.fendirain.reference.Key;
-import fendirain.fendirain.utility.LogHelper;
+import fendirain.fendirain.utility.helper.LogHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 

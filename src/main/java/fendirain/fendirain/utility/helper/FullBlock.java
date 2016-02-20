@@ -40,7 +40,11 @@ public class FullBlock implements Comparable<FullBlock> {
     }
 
     public boolean isSameType(FullBlock fullBlock) {
-        return block == fullBlock.block;
+        return block == fullBlock.getBlock();
+    }
+
+    public boolean isSameBlock(FullBlock fullBlock) {
+        return block == fullBlock.getBlock() && blockPos.toLong() == fullBlock.blockPos.toLong();
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {

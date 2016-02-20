@@ -8,6 +8,7 @@ keys.fendirain.release=Release
 item.itemSpawnEggFendirain.name=Spawn
 item.fendirain:itemFendiPiece.name=Fendi Piece
 item.fendirain:itemTreeClearer.name=Tree Clearer
+item.fendirain:itemFenderiumAxe.name=Fenderium Axe
 
 # Blocks
 tile.fendirain:blockOreFendi.name=Fendi Ore

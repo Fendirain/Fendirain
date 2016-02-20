@@ -4,7 +4,7 @@ import fendirain.fendirain.common.entity.mob.EntityFenderium.AI.EntityAIChopTree
 import fendirain.fendirain.common.entity.mob.EntityFenderium.AI.EntityAIThrowWoodAtPlayer;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.reference.Reference;
-import fendirain.fendirain.utility.LogHelper;
+import fendirain.fendirain.utility.helper.LogHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLog;
 import net.minecraft.entity.EntityCreature;
@@ -139,6 +139,12 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                         LogHelper.info("Inventory: " + Arrays.toString(printQueue));
                         entityPlayer.addChatMessage(new ChatComponentText("Percent Full: " + this.getPercentageOfInventoryFull()));
                         LogHelper.info("Percent Full: " + this.getPercentageOfInventoryFull());
+                        int timesKilled;
+                        if (entityPlayer.getEntityData().hasKey("fendirainMobTwo"))
+                            timesKilled = entityPlayer.getEntityData().getInteger("fendirainMobTwo");
+                        else timesKilled = 0;
+                        entityPlayer.addChatMessage(new ChatComponentText("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s)."));
+                        LogHelper.info("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s).");
                     }
                     return true;
                 } // End Test / Debug Code
@@ -288,6 +294,13 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         if (entityAIChopTrees.isAlreadyExecuting()) {
             this.entityAIChopTrees.resetTask();
         }
+        if (damageSource.getEntity() != null && damageSource.getEntity() instanceof EntityPlayer) {
+            EntityPlayer entityPlayer = (EntityPlayer) damageSource.getEntity();
+            NBTTagCompound nbtTagCompound = entityPlayer.getEntityData();
+            if (nbtTagCompound.hasKey("fendirainMobTwo"))
+                nbtTagCompound.setInteger("fendirainMobTwo", nbtTagCompound.getInteger("fendirainMobTwo") + 1);
+            else nbtTagCompound.setInteger("fendirainMobTwo", 1);
+        }
     }
 
     @Override
@@ -381,6 +394,10 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
 
     }
 
+    public EntityAIChopTrees getEntityAIChopTrees() {
+        return entityAIChopTrees;
+    }
+
     public boolean isItemValidForBreaking(Block block) {
         return block instanceof BlockLog;
     }
@@ -407,17 +424,14 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         super.readFromNBT(nbtTagCompound);
         NBTTagList nbttaglist = nbtTagCompound.getTagList("Items", 10);
         this.inventory = new ItemStack[this.getSizeInventory()];
-
         for (int i = 0; i < nbttaglist.tagCount(); ++i) {
             NBTTagCompound nbtTagCompound1 = nbttaglist.getCompoundTagAt(i);
             int j = nbtTagCompound1.getByte("Slot") & 255;
-
             if (j >= 0 && j < this.inventory.length) {
                 this.inventory[j] = ItemStack.loadItemStackFromNBT(nbtTagCompound1);
             }
         }
         entityAIChopTrees.readFromNBT(nbtTagCompound.getCompoundTag("entityAIChopTrees"));
-        this.entityAIChopTrees.setTimeToWaitUntilNextRun(nbtTagCompound.getInteger("EntityAIChopTrees_TimeToWaitUntilNextRun"));
     }
 
     @Override

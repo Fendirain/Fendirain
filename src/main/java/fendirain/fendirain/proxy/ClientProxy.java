@@ -25,11 +25,12 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerModelMesher() {
         ItemModelMesher itemModelMesher = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
-        itemModelMesher.register(ModItems.itemFendiPiece, 0, new ModelResourceLocation(Reference.MOD_ID + ":" + "itemFendiPiece", "inventory"));
-        itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockFendi), 0, new ModelResourceLocation(Reference.MOD_ID + ":" + "blockFendi", "inventory"));
-        itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockOreFendi), 0, new ModelResourceLocation(Reference.MOD_ID + ":" + "blockOreFendi", "inventory"));
+        itemModelMesher.register(ModItems.itemFendiPiece, 0, new ModelResourceLocation(Reference.MOD_PREFIX + "itemFendiPiece", "inventory"));
+        itemModelMesher.register(ModItems.itemFenderiumAxe, 0, new ModelResourceLocation(Reference.MOD_PREFIX + "itemFenderiumAxe", "inventory"));
+        itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockFendi), 0, new ModelResourceLocation(Reference.MOD_PREFIX + "blockFendi", "inventory"));
+        itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockOreFendi), 0, new ModelResourceLocation(Reference.MOD_PREFIX + "blockOreFendi", "inventory"));
         if (ConfigValues.isDebugSettingsEnabled) {
-            itemModelMesher.register(ModItems.itemTreeClearer, 0, new ModelResourceLocation(Reference.MOD_ID + ":" + "itemTreeClearer", "inventory"));
+            itemModelMesher.register(ModItems.itemTreeClearer, 0, new ModelResourceLocation(Reference.MOD_PREFIX + "itemTreeClearer", "inventory"));
         }
     }
 

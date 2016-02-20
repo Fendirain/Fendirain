@@ -1,4 +1,4 @@
-package fendirain.fendirain.utility;
+package fendirain.fendirain.utility.helper;
 
 import fendirain.fendirain.reference.Reference;
 import net.minecraftforge.fml.common.FMLLog;
