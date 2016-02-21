@@ -54,7 +54,6 @@ public class EntityAIChopTrees extends EntityAIBase {
             int range = entity.getMaxRange();
             FullBlock closest = null;
             double currentDist = -1.0;
-
             for (int y = (int) entity.posY - range; y <= (int) entity.posY + range; y++) {
                 for (int x = (int) entity.posX - range; x <= (int) entity.posX + range; x++) {
                     for (int z = (int) entity.posZ - range; z <= (int) entity.posZ + range; z++) {
