@@ -1,17 +1,19 @@
 package fendirain.fendirain.utility.tools;
 
+import fendirain.fendirain.network.PacketHandler;
+import fendirain.fendirain.network.packets.BlockDestroyEffectPacket;
+import fendirain.fendirain.network.packets.BlockHitEffectPacket;
 import fendirain.fendirain.utility.helper.FullBlock;
-import fendirain.fendirain.utility.helper.LogHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.block.BlockLog;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import java.util.*;
 
@@ -47,11 +49,10 @@ public class TreeChopper {
 
     public int breakAllBlocks(int maxToBreak) {
         int amountBroken = 0;
-        LogHelper.info(currentTree.size());
         for (FullBlock fullBlock : currentTree) {
             if (amountBroken >= maxToBreak) break;
             if (world.getBlockState(fullBlock.getBlockPos()).getBlock() == fullBlock.getBlock()) {
-                Minecraft.getMinecraft().effectRenderer.addBlockDestroyEffects(fullBlock.getBlockPos(), fullBlock.getBlock().getDefaultState());
+                PacketHandler.simpleNetworkWrapper.sendToAllAround(new BlockDestroyEffectPacket(fullBlock.getBlockPos().toLong()), new NetworkRegistry.TargetPoint(entity.dimension, fullBlock.getBlockPos().getX(), fullBlock.getBlockPos().getY(), fullBlock.getBlockPos().getZ(), 32));
                 BlockLog log = (BlockLog) fullBlock.getBlock();
                 log.breakBlock(world, fullBlock.getBlockPos(), world.getBlockState(fullBlock.getBlockPos()));
                 world.setBlockToAir(fullBlock.getBlockPos());
@@ -67,11 +68,10 @@ public class TreeChopper {
 
     public void breakFurthestBlock() {
         FullBlock logToBreak = returnFurthestLog();
-        LogHelper.info(logToBreak.getBlockPos().toString());
         EntityItem entityItem = new EntityItem(world, logToBreak.getBlockPos().getX(), logToBreak.getBlockPos().getY(), logToBreak.getBlockPos().getZ());
         entityItem.setEntityItemStack(new ItemStack(logToBreak.getBlock(), 1, logToBreak.getDamageValue()));
         world.spawnEntityInWorld(entityItem);
-        Minecraft.getMinecraft().effectRenderer.addBlockDestroyEffects(logToBreak.getBlockPos(), logToBreak.getBlock().getDefaultState());
+        PacketHandler.simpleNetworkWrapper.sendToAllAround(new BlockDestroyEffectPacket(logToBreak.getBlockPos().toLong()), new NetworkRegistry.TargetPoint(entity.dimension, logToBreak.getBlockPos().getX(), logToBreak.getBlockPos().getY(), logToBreak.getBlockPos().getZ(), 32));
         BlockLog log = (BlockLog) logToBreak.getBlock();
         log.breakBlock(world, logToBreak.getBlockPos(), world.getBlockState(logToBreak.getBlockPos()));
         world.setBlockToAir(logToBreak.getBlockPos());
@@ -100,22 +100,20 @@ public class TreeChopper {
         world.sendBlockBreakProgress(entity.getEntityId(), currentlyBreaking.getBlockPos(), breakProgress);
         //world.sendBlockBreakProgress(entity.getEntityId(), treeTargetFullBlock.getBlockPos(), (int) treeTargetBlockProgress[2]);
         //entity.getLookHelper().setLookPosition(treeTargetFullBlock.getBlockPos().getX(), treeTargetFullBlock.getBlockPos().getY(), treeTargetFullBlock.getBlockPos().getZ(), 0, 0);
-        Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(mainBlock.getBlockPos(), entity.getHorizontalFacing().getOpposite());
+        PacketHandler.simpleNetworkWrapper.sendToAllAround(new BlockHitEffectPacket(mainBlock.getBlockPos().toLong(), entity.getHorizontalFacing().getOpposite()), new NetworkRegistry.TargetPoint(entity.dimension, mainBlock.getBlockPos().getX(), mainBlock.getBlockPos().getY(), mainBlock.getBlockPos().getZ(), 32));
         if (this.currentBlockProgress >= 240) {
             itemStack = new ItemStack(currentlyBreaking.getBlock(), 1, currentlyBreaking.getDamageValue());
             world.sendBlockBreakProgress(entity.getEntityId(), currentlyBreaking.getBlockPos(), -1);
-            Minecraft.getMinecraft().effectRenderer.addBlockDestroyEffects(currentlyBreaking.getBlockPos(), currentlyBreaking.getBlock().getDefaultState());
+            PacketHandler.simpleNetworkWrapper.sendToAllAround(new BlockDestroyEffectPacket(currentlyBreaking.getBlockPos().toLong()), new NetworkRegistry.TargetPoint(entity.dimension, currentlyBreaking.getBlockPos().getX(), currentlyBreaking.getBlockPos().getY(), currentlyBreaking.getBlockPos().getZ(), 32));
             BlockLog log = (BlockLog) currentlyBreaking.getBlock();
             log.breakBlock(world, currentlyBreaking.getBlockPos(), world.getBlockState(currentlyBreaking.getBlockPos()));
             world.setBlockToAir(currentlyBreaking.getBlockPos());
             world.playSoundAtEntity(entity, "dig.wood", 2, .5F);
-            if (currentTree != null) {
-                if (currentTree.contains(currentlyBreaking)) currentTree.remove(currentlyBreaking);
-                treeTargetBlockProgress[2] = (treeTargetBlockProgress[2] + ((treeTargetBlockProgress[1] - currentTree.size()) * treeTargetBlockProgress[0]));
-                treeTargetBlockProgress[1] = (double) currentTree.size();
-            }
+            if (currentTree.contains(currentlyBreaking)) currentTree.remove(currentlyBreaking);
+            treeTargetBlockProgress[2] = (treeTargetBlockProgress[2] + ((treeTargetBlockProgress[1] - currentTree.size()) * treeTargetBlockProgress[0]));
+            treeTargetBlockProgress[1] = (double) currentTree.size();
             currentlyBreaking = this.returnFurthestLog();
-            if (currentlyBreaking == null && currentTree.isEmpty()) this.isFinished = true;
+            if (currentlyBreaking == null) this.isFinished = true;
             currentBlockProgress = 0;
         } else if (currentBlockProgress % 4 == 0) world.playSoundAtEntity(entity, "dig.wood", 1, 1);
         if (itemStack != null) return itemStack;
@@ -200,14 +198,14 @@ public class TreeChopper {
     }
 
     private FullBlock returnFurthestLog() {
-        FullBlock result = mainBlock;
-        int dist = 0;
+        FullBlock result = null;
+        int dist = -1;
         ArrayList<FullBlock> removeFullBlocks = new ArrayList<>();
         for (FullBlock fullBlock : currentTree) {
             if (fullBlock != mainBlock) {
                 if (world.getBlockState(fullBlock.getBlockPos()).getBlock() == blockType) {
                     int blockDist = fullBlock.compareTo(mainBlock);
-                    if (blockDist > dist || (dist == blockDist && fullBlock.getBlockPos().getY() > result.getBlockPos().getY())) {
+                    if (dist == -1 || blockDist > dist || (dist == blockDist && fullBlock.getBlockPos().getY() > result.getBlockPos().getY())) {
                         dist = blockDist;
                         result = fullBlock;
                     }
