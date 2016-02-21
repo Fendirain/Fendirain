@@ -16,6 +16,7 @@ public class RenderFendinain extends RendererLivingEntity<EntityFendinainMob> {
 
     public RenderFendinain(RenderManager renderManager) {
         super(renderManager, new ModelFendinainMob(), 0.21f);
+        //noinspection unchecked
         this.addLayer(new LayerHeldItem(this));
     }
 

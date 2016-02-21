@@ -50,9 +50,8 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     @Override
     public void onLivingUpdate() {
         super.onLivingUpdate();
-        if (!entityAIChopTrees.isAlreadyExecuting() && !(entityAIChopTrees.getTimeToWaitUntilNextRun() <= 0)) {
+        if (!entityAIChopTrees.isAlreadyExecuting() && !(entityAIChopTrees.getTimeToWaitUntilNextRun() <= 0))
             this.entityAIChopTrees.setTimeToWaitUntilNextRun(this.entityAIChopTrees.getTimeToWaitUntilNextRun() - 1);
-        }
     }
 
     @Override
@@ -64,18 +63,14 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                 if (itemStack.getItem() == Items.wooden_hoe) {
                     this.kill();
                     this.setDead();
-                    if (this.entityAIChopTrees.isAlreadyExecuting()) {
-                        this.entityAIChopTrees.resetTask();
-                    }
+                    if (this.entityAIChopTrees.isAlreadyExecuting()) this.entityAIChopTrees.resetTask();
                     return true;
                 } else if (itemStack.getItem() == Items.arrow) {
                     String[] printQueue = new String[this.inventorySize];
                     for (int slot = 0; slot < inventory.length; slot++) {
-                        if (inventory[slot] != null) {
+                        if (inventory[slot] != null)
                             printQueue[slot] = (inventory[slot].getItem().getItemStackDisplayName(inventory[slot]) + "x" + inventory[slot].stackSize);
-                        } else {
-                            printQueue[slot] = (slot + " is null");
-                        }
+                        else printQueue[slot] = (slot + " is null");
                     }
                     if (!worldObj.isRemote) {
                         entityPlayer.addChatMessage(new ChatComponentText(Arrays.toString(printQueue)));
@@ -83,32 +78,25 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                     }
                     return true;
                 } else if (itemStack.getItem() == Items.blaze_rod) {
-                    if (entityAIChopTrees.isAlreadyExecuting()) {
-                        this.addPotionEffect(new PotionEffect(3, 99999, 9));
-                    } else entityAIChopTrees.setTimeToWaitUntilNextRun(0);
+                    if (entityAIChopTrees.isAlreadyExecuting()) this.addPotionEffect(new PotionEffect(3, 99999, 9));
+                    else entityAIChopTrees.setTimeToWaitUntilNextRun(0);
                     return true;
                 } else if (itemStack.getItem() == Items.diamond_axe) {
-                    for (int slot = 0; slot < inventory.length; slot++) {
-                        inventory[slot] = null;
-                    }
+                    for (int slot = 0; slot < inventory.length; slot++) inventory[slot] = null;
                     this.setCurrentItemOrArmor(0, null);
                     return true;
                 } else if (itemStack.getItem() == Items.nether_star) {
-                    for (int slot = 0; slot < inventory.length; slot++) {
+                    for (int slot = 0; slot < inventory.length; slot++)
                         inventory[slot] = new ItemStack(Item.getItemFromBlock(Blocks.log), this.getInventoryStackLimit());
-                    }
                     return true;
                 } else if (itemStack.getItem() == Items.wooden_axe) {
                     Boolean alreadyChanged = false;
                     for (int slot = 0; slot < inventory.length; slot++) {
                         if (inventory[slot] != null) {
-                            if (alreadyChanged) {
-                                inventory[slot] = null;
-                            } else {
+                            if (alreadyChanged) inventory[slot] = null;
+                            else {
                                 inventory[slot].stackSize -= 1;
-                                if (inventory[slot].stackSize == 0) {
-                                    inventory[slot] = null;
-                                }
+                                if (inventory[slot].stackSize == 0) inventory[slot] = null;
                                 alreadyChanged = true;
                             }
                         }
@@ -117,11 +105,9 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                 } else if (itemStack.getItem() == Items.paper) {
                     String[] printQueue = new String[this.inventorySize];
                     for (int slot = 0; slot < inventory.length; slot++) {
-                        if (inventory[slot] != null) {
+                        if (inventory[slot] != null)
                             printQueue[slot] = (inventory[slot].getItem().getItemStackDisplayName(inventory[slot]) + "x" + inventory[slot].stackSize);
-                        } else {
-                            printQueue[slot] = (slot + " is null");
-                        }
+                        else printQueue[slot] = (slot + " is null");
                     }
                     if (!worldObj.isRemote) {
                         entityPlayer.addChatMessage(new ChatComponentText("Health: " + this.getHealth()));
@@ -154,9 +140,9 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     }
 
     public int getBreakSpeed() {
-        if (this.isPotionActive(Potion.digSpeed)) {
+        if (this.isPotionActive(Potion.digSpeed))
             return this.breakSpeed + (this.getActivePotionEffect(Potion.digSpeed).getAmplifier() + 1);
-        } else return this.breakSpeed;
+        else return this.breakSpeed;
     }
 
     @Override
@@ -214,11 +200,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
 
     @Override
     public void dropFewItems(boolean wasHitRecently, int lootingLevel) { //TODO Might Change this
-        for (ItemStack itemStack : inventory) {
-            if (itemStack != null) {
-                this.entityDropItem(itemStack, 1.0F);
-            }
-        }
+        for (ItemStack itemStack : inventory) if (itemStack != null) this.entityDropItem(itemStack, 1.0F);
     }
 
     public void putIntoInventory(ItemStack itemStack) {
@@ -226,17 +208,16 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
             for (int slot = 0; slot < inventory.length; slot++) {
                 if (inventory[slot] == null) {
                     int amountToAdd;
-                    if (this.getInventoryStackLimit() < itemStack.stackSize) {
+                    if (this.getInventoryStackLimit() < itemStack.stackSize)
                         amountToAdd = this.getInventoryStackLimit();
-                    } else amountToAdd = itemStack.stackSize;
+                    else amountToAdd = itemStack.stackSize;
                     inventory[slot] = itemStack.copy();
                     inventory[slot].stackSize = amountToAdd;
                     itemStack.stackSize -= amountToAdd;
                 } else if (inventory[slot].getUnlocalizedName().matches(itemStack.getUnlocalizedName())) {
                     int freeSpace = this.getInventoryStackLimit() - this.inventory[slot].stackSize, amountToAdd;
-                    if (freeSpace < itemStack.stackSize) {
-                        amountToAdd = freeSpace;
-                    } else amountToAdd = itemStack.stackSize;
+                    if (freeSpace < itemStack.stackSize) amountToAdd = freeSpace;
+                    else amountToAdd = itemStack.stackSize;
                     this.inventory[slot].stackSize += amountToAdd;
                     itemStack.stackSize -= amountToAdd;
                 }

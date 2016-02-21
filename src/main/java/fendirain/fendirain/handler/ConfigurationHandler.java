@@ -19,10 +19,8 @@ public class ConfigurationHandler {
     public static Configuration configuration;
 
     public static void init(File configFile) {
-        if (configuration == null) {
-            configuration = new Configuration(configFile);
-            loadConfiguration();
-        }
+        configuration = new Configuration(configFile);
+        loadConfiguration();
     }
 
     private static void loadConfiguration() {
@@ -40,19 +38,14 @@ public class ConfigurationHandler {
         ConfigValues.fenderiumMob_waitPerTreeOrLog = configuration.getBoolean("Fenderium_WaitPerLogOrTree", CATEGORY_MOB, true, "If true, Wait time will be added per a log broken. If false, it will wait the same amount of time per a tree broken no matter the size.");
         ConfigValues.fenderiumMob_timePerBreak = configuration.getInt("Fenderium_TimePerBreak", CATEGORY_MOB, 30, 0, Integer.MAX_VALUE, "Amount of seconds to wait, either per a log or tree chopped, depending on the 'Fenderium_WaitPerLogOrTree' setting.");
 
-        if (ConfigValues.fendinainMob_minTimeToWaitToPlant > ConfigValues.fendinainMob_maxTimeToWaitToPlant) {
+        if (ConfigValues.fendinainMob_minTimeToWaitToPlant > ConfigValues.fendinainMob_maxTimeToWaitToPlant)
             Minecraft.getMinecraft().crashed(new CrashReport("fendinainMob_minTimeToWaitToPlant is not lower than or equal too fendinainMob_maxTimeToWaitToPlant, Please correct.", new CannotProceedException()));
-        }
 
-        if (configuration.hasChanged()) {
-            configuration.save();
-        }
+        if (configuration.hasChanged()) configuration.save();
     }
 
     @SubscribeEvent
     public void onConfigurationChangedEvent(ConfigChangedEvent.OnConfigChangedEvent onConfigChangedEvent) {
-        if (onConfigChangedEvent.modID.equalsIgnoreCase(Reference.MOD_ID)) {
-            loadConfiguration();
-        }
+        if (onConfigChangedEvent.modID.equalsIgnoreCase(Reference.MOD_ID)) loadConfiguration();
     }
 }

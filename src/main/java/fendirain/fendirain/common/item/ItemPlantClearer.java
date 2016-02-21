@@ -15,13 +15,13 @@ import net.minecraft.world.World;
 import java.util.List;
 
 
-public class ItemTreeClearer extends ItemFendirain {
+public class ItemPlantClearer extends ItemFendirain {
     private boolean alreadyWorking;
 
-    public ItemTreeClearer() {
+    public ItemPlantClearer() {
         super();
         this.maxStackSize = 1;
-        this.setUnlocalizedName("itemTreeClearer");
+        this.setUnlocalizedName("itemPlantClearer");
         alreadyWorking = false;
     }
 
@@ -35,9 +35,8 @@ public class ItemTreeClearer extends ItemFendirain {
                 for (int x = posX - range; x <= posX + range; x++) {
                     for (int z = posZ - range; z <= posZ + range; z++) {
                         Block block = world.getBlockState(new BlockPos(x, y, z)).getBlock();
-                        if (block instanceof BlockLeaves || block instanceof BlockLog || block instanceof BlockTallGrass || block instanceof BlockFlower || block instanceof BlockDoublePlant) {
+                        if (block instanceof BlockLeaves || block instanceof BlockLog || block instanceof BlockTallGrass || block instanceof BlockFlower || block instanceof BlockDoublePlant || block instanceof BlockSapling)
                             world.setBlockToAir(new BlockPos(x, y, z));
-                        }
                     }
                 }
             }

@@ -16,14 +16,10 @@ public class ModEntities {
 
         // Fendinain
         EntityRegistry.registerModEntity(EntityFendinainMob.class, EntityNames.EntityFendinain, 0, Fendirain.instance, 64, 3, true, 0x27624D, 0x212121);
-        if (ConfigValues.fendinainMob_enableSpawning) {
-            registerSpawningInTreeBiomes(EntityFendinainMob.class, 1);
-        }
+        if (ConfigValues.fendinainMob_enableSpawning) registerSpawningInTreeBiomes(EntityFendinainMob.class, 1);
         // Fenderium
         EntityRegistry.registerModEntity(EntityFenderiumMob.class, EntityNames.EntityFenderium, 1, Fendirain.instance, 64, 3, true, 0x24424D, 0x210021);
-        if (ConfigValues.fenderiumMob_enableSpawning) {
-            registerSpawningInTreeBiomes(EntityFenderiumMob.class, 2);
-        }
+        if (ConfigValues.fenderiumMob_enableSpawning) registerSpawningInTreeBiomes(EntityFenderiumMob.class, 2);
     }
 
     @SuppressWarnings("unchecked")

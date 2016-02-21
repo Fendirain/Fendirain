@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
+// This whole class is temporary, I have another idea for the wood.
 public class EntityAIThrowWoodAtPlayer extends EntityAIBase {
 
     private final EntityFenderiumMob entity;
@@ -29,9 +30,7 @@ public class EntityAIThrowWoodAtPlayer extends EntityAIBase {
 
     @Override
     public boolean shouldExecute() {
-        if (alreadyExecuting) {
-            return false;
-        }
+        if (alreadyExecuting) return false;
         if (entity.worldObj != null && entity.getPercentageOfInventoryFull() >= 50) {
             EntityPlayer player = entity.worldObj.getClosestPlayerToEntity(entity, 8);
             if (player != null) {
@@ -98,9 +97,8 @@ public class EntityAIThrowWoodAtPlayer extends EntityAIBase {
                 }
             }
         }
-        if (targetEntity != null && pathFinder.noPath() && entity.getDistanceToEntity(targetEntity) > 4 && continueExecuting()) {
+        if (targetEntity != null && pathFinder.noPath() && entity.getDistanceToEntity(targetEntity) > 4 && continueExecuting())
             startExecuting();
-        }
     }
 
     @Override

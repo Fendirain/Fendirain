@@ -38,9 +38,7 @@ public class FendiOreGenerator implements IWorldGenerator {
             if (rand.nextInt(4) == 1) {
                 BlockPos blockPos = new BlockPos(chunkX + rand.nextInt(16), minHeight + rand.nextInt(heightDiff), chunkZ + rand.nextInt(16));
                 int numberOfOre = 1;
-                while (rand.nextInt(12) == 2) {
-                    numberOfOre = 2;
-                }
+                while (rand.nextInt(12) == 2) numberOfOre = 2;
                 worldGenCustom.generate(world, rand, blockPos, numberOfOre);
             }
         }

@@ -16,6 +16,7 @@ public class RenderFenderium extends RendererLivingEntity<EntityFenderiumMob> {
 
     public RenderFenderium(RenderManager renderManager) {
         super(renderManager, new ModelFenderiumMob(), 0.35f);
+        //noinspection unchecked
         this.addLayer(new LayerHeldItem(this));
     }
 

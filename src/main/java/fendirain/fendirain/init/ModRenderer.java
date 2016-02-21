@@ -10,6 +10,7 @@ public class ModRenderer {
     public static final TileEntitySpecialRenderer renderFendiBlock = new RenderBlock(new ModelFendiBlock(), "textures/models/modelFendiBlock.png");
 
     public static void init() {
+        //noinspection unchecked
         ClientRegistry.bindTileEntitySpecialRenderer(TileFendiBlock.class, renderFendiBlock);
     }
 }

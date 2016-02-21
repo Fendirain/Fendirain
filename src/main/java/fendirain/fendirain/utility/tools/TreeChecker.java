@@ -44,10 +44,7 @@ public class TreeChecker {
                 }
                 if (leafBlock == null) return null;
             }
-
-            if (mostLeaves[0] > 4) {
-                return leafBlock;
-            }
+            if (mostLeaves[0] > 4) return leafBlock;
         }
         return null;
     }

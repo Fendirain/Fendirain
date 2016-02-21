@@ -36,9 +36,7 @@ public class WorldGenCustom extends WorldGenerator {
             int lastDirection = -1;
             while (numberOfBlocks > 1) {
                 int randomInt = rand.nextInt(6);
-                while (randomInt == lastDirection) {
-                    randomInt = rand.nextInt(6);
-                }
+                while (randomInt == lastDirection) randomInt = rand.nextInt(6);
                 switch (randomInt) {
                     case 0:
                         blockPos.east();
@@ -59,9 +57,8 @@ public class WorldGenCustom extends WorldGenerator {
                         blockPos.north();
                         break;
                 }
-                if (world.getBlockState(blockPos).getBlock().isReplaceableOreGen(world, blockPos, this.target)) {
+                if (world.getBlockState(blockPos).getBlock().isReplaceableOreGen(world, blockPos, this.target))
                     world.setBlockState(blockPos, this.block.getStateFromMeta(this.blockMeta), 2);
-                }
                 lastDirection = randomInt;
                 numberOfBlocks--;
             }

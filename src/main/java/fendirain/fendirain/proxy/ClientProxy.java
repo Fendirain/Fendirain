@@ -29,9 +29,8 @@ public class ClientProxy extends CommonProxy {
         itemModelMesher.register(ModItems.itemFenderiumAxe, 0, new ModelResourceLocation(Reference.MOD_PREFIX + "itemFenderiumAxe", "inventory"));
         itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockFendi), 0, new ModelResourceLocation(Reference.MOD_PREFIX + "blockFendi", "inventory"));
         itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockOreFendi), 0, new ModelResourceLocation(Reference.MOD_PREFIX + "blockOreFendi", "inventory"));
-        if (ConfigValues.isDebugSettingsEnabled) {
-            itemModelMesher.register(ModItems.itemTreeClearer, 0, new ModelResourceLocation(Reference.MOD_PREFIX + "itemTreeClearer", "inventory"));
-        }
+        if (ConfigValues.isDebugSettingsEnabled)
+            itemModelMesher.register(ModItems.itemPlantClearer, 0, new ModelResourceLocation(Reference.MOD_PREFIX + "itemPlantClearer", "inventory"));
     }
 
     @Override

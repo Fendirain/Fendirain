@@ -28,7 +28,7 @@ public class ItemFenderiumAxe extends ItemAxe {
     @Override
     public boolean onItemUse(ItemStack itemStack, EntityPlayer entityPlayerIn, World worldIn, BlockPos blockPos, EnumFacing side, float hitX, float hitY, float hitZ) {
         World world = entityPlayerIn.getEntityWorld();
-        if (!world.isRemote) {
+        if (!world.isRemote && itemStack.getMaxDamage() - itemStack.getItemDamage() > 1) {
             FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
             if (fullBlock.getBlock() instanceof BlockLog) {
                 FullBlock treeLeaf = TreeChecker.isTree(world, fullBlock.getBlockPos());
@@ -64,9 +64,9 @@ public class ItemFenderiumAxe extends ItemAxe {
     }
 
     @Override
-    public boolean onBlockStartBreak(ItemStack itemstack, BlockPos blockPos, EntityPlayer entityPlayer) {
+    public boolean onBlockStartBreak(ItemStack itemStack, BlockPos blockPos, EntityPlayer entityPlayer) {
         World world = entityPlayer.getEntityWorld();
-        if (!world.isRemote) {
+        if (!world.isRemote && itemStack.getMaxDamage() - itemStack.getItemDamage() > 1) {
             FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
             if (fullBlock.getBlock() instanceof BlockLog) {
                 if (treeChopper != null) LogHelper.info(treeChopper.isBlockContainedInTree(fullBlock));
