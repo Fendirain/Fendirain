@@ -3,6 +3,7 @@ package fendirain.fendirain;
 import fendirain.fendirain.client.handler.KeyInputEventHandler;
 import fendirain.fendirain.handler.ConfigurationHandler;
 import fendirain.fendirain.init.*;
+import fendirain.fendirain.network.PacketHandler;
 import fendirain.fendirain.proxy.IProxy;
 import fendirain.fendirain.reference.Reference;
 import fendirain.fendirain.utility.helper.LogHelper;
@@ -22,12 +23,16 @@ public class Fendirain {
     @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS, serverSide = Reference.SERVER_PROXY_CLASS)
     public static IProxy proxy;
 
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent preInitializationEvent) {
         // Network Handling, Configuration, Initialize items, blocks, and entities.
+
         ConfigurationHandler.init(preInitializationEvent.getSuggestedConfigurationFile());
 
         MinecraftForge.EVENT_BUS.register(new ConfigurationHandler());
+
+        PacketHandler.register();
 
         proxy.registerKeyBindings();
         ModItems.init();
@@ -35,7 +40,7 @@ public class Fendirain {
         ModTileEntities.init();
         ModWorldGenerator.init();
         ModEntities.init();
-        proxy.registerRender();
+        proxy.registerRenderPreInit();
 
         LogHelper.info("Pre-Initialization Complete");
     }
@@ -44,8 +49,7 @@ public class Fendirain {
     public void init(FMLInitializationEvent initializationEvent) {
         // Register Gui's, Tile Entity's, Crafting recipes, other event handlers.
 
-        ModRenderer.init();
-        proxy.registerModelMesher();
+        proxy.registerRenderInit();
         MinecraftForge.EVENT_BUS.register(new KeyInputEventHandler());
         ModRecipes.init();
         LogHelper.info("Initialization Complete");

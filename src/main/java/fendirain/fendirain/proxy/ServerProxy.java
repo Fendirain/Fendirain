@@ -3,12 +3,11 @@ package fendirain.fendirain.proxy;
 public class ServerProxy extends CommonProxy {
 
     @Override
-    public void registerRender() {
+    public void registerRenderPreInit() {
     }
 
     @Override
-    public void registerModelMesher() {
-
+    public void registerRenderInit() {
     }
 
     @Override

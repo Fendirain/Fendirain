@@ -1,9 +1,9 @@
 package fendirain.fendirain.proxy;
 
 public interface IProxy {
-    void registerRender();
+    void registerRenderPreInit();
 
-    void registerModelMesher();
+    void registerRenderInit();
 
     void registerKeyBindings();
 }

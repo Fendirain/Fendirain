@@ -2,7 +2,6 @@ package fendirain.fendirain.common.entity.mob.EntityFenderium.AI;
 
 import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
 import fendirain.fendirain.utility.helper.FullBlock;
-import fendirain.fendirain.utility.helper.LogHelper;
 import fendirain.fendirain.utility.tools.TreeChecker;
 import fendirain.fendirain.utility.tools.TreeChopper;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -94,20 +93,7 @@ public class EntityAIChopTrees extends EntityAIBase {
         if (entity.worldObj.getBlockState(treeChopper.getMainBlock().getBlockPos()).getBlock() != treeChopper.getMainBlock().getBlock()) {
             treeChopper.setMainBlockToClosest();
         }
-        if (!treeChopper.isFinished()) return true;
-        else {
-            treeChopper.resetBlockProgress();
-            treeChopper = null;
-
-            for (Object potion : entity.getActivePotionEffects()) {
-                PotionEffect potionEffect = (PotionEffect) potion;
-                if (potionEffect.getPotionID() == 3) {
-                    entity.removePotionEffect(3);
-                    break;
-                }
-            }
-            return false;
-        }
+        return !treeChopper.isFinished();
     }
 
     @Override
@@ -126,6 +112,15 @@ public class EntityAIChopTrees extends EntityAIBase {
         if (treeChopper != null) {
             treeChopper.resetBlockProgress();
             treeChopper = null;
+            alreadyExecuting = false;
+        }
+
+        for (Object potion : entity.getActivePotionEffects()) {
+            PotionEffect potionEffect = (PotionEffect) potion;
+            if (potionEffect.getPotionID() == 3) {
+                entity.removePotionEffect(3);
+                break;
+            }
         }
     }
 
@@ -133,10 +128,10 @@ public class EntityAIChopTrees extends EntityAIBase {
     public void updateTask() {
         if (!entity.worldObj.isRemote) {
             if (entity.getDistance(treeChopper.getMainBlock().getBlockPos().getX(), treeChopper.getMainBlock().getBlockPos().getY(), treeChopper.getMainBlock().getBlockPos().getZ()) < 2) {
-                LogHelper.info("Ran");
+                //LogHelper.info("Ran");
                 ItemStack itemStack = treeChopper.continueBreaking(entity.getBreakSpeed());
-                entity.putIntoInventory(itemStack);
                 if (itemStack != null) {
+                    entity.putIntoInventory(itemStack.copy());
                     if (doTimePerLog) {
                         if (timeToWaitUntilNextRun < 0) {
                             timeToWaitUntilNextRun = 0;
@@ -146,7 +141,8 @@ public class EntityAIChopTrees extends EntityAIBase {
                         timeToWaitUntilNextRun = timePer;
                     }
                 }
-                if (treeChopper.isFinished() || !entity.isAnySpaceForItemPickup(itemStack)) resetTask();
+                if (treeChopper.isFinished() || (itemStack != null && !entity.isAnySpaceForItemPickup(itemStack)))
+                    resetTask();
             } else if (pathFinder.noPath()) {
                 startExecuting();
             }
