@@ -53,7 +53,7 @@ public class TreeChopper {
         int amountBroken = 0;
         Set<FullBlock> blocksToBreak = new LinkedHashSet<>(currentTree.size());
         if (maxToBreak < currentTree.size())
-            for (int i = 0; i <= maxToBreak; i++) blocksToBreak.add(returnFurthestLog());
+            for (int i = 0; i < maxToBreak; i++) blocksToBreak.add(returnFurthestLog());
         else blocksToBreak.addAll(currentTree);
         for (FullBlock fullBlock : blocksToBreak) {
             if (world.getBlockState(fullBlock.getBlockPos()).getBlock() == fullBlock.getBlock()) {

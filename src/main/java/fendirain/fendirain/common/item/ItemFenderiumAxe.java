@@ -2,16 +2,12 @@ package fendirain.fendirain.common.item;
 
 import fendirain.fendirain.creativetab.CreativeTabFendirain;
 import fendirain.fendirain.init.ModItems;
-import fendirain.fendirain.network.PacketHandler;
-import fendirain.fendirain.network.packets.PlayerItemInUsePacket;
 import fendirain.fendirain.reference.Reference;
 import fendirain.fendirain.utility.helper.FullBlock;
-import fendirain.fendirain.utility.helper.LogHelper;
 import fendirain.fendirain.utility.tools.TreeChecker;
 import fendirain.fendirain.utility.tools.TreeChopper;
 import net.minecraft.block.BlockLog;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemStack;
@@ -31,18 +27,18 @@ public class ItemFenderiumAxe extends ItemAxe {
     @Override
     public boolean onItemUse(ItemStack itemStack, EntityPlayer entityPlayerIn, World worldIn, BlockPos blockPos, EnumFacing side, float hitX, float hitY, float hitZ) {
         World world = entityPlayerIn.getEntityWorld();
-        if (!world.isRemote && itemStack.getMaxDamage() - itemStack.getItemDamage() > 4) {
+        if (itemStack.getMaxDamage() - itemStack.getItemDamage() > 4) {
             FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
             if (fullBlock.getBlock() instanceof BlockLog) {
                 if (treeChopper != null && treeChopper.isBlockContainedInTree(fullBlock)) {
                     treeChopper.setMainBlock(fullBlock);
-                    PacketHandler.simpleNetworkWrapper.sendTo(new PlayerItemInUsePacket(itemStack, this.getMaxItemUseDuration(itemStack)), (EntityPlayerMP) entityPlayerIn);
+                    entityPlayerIn.setItemInUse(itemStack, this.getMaxItemUseDuration(itemStack));
                     return true;
                 } else {
                     FullBlock treeLeaf = TreeChecker.isTree(world, fullBlock.getBlockPos());
                     if (treeLeaf != null) {
-                        treeChopper = new TreeChopper(entityPlayerIn, fullBlock, treeLeaf, true);
-                        PacketHandler.simpleNetworkWrapper.sendTo(new PlayerItemInUsePacket(itemStack, this.getMaxItemUseDuration(itemStack)), (EntityPlayerMP) entityPlayerIn);
+                        if (!world.isRemote) treeChopper = new TreeChopper(entityPlayerIn, fullBlock, treeLeaf, true);
+                        entityPlayerIn.setItemInUse(itemStack, this.getMaxItemUseDuration(itemStack));
                         return true;
                     }
                 }
@@ -83,16 +79,13 @@ public class ItemFenderiumAxe extends ItemAxe {
 
     @Override
     public void onPlayerStoppedUsing(ItemStack itemStack, World worldIn, EntityPlayer entityPlayerIn, int timeLeft) {
-        if (!entityPlayerIn.worldObj.isRemote) {
-            LogHelper.info("Ran2 || " + (this.getMaxItemUseDuration(itemStack) - timeLeft) / 2);
-            if (treeChopper != null) {
-                int maxToBreak = ((this.getMaxItemUseDuration(itemStack) - timeLeft) / 2 < (itemStack.getMaxDamage() - itemStack.getItemDamage()) / 4) ? (this.getMaxItemUseDuration(itemStack) - timeLeft) / 2 : (itemStack.getMaxDamage() - itemStack.getItemDamage()) / 4;
-                int itemDamage = treeChopper.breakAllBlocks(maxToBreak);
-                if (itemDamage > 0) itemStack.damageItem(itemDamage * 4, entityPlayerIn);
-                PacketHandler.simpleNetworkWrapper.sendTo(new PlayerItemInUsePacket(itemStack, this.getMaxItemUseDuration(itemStack)), (EntityPlayerMP) entityPlayerIn);
-                entityPlayerIn.stopUsingItem();
-                if (treeChopper.isFinished()) treeChopper = null;
-            }
+        //LogHelper.info("Ran2 || " + (this.getMaxItemUseDuration(itemStack) - timeLeft) / 2);
+        if (treeChopper != null) {
+            int maxToBreak = ((this.getMaxItemUseDuration(itemStack) - timeLeft) / 2 < (itemStack.getMaxDamage() - itemStack.getItemDamage()) / 4) ? (this.getMaxItemUseDuration(itemStack) - timeLeft) / 2 : (itemStack.getMaxDamage() - itemStack.getItemDamage()) / 4;
+            int itemDamage = treeChopper.breakAllBlocks(maxToBreak);
+            if (itemDamage > 0) itemStack.damageItem(itemDamage * 4, entityPlayerIn);
+            entityPlayerIn.clearItemInUse();
+            if (treeChopper.isFinished()) treeChopper = null;
         }
     }
 
