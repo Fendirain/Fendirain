@@ -3,10 +3,10 @@ package fendirain.fendirain.common.entity.mob.EntityFendinain;
 import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAIBegPlayer;
 import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAICollectSaplings;
 import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAIPlantSapling;
+import fendirain.fendirain.init.ModCompatibility;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.reference.Reference;
 import fendirain.fendirain.utility.helper.LogHelper;
-import net.minecraft.block.Block;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -40,7 +40,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     private final EntityAICollectSaplings entityAICollectSaplings;
     private final EntityAIPlantSapling entityAIPlantSapling;
     private ItemStack[] inventory = new ItemStack[inventorySize];
-    private boolean firstUpdate;
+    private boolean firstUpdate, reloaded = false;
 
     public EntityFendinainMob(World world) {
         super(world);
@@ -60,11 +60,16 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
 
     @Override
     public void onLivingUpdate() {
-        if (firstUpdate) {
-            this.addNewSpawnInventory();
-            this.setCurrentItemOrArmor(0, this.getRandomSlot());
-            firstUpdate = false;
-        }
+        if (!worldObj.isRemote) {
+            if (firstUpdate && !reloaded) {
+                this.addNewSpawnInventory();
+                this.setCurrentItemOrArmor(0, this.getRandomSlot());
+                firstUpdate = false;
+            } else if (firstUpdate) {
+                this.setCurrentItemOrArmor(0, this.getRandomSlot());
+                if (firstUpdate) firstUpdate = false;
+            }
+        } else firstUpdate = false;
         super.onLivingUpdate();
         this.entityAIPlantSapling.addToTimeSinceLastPlacement(1);
     }
@@ -284,7 +289,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     public void putIntoInventory(ItemStack itemStack) {
-        if ((itemStack != null && itemStack.stackSize > 0) && (itemStack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemStack.getItem()) == Blocks.sapling)) {
+        if ((itemStack != null && itemStack.stackSize > 0) && (itemStack.getItem() instanceof ItemBlock && ModCompatibility.saplings.contains(itemStack.getItem()))) {
             for (int slot = 0; slot < inventory.length; slot++) {
                 if (inventory[slot] == null) {
                     int amountToAdd;
@@ -423,7 +428,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
 
     @Override
     public boolean isItemValidForSlot(int slot, ItemStack itemStack) {
-        return itemStack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemStack.getItem()) == Blocks.sapling;
+        return itemStack.getItem() instanceof ItemBlock && ModCompatibility.saplings.contains(itemStack.getItem());
     }
 
     @Override
@@ -460,6 +465,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                 this.inventory[j] = ItemStack.loadItemStackFromNBT(nbtTagCompound1);
             }
         }
+        reloaded = true;
     }
 
     @Override
@@ -523,7 +529,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     public boolean isValidForPickup(Item item) {
-        return item instanceof ItemBlock && Block.getBlockFromItem(item) == Blocks.sapling;
+        return item instanceof ItemBlock && ModCompatibility.saplings.contains(item);
     }
 
     public void removeItemFromInventory(ItemStack itemStack, int amount, boolean resetCurrentSapling) {

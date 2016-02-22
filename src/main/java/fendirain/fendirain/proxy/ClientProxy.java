@@ -21,12 +21,25 @@ public class ClientProxy extends CommonProxy {
         RenderingRegistry.registerEntityRenderingHandler(EntityFendinainMob.class, RenderFendinain::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityFenderiumMob.class, RenderFenderium::new);
 
-        ModelLoader.setCustomModelResourceLocation(ModItems.itemFendiPiece, 0, new ModelResourceLocation(Reference.MOD_PREFIX + "itemFendiPiece", "inventory"));
-        ModelLoader.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, 0, new ModelResourceLocation(Reference.MOD_PREFIX + "itemFenderiumAxe", "inventory"));
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ModBlocks.blockFendi), 0, new ModelResourceLocation(Reference.MOD_PREFIX + "blockFendi", "inventory"));
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ModBlocks.blockOreFendi), 0, new ModelResourceLocation(Reference.MOD_PREFIX + "blockOreFendi", "inventory"));
+        this.setCustomModelResourceLocation(ModItems.itemFendiPiece, "itemFendiPiece");
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_1");
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_2");
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_3");
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_4");
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_5");
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_6");
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_7");
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_8");
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_9");
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Default");
+        this.setCustomModelResourceLocation(Item.getItemFromBlock(ModBlocks.blockFendi), "blockFendi");
+        this.setCustomModelResourceLocation(Item.getItemFromBlock(ModBlocks.blockOreFendi), "blockOreFendi");
         if (ConfigValues.isDebugSettingsEnabled)
-            ModelLoader.setCustomModelResourceLocation(ModItems.itemPlantClearer, 0, new ModelResourceLocation(Reference.MOD_PREFIX + "itemPlantClearer", "inventory"));
+            this.setCustomModelResourceLocation(ModItems.itemPlantClearer, "itemPlantClearer");
+    }
+
+    private void setCustomModelResourceLocation(Item item, String location) {
+        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(Reference.MOD_PREFIX + location, "inventory"));
     }
 
     @Override

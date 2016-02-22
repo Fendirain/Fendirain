@@ -1,7 +1,7 @@
 {
   "parent": "builtin/generated",
   "textures": {
-    "layer0": "fendirain:items/itemFenderiumAxe"
+    "layer0": "fendirain:items/itemFenderiumAxe_Charging_3"
   },
   "display": {
     "thirdperson": {

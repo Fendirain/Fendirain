@@ -1,11 +1,13 @@
 package fendirain.fendirain.common.item;
 
+import fendirain.fendirain.init.ModCompatibility;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
@@ -35,7 +37,7 @@ public class ItemPlantClearer extends ItemFendirain {
                 for (int x = posX - range; x <= posX + range; x++) {
                     for (int z = posZ - range; z <= posZ + range; z++) {
                         Block block = world.getBlockState(new BlockPos(x, y, z)).getBlock();
-                        if (block instanceof BlockLeaves || block instanceof BlockLog || block instanceof BlockTallGrass || block instanceof BlockFlower || block instanceof BlockDoublePlant || block instanceof BlockSapling)
+                        if (block instanceof BlockLeaves || block instanceof BlockLog || block instanceof BlockTallGrass || block instanceof BlockFlower || block instanceof BlockDoublePlant || (Item.getItemFromBlock(block) != null && ModCompatibility.saplings.contains(Item.getItemFromBlock(block))))
                             world.setBlockToAir(new BlockPos(x, y, z));
                     }
                 }

@@ -52,9 +52,15 @@ public class TreeChopper {
     public int breakAllBlocks(int maxToBreak) {
         int amountBroken = 0;
         Set<FullBlock> blocksToBreak = new LinkedHashSet<>(currentTree.size());
-        if (maxToBreak < currentTree.size())
+        FullBlock closestBlock;
+        if (maxToBreak < currentTree.size()) {
             for (int i = 0; i < maxToBreak; i++) blocksToBreak.add(returnFurthestLog());
-        else blocksToBreak.addAll(currentTree);
+            closestBlock = returnClosestLog(blocksToBreak);
+            if (closestBlock == null) closestBlock = mainBlock;
+        } else {
+            blocksToBreak.addAll(currentTree);
+            closestBlock = mainBlock;
+        }
         for (FullBlock fullBlock : blocksToBreak) {
             if (world.getBlockState(fullBlock.getBlockPos()).getBlock() == fullBlock.getBlock()) {
                 PacketHandler.simpleNetworkWrapper.sendToAllAround(new BlockDestroyEffectPacket(fullBlock.getBlockPos().toLong()), new NetworkRegistry.TargetPoint(entity.dimension, fullBlock.getBlockPos().getX(), fullBlock.getBlockPos().getY(), fullBlock.getBlockPos().getZ(), 32));
@@ -66,7 +72,7 @@ public class TreeChopper {
                 currentTree.remove(fullBlock);
             }
         }
-        EntityItem entityItem = new EntityItem(world, mainBlock.getBlockPos().getX(), mainBlock.getBlockPos().getY(), mainBlock.getBlockPos().getZ());
+        EntityItem entityItem = new EntityItem(world, closestBlock.getBlockPos().getX(), closestBlock.getBlockPos().getY(), closestBlock.getBlockPos().getZ());
         entityItem.setEntityItemStack(new ItemStack(mainBlock.getBlock(), amountBroken, mainBlock.getDamageValue()));
         world.spawnEntityInWorld(entityItem);
         if (currentTree.isEmpty()) this.isFinished = true;
@@ -223,12 +229,12 @@ public class TreeChopper {
         return result;
     }
 
-    private FullBlock returnClosestLog() {
-        if (!currentTree.isEmpty()) {
+    private FullBlock returnClosestLog(Set<FullBlock> blockSet) {
+        if (!blockSet.isEmpty()) {
             FullBlock result = null;
             int dist = -1;
             ArrayList<FullBlock> removeFullBlocks = new ArrayList<>();
-            for (FullBlock fullBlock : currentTree) {
+            for (FullBlock fullBlock : blockSet) {
                 if (entity.worldObj.getBlockState(fullBlock.getBlockPos()).getBlock() == mainBlock.getBlock()) {
                     int blockDist = fullBlock.compareTo(mainBlock);
                     if (dist == -1) {
@@ -240,14 +246,14 @@ public class TreeChopper {
                     }
                 } else removeFullBlocks.add(fullBlock);
             }
-            removeFullBlocks.stream().filter(currentTree::contains).forEach(currentTree::remove);
+            removeFullBlocks.stream().filter(blockSet::contains).forEach(blockSet::remove);
             return result;
         }
         return null;
     }
 
     public boolean setMainBlockToClosest() {
-        FullBlock closest = returnClosestLog();
+        FullBlock closest = returnClosestLog(currentTree);
         if (closest != null) {
             mainBlock = closest;
             return true;

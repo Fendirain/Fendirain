@@ -7,7 +7,7 @@ keys.fendirain.release=Release
 # Items
 item.itemSpawnEggFendirain.name=Spawn
 item.fendirain:itemFendiPiece.name=Fendi Piece
-item.fendirain:itemPlantClearer.name=Tree Clearer
+item.fendirain:itemPlantClearer.name=Plant Clearer
 item.fendirain:itemFenderiumAxe.name=Fenderium Axe
 
 # Blocks

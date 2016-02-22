@@ -2,13 +2,12 @@ package fendirain.fendirain.client.render.mobs.layers;
 
 import fendirain.fendirain.client.models.mobs.ModelFendinainMob;
 import fendirain.fendirain.common.entity.mob.EntityFendinain.EntityFendinainMob;
-import net.minecraft.block.Block;
+import fendirain.fendirain.init.ModCompatibility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
@@ -28,7 +27,7 @@ public class LayerHeldItem implements LayerRenderer {
         ItemStack itemstack = entityLivingBase.getHeldItem();
         if (itemstack != null && itemstack.getItem() != null) {
             if (entityLivingBase instanceof EntityFendinainMob) {
-                if (itemstack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemstack.getItem()) == Blocks.sapling) {
+                if (itemstack.getItem() instanceof ItemBlock && ModCompatibility.saplings.contains(itemstack.getItem())) {
                     GL11.glPushMatrix();
                     ModelFendinainMob model = (ModelFendinainMob) this.livingEntityRenderer.getMainModel();
                     model.leftArm2.postRender(-1.2F);
