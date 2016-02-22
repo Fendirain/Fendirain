@@ -23,7 +23,7 @@ public class EntityAIChopTrees extends EntityAIBase {
     private final EntityFenderiumMob entity;
     private final PathNavigate pathFinder;
     private final float moveSpeed;
-    TreeChopper treeChopper;
+    private TreeChopper treeChopper;
     private boolean alreadyExecuting;
     private int timeToWaitUntilNextRun;
     private boolean reloaded = false;
@@ -79,7 +79,8 @@ public class EntityAIChopTrees extends EntityAIBase {
                 }
             }
             if (closest != null) {
-                treeChopper = new TreeChopper(entity, closest, TreeChecker.isTree(world, closest.getBlockPos()));
+                treeChopper = new TreeChopper(entity, closest, TreeChecker.isTree(world, closest.getBlockPos()), true);
+
                 return true;
             } else timeToWaitUntilNextRun = timeToWaitUntilNextRun + 50;
         }
@@ -126,7 +127,8 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public void updateTask() {
         if (!entity.worldObj.isRemote) {
-            if (entity.getDistance(treeChopper.getMainBlock().getBlockPos().getX(), treeChopper.getMainBlock().getBlockPos().getY(), treeChopper.getMainBlock().getBlockPos().getZ()) < 2) {
+            if (pathFinder.noPath() && entity.getDistance(treeChopper.getMainBlock().getBlockPos().getX(), treeChopper.getMainBlock().getBlockPos().getY(), treeChopper.getMainBlock().getBlockPos().getZ()) < 2) {
+                entity.getLookHelper().setLookPosition(treeChopper.getMainBlock().getBlockPos().getX(), treeChopper.getMainBlock().getBlockPos().getY(), treeChopper.getMainBlock().getBlockPos().getZ(), 2, 1);
                 //LogHelper.info("Ran");
                 ItemStack itemStack = treeChopper.continueBreaking(entity.getBreakSpeed());
                 if (itemStack != null) {

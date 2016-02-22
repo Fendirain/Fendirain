@@ -37,7 +37,11 @@ public class BlockHitEffectPacket implements IMessage {
     public static class Handler implements IMessageHandler<BlockHitEffectPacket, IMessage> {
         @Override
         public IMessage onMessage(BlockHitEffectPacket message, MessageContext ctx) {
-            Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(BlockPos.fromLong(message.blockPos), message.enumFacing);
+            //Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(BlockPos.fromLong(message.blockPos), message.enumFacing);
+            Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(BlockPos.fromLong(message.blockPos), EnumFacing.NORTH);
+            Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(BlockPos.fromLong(message.blockPos), EnumFacing.EAST);
+            Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(BlockPos.fromLong(message.blockPos), EnumFacing.SOUTH);
+            Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(BlockPos.fromLong(message.blockPos), EnumFacing.WEST);
             return null;
         }
     }

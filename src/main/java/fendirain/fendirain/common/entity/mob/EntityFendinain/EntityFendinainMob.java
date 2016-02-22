@@ -20,6 +20,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -187,8 +188,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
             if (ConfigValues.isDebugSettingsEnabled) {
                 // Test / Debug Code Following
                 if (itemStack.getItem() == Items.wooden_hoe) {
-                    this.kill();
-                    this.setDead();
+                    this.onDeath(DamageSource.causePlayerDamage(entityPlayer));
                     return true;
                 } else if (itemStack.getItem() == Items.arrow) {
                     String[] printQueue = new String[this.inventorySize];
@@ -272,11 +272,13 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         super.onDeath(damageSource);
         if (damageSource.getEntity() != null && damageSource.getEntity() instanceof EntityPlayer) {
             EntityPlayer entityPlayer = (EntityPlayer) damageSource.getEntity();
-            NBTTagCompound nbtTagCompound = entityPlayer.getEntityData();
-            // Named as "fendirainMobOne" for simplicity in the future if I decide to change the mobs name.
-            if (nbtTagCompound.hasKey("fendirainMobOne"))
-                nbtTagCompound.setInteger("fendirainMobOne", nbtTagCompound.getInteger("fendirainMobOne") + 1);
-            else nbtTagCompound.setInteger("fendirainMobOne", 1);
+            if (!entityPlayer.capabilities.isCreativeMode || entityPlayer.getHeldItem().getItem() instanceof ItemHoe) {
+                NBTTagCompound nbtTagCompound = entityPlayer.getEntityData();
+                // Named as "fendirainMobOne" for simplicity in the future if I decide to change the mobs name.
+                if (nbtTagCompound.hasKey("fendirainMobOne"))
+                    nbtTagCompound.setInteger("fendirainMobOne", nbtTagCompound.getInteger("fendirainMobOne") + 1);
+                else nbtTagCompound.setInteger("fendirainMobOne", 1);
+            }
         }
 
     }

@@ -15,11 +15,13 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class TreeChopper {
     private final World world;
     private final Entity entity;
+    @Nullable
     private final FullBlock treeLeaf;
     private final Block blockType;
     private FullBlock mainBlock;
@@ -31,14 +33,14 @@ public class TreeChopper {
     private FullBlock currentlyBreaking;
 
 
-    public TreeChopper(Entity entity, FullBlock mainBlock, FullBlock treeLeaf) {
+    public TreeChopper(Entity entity, FullBlock mainBlock, FullBlock treeLeaf, boolean useLeavesToCheck) {
         this.world = entity.getEntityWorld();
         this.entity = entity;
         this.mainBlock = mainBlock;
         this.treeLeaf = treeLeaf;
         this.blockType = mainBlock.getBlock();
 
-        this.currentTree.addAll(getAllConnectingTreeBlocks(world, mainBlock, new LinkedHashSet<>(), true));
+        this.currentTree.addAll(getAllConnectingTreeBlocks(world, mainBlock, new LinkedHashSet<>(), useLeavesToCheck, true));
 
         if (!(entity instanceof EntityPlayer)) {
             currentBlockProgress = 0;
@@ -49,8 +51,11 @@ public class TreeChopper {
 
     public int breakAllBlocks(int maxToBreak) {
         int amountBroken = 0;
-        for (FullBlock fullBlock : currentTree) {
-            if (amountBroken >= maxToBreak) break;
+        Set<FullBlock> blocksToBreak = new LinkedHashSet<>(currentTree.size());
+        if (maxToBreak < currentTree.size())
+            for (int i = 0; i <= maxToBreak; i++) blocksToBreak.add(returnFurthestLog());
+        else blocksToBreak.addAll(currentTree);
+        for (FullBlock fullBlock : blocksToBreak) {
             if (world.getBlockState(fullBlock.getBlockPos()).getBlock() == fullBlock.getBlock()) {
                 PacketHandler.simpleNetworkWrapper.sendToAllAround(new BlockDestroyEffectPacket(fullBlock.getBlockPos().toLong()), new NetworkRegistry.TargetPoint(entity.dimension, fullBlock.getBlockPos().getX(), fullBlock.getBlockPos().getY(), fullBlock.getBlockPos().getZ(), 32));
                 BlockLog log = (BlockLog) fullBlock.getBlock();
@@ -58,11 +63,13 @@ public class TreeChopper {
                 world.setBlockToAir(fullBlock.getBlockPos());
                 world.playSoundAtEntity(entity, "dig.wood", 2, .5F);
                 amountBroken++;
+                currentTree.remove(fullBlock);
             }
         }
         EntityItem entityItem = new EntityItem(world, mainBlock.getBlockPos().getX(), mainBlock.getBlockPos().getY(), mainBlock.getBlockPos().getZ());
         entityItem.setEntityItemStack(new ItemStack(mainBlock.getBlock(), amountBroken, mainBlock.getDamageValue()));
         world.spawnEntityInWorld(entityItem);
+        if (currentTree.isEmpty()) this.isFinished = true;
         return amountBroken;
     }
 
@@ -96,7 +103,7 @@ public class TreeChopper {
         ItemStack itemStack = null;
         currentBlockProgress = currentBlockProgress + 1 + Math.abs(breakSpeed);
         int breakProgress = (int) ((float) this.currentBlockProgress / 240.0F * 10.0F);
-        //if (treeTargetFullBlock != currentlyBreaking)
+        //if (mainBlock != currentlyBreaking)
         world.sendBlockBreakProgress(entity.getEntityId(), currentlyBreaking.getBlockPos(), breakProgress);
         //world.sendBlockBreakProgress(entity.getEntityId(), treeTargetFullBlock.getBlockPos(), (int) treeTargetBlockProgress[2]);
         //entity.getLookHelper().setLookPosition(treeTargetFullBlock.getBlockPos().getX(), treeTargetFullBlock.getBlockPos().getY(), treeTargetFullBlock.getBlockPos().getZ(), 0, 0);
@@ -120,37 +127,37 @@ public class TreeChopper {
         return null;
     }
 
-    private Set<FullBlock> getAllConnectingTreeBlocks(World world, FullBlock fullBlock, Set<Long> searchedBlocks, boolean originalPass) {
+    private Set<FullBlock> getAllConnectingTreeBlocks(World world, FullBlock fullBlock, Set<Long> searchedBlocks, boolean useLeavesToCheck, boolean originalPass) {
         Set<FullBlock> fullBlocks = new LinkedHashSet<>();
         if (originalPass) fullBlocks.add(mainBlock);
         int maxRange = 12;
         if (fullBlock.getBlockPos().getX() < mainBlock.getBlockPos().getX() + maxRange && fullBlock.getBlockPos().getX() > mainBlock.getBlockPos().getX() - maxRange && fullBlock.getBlockPos().getZ() < mainBlock.getBlockPos().getZ() + maxRange && fullBlock.getBlockPos().getZ() > mainBlock.getBlockPos().getZ() - maxRange) {
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().up()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().east()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().west()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().down()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().east()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().west()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().up()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().up().east()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().up().west()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().down()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().down().east()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().down().west()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().up().east()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().up().west()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().down().east()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().down().west()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().east()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().west()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().up()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().up().east()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().up().west()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().down()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().down().east()));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().down().west()));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().up(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().east(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().west(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().down(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().east(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().west(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().up(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().up().east(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().up().west(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().down(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().down().east(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().down().west(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().up().east(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().up().west(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().down().east(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().down().west(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().east(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().west(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().up(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().up().east(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().up().west(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().down(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().down().east(), useLeavesToCheck));
+            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().down().west(), useLeavesToCheck));
         }
 
         if (originalPass) {
@@ -172,14 +179,14 @@ public class TreeChopper {
         return fullBlocks;
     }
 
-    private Set<FullBlock> checkBlocks(Set<Long> searchedBlocks, World world, BlockPos blockPos) {
+    private Set<FullBlock> checkBlocks(Set<Long> searchedBlocks, World world, BlockPos blockPos, boolean useLeavesToCheck) {
         Set<FullBlock> foundBlocks = new LinkedHashSet<>();
         FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
-        if ((mainBlock.isSameType(fullBlock) && fullBlock.getDamageValue() == mainBlock.getDamageValue()) || (treeLeaf.isSameType(fullBlock) && fullBlock.getDamageValue() == treeLeaf.getDamageValue())) {
+        if ((mainBlock.isSameType(fullBlock) && fullBlock.getDamageValue() == mainBlock.getDamageValue()) || (useLeavesToCheck && treeLeaf != null && (treeLeaf.isSameType(fullBlock) && fullBlock.getDamageValue() == treeLeaf.getDamageValue()))) {
             if (!searchedBlocks.contains(blockPos.toLong())) {
                 searchedBlocks.add(blockPos.toLong());
                 foundBlocks.add(fullBlock);
-                foundBlocks.addAll(getAllConnectingTreeBlocks(world, fullBlock, searchedBlocks, false));
+                foundBlocks.addAll(getAllConnectingTreeBlocks(world, fullBlock, searchedBlocks, useLeavesToCheck, false));
             }
         }
         return foundBlocks;
@@ -269,6 +276,10 @@ public class TreeChopper {
             world.sendBlockBreakProgress(entity.getEntityId(), currentlyBreaking.getBlockPos(), -1);
         if (mainBlock != null && world.getBlockState(mainBlock.getBlockPos()).getBlock() == mainBlock.getBlock())
             world.sendBlockBreakProgress(entity.getEntityId(), mainBlock.getBlockPos(), -1);
+    }
+
+    public int getNumberOfLogs() {
+        return this.currentTree.size();
     }
 
     public boolean isFinished() {

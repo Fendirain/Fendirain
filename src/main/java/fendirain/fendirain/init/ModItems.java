@@ -10,7 +10,8 @@ import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModItems {
-    public static final Item.ToolMaterial Fendi = EnumHelper.addToolMaterial("fendi", 3, 2000, 6.0f, 2.0f, 15);
+    public static final Item.ToolMaterial fendi = EnumHelper.addToolMaterial("fendi", 3, 2000, 6.0f, 2.0f, 15);
+    // public static final EnumAction axeCharge = EnumHelper.addAction("axeCharge");
     public static final ItemFendirain itemFendiPiece = new ItemFendiPiece();
     public static final ItemPlantClearer itemPlantClearer = new ItemPlantClearer();
     public static final ItemFenderiumAxe itemFenderiumAxe = new ItemFenderiumAxe();
@@ -20,4 +21,5 @@ public class ModItems {
         if (ConfigValues.isDebugSettingsEnabled) GameRegistry.registerItem(itemPlantClearer, "itemPlantClearer");
         GameRegistry.registerItem(itemFenderiumAxe, "itemFenderiumAxe");
     }
+
 }
