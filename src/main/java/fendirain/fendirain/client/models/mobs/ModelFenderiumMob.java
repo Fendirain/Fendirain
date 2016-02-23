@@ -1,6 +1,7 @@
 package fendirain.fendirain.client.models.mobs;
 
 import fendirain.fendirain.client.models.blocks.ModelFendirain;
+import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.MathHelper;
@@ -21,6 +22,7 @@ public class ModelFenderiumMob extends ModelFendirain {
     public ModelRenderer leftEye;
     public ModelRenderer rightEye;
     public ModelRenderer mouth;
+    private boolean loweringArm = false, wasChopping = false;
 
     public ModelFenderiumMob() {
         this.textureWidth = 64;
@@ -98,5 +100,24 @@ public class ModelFenderiumMob extends ModelFendirain {
         this.leftLeg1.rotateAngleY = 0.0F;
         this.rightLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 1.4F * walkSpeed;
         this.rightLeg1.rotateAngleY = 0.0F;
+        EntityFenderiumMob entityFenderiumMob = (EntityFenderiumMob) entity;
+        if (entityFenderiumMob.getHeldItem() != null && entityFenderiumMob.isCurrentlyChopping()) {
+           /* wasChopping = true;
+            LogHelper.info(this.rightArm1.rotateAngleX);
+            if (loweringArm) this.rightArm1.rotateAngleX -= .01;
+            else this.rightArm1.rotateAngleX += .01;
+            if (this.rightArm1.rotateAngleX >= .75) loweringArm = true;
+            else if (this.rightArm1.rotateAngleX <= 0.0F) loweringArm = false;*/
+            if (loweringArm) this.rightArm1.rotateAngleX = this.rightArm1.rotateAngleX + .25F;
+            else this.rightArm1.rotateAngleX = this.rightArm1.rotateAngleX - .25F;
+            if (this.rightArm1.rotateAngleX <= -3.5) loweringArm = true;
+            else if (this.rightArm1.rotateAngleX >= -2.5) loweringArm = false;
+            this.rightArm1.rotateAngleX = -2.5F;
+        } else {
+            if (wasChopping) this.rightArm1.rotateAngleX = 0.0F;
+            this.rightArm1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 2.0F * walkSpeed * 0.5F;
+            this.rightArm1.rotateAngleZ = 0.0F;
+            wasChopping = false;
+        }
     }
 }

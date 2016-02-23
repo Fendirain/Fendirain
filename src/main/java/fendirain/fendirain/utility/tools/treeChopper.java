@@ -15,13 +15,11 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 public class TreeChopper {
     private final World world;
     private final Entity entity;
-    @Nullable
     private final FullBlock treeLeaf;
     private final Block blockType;
     private FullBlock mainBlock;

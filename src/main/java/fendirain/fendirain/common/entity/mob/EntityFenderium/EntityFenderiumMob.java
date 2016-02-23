@@ -2,6 +2,7 @@ package fendirain.fendirain.common.entity.mob.EntityFenderium;
 
 import fendirain.fendirain.common.entity.mob.EntityFenderium.AI.EntityAIChopTrees;
 import fendirain.fendirain.common.entity.mob.EntityFenderium.AI.EntityAIThrowWoodAtPlayer;
+import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.reference.Reference;
 import fendirain.fendirain.utility.helper.LogHelper;
@@ -36,6 +37,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     private final int inventorySize = 6, maxStackSize = 28, range = 12, breakSpeed = ConfigValues.fenderiumMob_breakSpeed;
     private final EntityAIChopTrees entityAIChopTrees;
     private ItemStack[] inventory = new ItemStack[inventorySize];
+    private boolean isChopping = false;
 
     public EntityFenderiumMob(World world) {
         super(world);
@@ -46,6 +48,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         this.tasks.addTask(1, entityAIChopTrees);
         this.tasks.addTask(2, new EntityAIWander(this, 1.0F));
         this.tasks.addTask(3, new EntityAIThrowWoodAtPlayer(this, rand, 1.0F));
+        this.setCurrentItemOrArmor(0, new ItemStack(ModItems.itemFenderiumAxe));
     }
 
     @Override
@@ -62,7 +65,8 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
             if (ConfigValues.isDebugSettingsEnabled) {
                 // Test / Debug Code Following
                 if (itemStack.getItem() == Items.wooden_hoe) {
-                    this.onDeath(DamageSource.causePlayerDamage(entityPlayer));
+                    this.setHealth(0);
+                    this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
                     return true;
                 } else if (itemStack.getItem() == Items.arrow) {
                     String[] printQueue = new String[this.inventorySize];
@@ -434,5 +438,13 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
 
     public int getMaxRange() {
         return range;
+    }
+
+    public boolean isCurrentlyChopping() {
+        return this.isChopping;
+    }
+
+    public void setIsChopping(boolean chopping) {
+        isChopping = chopping;
     }
 }
