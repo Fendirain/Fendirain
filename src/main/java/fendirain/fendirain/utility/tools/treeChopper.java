@@ -5,13 +5,13 @@ import fendirain.fendirain.network.packets.BlockDestroyEffectPacket;
 import fendirain.fendirain.network.packets.BlockHitEffectPacket;
 import fendirain.fendirain.utility.helper.FullBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.block.BlockLog;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
@@ -136,32 +136,18 @@ public class TreeChopper {
         if (originalPass) fullBlocks.add(mainBlock);
         int maxRange = 12;
         if (fullBlock.getBlockPos().getX() < mainBlock.getBlockPos().getX() + maxRange && fullBlock.getBlockPos().getX() > mainBlock.getBlockPos().getX() - maxRange && fullBlock.getBlockPos().getZ() < mainBlock.getBlockPos().getZ() + maxRange && fullBlock.getBlockPos().getZ() > mainBlock.getBlockPos().getZ() - maxRange) {
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().up(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().east(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().west(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().down(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().east(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().west(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().up(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().up().east(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().up().west(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().down(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().down().east(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().north().down().west(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().up().east(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().up().west(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().down().east(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().down().west(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().east(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().west(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().up(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().up().east(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().up().west(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().down(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().down().east(), useLeavesToCheck));
-            fullBlocks.addAll(checkBlocks(searchedBlocks, world, fullBlock.getBlockPos().south().down().west(), useLeavesToCheck));
+            Set<FullBlock> blocksAroundCurrent = new LinkedHashSet<>(26);
+            fullBlock.getSurroundingBlockPos(1).stream().filter(blockPos1 -> !(world.getBlockState(blockPos1) instanceof BlockAir)).forEach(blockPos -> {
+                if (!searchedBlocks.contains(blockPos.toLong())) {
+                    FullBlock fullBlock1 = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
+                    if (fullBlock1.isSameType(mainBlock) && fullBlock1.getDamageValue() == mainBlock.getDamageValue() || (useLeavesToCheck && treeLeaf != null && (treeLeaf.isSameType(fullBlock1) && fullBlock1.getDamageValue() == treeLeaf.getDamageValue()))) {
+                        searchedBlocks.add(fullBlock1.getBlockPos().toLong());
+                        blocksAroundCurrent.add(fullBlock1);
+                        fullBlocks.add(fullBlock1);
+                    }
+                }
+            });
+            blocksAroundCurrent.forEach(fullBlock1 -> fullBlocks.addAll(getAllConnectingTreeBlocks(world, fullBlock1, searchedBlocks, useLeavesToCheck, false)));
         }
 
         if (originalPass) {
@@ -174,38 +160,15 @@ public class TreeChopper {
                     else {
                         if (!validCoords.isEmpty() && !validCoords.contains(next.getBlockPos().toString()))
                             iterator.remove();
-                        else
-                            this.getBlockAreaCoords(next.getBlockPos()).stream().filter(coord -> !validCoords.contains(coord)).forEach(validCoords::add);
+                        else {
+                            int maxLogRange = 3;
+                            fullBlock.getSurroundingBlockPos(maxLogRange).stream().filter(coord -> !validCoords.contains(coord.toString())).forEach(blockPos -> validCoords.add(blockPos.toString()));
+                        }
                     }
                 }
             }
         }
         return fullBlocks;
-    }
-
-    private Set<FullBlock> checkBlocks(Set<Long> searchedBlocks, World world, BlockPos blockPos, boolean useLeavesToCheck) {
-        Set<FullBlock> foundBlocks = new LinkedHashSet<>();
-        FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
-        if ((mainBlock.isSameType(fullBlock) && fullBlock.getDamageValue() == mainBlock.getDamageValue()) || (useLeavesToCheck && treeLeaf != null && (treeLeaf.isSameType(fullBlock) && fullBlock.getDamageValue() == treeLeaf.getDamageValue()))) {
-            if (!searchedBlocks.contains(blockPos.toLong())) {
-                searchedBlocks.add(blockPos.toLong());
-                foundBlocks.add(fullBlock);
-                foundBlocks.addAll(getAllConnectingTreeBlocks(world, fullBlock, searchedBlocks, useLeavesToCheck, false));
-            }
-        }
-        return foundBlocks;
-    }
-
-    private Set<String> getBlockAreaCoords(BlockPos blockPos) {
-        Set<String> result = new HashSet<>();
-        int maxLogRange = 3;
-        for (int y = blockPos.getY() - maxLogRange; y <= blockPos.getY() + maxLogRange; y++) {
-            for (int x = blockPos.getX() - maxLogRange; x <= blockPos.getX() + maxLogRange; x++) {
-                for (int z = blockPos.getZ() - maxLogRange; z <= blockPos.getZ() + maxLogRange; z++)
-                    result.add(new BlockPos(x, y, z).toString());
-            }
-        }
-        return result;
     }
 
     private FullBlock returnFurthestLog() {
