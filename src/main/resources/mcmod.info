@@ -1,16 +1,20 @@
-[
 {
-  "modid": "Fendirain",
-  "name": "Fendirain",
-  "description": "Make your world feel alive.",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "http://www.curse.com/mc-mods/Minecraft/235251-fendirain",
-  "updateUrl": "",
-  "authorList": ["Fendirain"],
-  "credits": "'#minecraftforge' IRC, Pahimar's LMR & EE3, Vaskii's Botania, OpenBlocks, and other open source mods (To be added).",
-  "logoFile": "assets/fendirain/textures/logo/logo.png",
-  "screenshots": [],
-  "dependencies": []
+  "modList": [{
+   "modid": "fendirain",
+   "name": "Fendirain",
+   "description": "Make your world feel alive.",
+   "version": "${version}",
+   "mcversion": "${mcversion}",
+   "url": "http://www.curse.com/mc-mods/Minecraft/235251-fendirain",
+   "updateUrl": "",
+   "authorList": [ "Fendirain" ],
+   "credits": "'#minecraftforge' IRC, Pahimar's LMR & EE3, Vaskii's Botania, OpenBlocks, and other open source mods (To be added).",
+   "logoFile": "assets/fendirain/textures/logo/logo.png",
+   "screenshots": [],
+   "parent": "",
+   "requiredMods": [ "Forge" ],
+   "dependencies": [],
+   "dependants": [],
+   "useDependencyInformation": true
+  }]
 }
-]

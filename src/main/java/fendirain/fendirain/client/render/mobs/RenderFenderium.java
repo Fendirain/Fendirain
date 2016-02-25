@@ -21,11 +21,11 @@ public class RenderFenderium extends RendererLivingEntity<EntityFenderiumMob> {
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(EntityFenderiumMob entity) {
+    public ResourceLocation getEntityTexture(EntityFenderiumMob entity) {
         return resourceLocation;
     }
 
-    protected boolean canRenderName(EntityFenderiumMob entity) {
+    public boolean canRenderName(EntityFenderiumMob entity) {
         return super.canRenderName(entity) && (entity.getAlwaysRenderNameTagForRender() || entity.hasCustomName() && entity == this.renderManager.pointedEntity);
     }
 }

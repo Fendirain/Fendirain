@@ -88,14 +88,14 @@ public class ItemFenderiumAxe extends ItemAxe {
     @Override
     public void onPlayerStoppedUsing(ItemStack itemStack, World worldIn, EntityPlayer entityPlayerIn, int timeLeft) {
         //LogHelper.info("Ran2 || " + (this.getMaxItemUseDuration(itemStack) - timeLeft) / 2);
-        if (treeChopper != null) {
+        if (!worldIn.isRemote) {
             int maxToBreak = ((this.getMaxItemUseDuration(itemStack) - timeLeft) / 2 < (itemStack.getMaxDamage() - itemStack.getItemDamage()) / 4) ? (this.getMaxItemUseDuration(itemStack) - timeLeft) / 2 : (itemStack.getMaxDamage() - itemStack.getItemDamage()) / 4;
             int itemDamage = treeChopper.breakAllBlocks(maxToBreak);
-            if (itemDamage > 0) itemStack.damageItem(itemDamage * 4, entityPlayerIn);
-            entityPlayerIn.clearItemInUse();
-            if (treeChopper.isFinished()) treeChopper = null;
-            count = 0;
+            if (itemDamage > 0) itemStack.damageItem(itemDamage * 6, entityPlayerIn);
         }
+        entityPlayerIn.clearItemInUse();
+        if (treeChopper.isFinished()) treeChopper = null;
+        count = 0;
     }
 
     @Override

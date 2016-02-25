@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLog;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWander;
@@ -29,6 +30,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
@@ -48,8 +50,15 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         this.tasks.addTask(1, entityAIChopTrees);
         this.tasks.addTask(2, new EntityAIWander(this, 1.0F));
         this.tasks.addTask(3, new EntityAIThrowWoodAtPlayer(this, rand, 1.0F));
-        this.setCurrentItemOrArmor(0, new ItemStack(ModItems.itemFenderiumAxe));
+
     }
+
+    @Override
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficultyInstance, IEntityLivingData iEntityLivingData) {
+        this.setCurrentItemOrArmor(0, new ItemStack(ModItems.itemFenderiumAxe));
+        return iEntityLivingData;
+    }
+
 
     @Override
     public void onLivingUpdate() {
@@ -64,7 +73,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         if (itemStack != null) {
             if (ConfigValues.isDebugSettingsEnabled) {
                 // Test / Debug Code Following
-                if (itemStack.getItem() == Items.wooden_hoe) {
+                if (itemStack.getItem() == ModItems.itemDebug) {
                     this.setHealth(0);
                     this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
                     return true;
@@ -207,7 +216,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     }
 
     public void putIntoInventory(ItemStack itemStack) {
-        if ((itemStack != null && itemStack.stackSize > 0) && (itemStack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemStack.getItem()) == Blocks.log || Block.getBlockFromItem(itemStack.getItem()) == Blocks.log2)) {
+        if ((itemStack != null && itemStack.stackSize > 0) && (itemStack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemStack.getItem()) instanceof BlockLog)) {
             for (int slot = 0; slot < inventory.length; slot++) {
                 if (inventory[slot] == null) {
                     int amountToAdd;

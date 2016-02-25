@@ -52,46 +52,29 @@ public class TreeChecker {
     private static Set<FullBlock> getBaseTree(World world, FullBlock fullBlock, Set<Long> searchedBlocks, boolean originalPass) {
         Set<FullBlock> baseTree = new LinkedHashSet<>();
         if (originalPass) baseTree.add(fullBlock);
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().up()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().down()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().up()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().up().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().up().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().down()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().down().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().north().down().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().up().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().up().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().down().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().down().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().up()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().up().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().up().west()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().down()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().down().east()));
-        baseTree.addAll(checkLog(searchedBlocks, world, fullBlock.getBlockPos().south().down().west()));
+        Set<FullBlock> blocksAroundCurrent = new LinkedHashSet<>(26);
+        fullBlock.getSurroundingBlockPos(1).stream().filter(blockPos1 -> !(world.getBlockState(blockPos1) instanceof BlockAir)).forEach(blockPos -> {
+            FullBlock fullBlock1 = isBlockValid(searchedBlocks, world, blockPos);
+            if (fullBlock1 != null) {
+                blocksAroundCurrent.add(fullBlock1);
+                baseTree.add(fullBlock1);
+            }
+        });
+        blocksAroundCurrent.forEach(fullBlock1 -> {
+            if (fullBlock1.getBlock() instanceof BlockLog)
+                baseTree.addAll(getBaseTree(world, fullBlock1, searchedBlocks, false));
+        });
         return baseTree;
     }
 
-    private static Set<FullBlock> checkLog(Set<Long> searchedBlocks, World world, BlockPos blockPos) {
-        Set<FullBlock> foundBlocks = new LinkedHashSet<>();
-        FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
-        if (fullBlock.getBlock() instanceof BlockLog || fullBlock.getBlock() instanceof BlockLeavesBase) {
-            if (!searchedBlocks.contains(blockPos.toLong())) {
-                searchedBlocks.add(blockPos.toLong());
-                foundBlocks.add(fullBlock);
-                if (fullBlock.getBlock() instanceof BlockLog)
-                    foundBlocks.addAll(getBaseTree(world, fullBlock, searchedBlocks, false));
+    private static FullBlock isBlockValid(Set<Long> searchedBlocks, World world, BlockPos blockPos) {
+        if (!searchedBlocks.contains(blockPos.toLong())) {
+            FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
+            if (fullBlock.getBlock() instanceof BlockLog || fullBlock.getBlock() instanceof BlockLeavesBase) {
+                searchedBlocks.add(fullBlock.getBlockPos().toLong());
+                return fullBlock;
             }
         }
-        return foundBlocks;
+        return null;
     }
 }

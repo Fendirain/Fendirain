@@ -22,7 +22,7 @@ public class ModelFenderiumMob extends ModelFendirain {
     public ModelRenderer leftEye;
     public ModelRenderer rightEye;
     public ModelRenderer mouth;
-    private boolean loweringArm = false, wasChopping = false;
+    boolean lowerArm = false;
 
     public ModelFenderiumMob() {
         this.textureWidth = 64;
@@ -85,39 +85,40 @@ public class ModelFenderiumMob extends ModelFendirain {
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) {
-        this.setRotationAngles(f, f1, f2, f3, f4, f5, entity);
-        this.mainBody.render(f5);
+    public void render(Entity entity, float time, float walkSpeed, float otherAngle, float rotationYaw, float rotationPitch, float scale) {
+        this.renderFenderium((EntityFenderiumMob) entity, time, walkSpeed, otherAngle, rotationYaw, rotationPitch, scale);
+    }
+
+    public void renderFenderium(EntityFenderiumMob entityFenderiumMob, float time, float walkSpeed, float otherAngle, float rotationYaw, float rotationPitch, float scale) {
+        this.mainBody.render(scale);
+        setRotationAngles(time, walkSpeed, otherAngle, rotationYaw, rotationPitch, scale, entityFenderiumMob);
+        if (entityFenderiumMob.getHeldItem() != null && entityFenderiumMob.isCurrentlyChopping()) {
+            if (this.rightArm1.rotateAngleX == 0) {
+                this.rightArm1.rotateAngleX = -2.5F;
+                lowerArm = false;
+            }
+            this.rightArm1.rotateAngleX = lowerArm ? this.rightArm1.rotateAngleX + 0.18F : this.rightArm1.rotateAngleX - 0.18F;
+            if (this.rightArm1.rotateAngleX <= -3.5) lowerArm = true;
+            else if (this.rightArm1.rotateAngleX >= -2.5) lowerArm = false;
+        } else this.rightArm1.rotateAngleX = 0.0F;
+
     }
 
     @Override
     public void setRotationAngles(float time, float walkSpeed, float otherAngle, float rotationYaw, float rotationPitch, float scale, Entity entity) {
         this.head.rotateAngleY = rotationYaw / (180F / (float) Math.PI);
         this.head.rotateAngleX = rotationPitch / (180F / (float) Math.PI);
-        this.rightArm1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 2.0F * walkSpeed * 0.5F;
-        this.rightArm2.rotateAngleZ = 0.0F;
-        this.leftLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 1.4F * walkSpeed;
-        this.leftLeg1.rotateAngleY = 0.0F;
-        this.rightLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 1.4F * walkSpeed;
-        this.rightLeg1.rotateAngleY = 0.0F;
         EntityFenderiumMob entityFenderiumMob = (EntityFenderiumMob) entity;
-        if (entityFenderiumMob.getHeldItem() != null && entityFenderiumMob.isCurrentlyChopping()) {
-           /* wasChopping = true;
-            LogHelper.info(this.rightArm1.rotateAngleX);
-            if (loweringArm) this.rightArm1.rotateAngleX -= .01;
-            else this.rightArm1.rotateAngleX += .01;
-            if (this.rightArm1.rotateAngleX >= .75) loweringArm = true;
-            else if (this.rightArm1.rotateAngleX <= 0.0F) loweringArm = false;*/
-            if (loweringArm) this.rightArm1.rotateAngleX = this.rightArm1.rotateAngleX + .25F;
-            else this.rightArm1.rotateAngleX = this.rightArm1.rotateAngleX - .25F;
-            if (this.rightArm1.rotateAngleX <= -3.5) loweringArm = true;
-            else if (this.rightArm1.rotateAngleX >= -2.5) loweringArm = false;
-            this.rightArm1.rotateAngleX = -2.5F;
-        } else {
-            if (wasChopping) this.rightArm1.rotateAngleX = 0.0F;
-            this.rightArm1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 2.0F * walkSpeed * 0.5F;
+        if (entityFenderiumMob.getHeldItem() == null || !entityFenderiumMob.isCurrentlyChopping()) {
+            this.rightArm1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 2.0F * walkSpeed * 0.5F;
             this.rightArm1.rotateAngleZ = 0.0F;
-            wasChopping = false;
+            this.leftLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 1.4F * walkSpeed;
+            this.leftLeg1.rotateAngleY = 0.0F;
+            this.rightLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 1.4F * walkSpeed;
+            this.rightLeg1.rotateAngleY = 0.0F;
+        } else if (this.leftLeg1.rotateAngleX != 0 || this.rightLeg1.rotateAngleX != 0) {
+            this.leftLeg1.rotateAngleX = 0.0F;
+            this.rightLeg1.rotateAngleX = 0.0F;
         }
     }
 }

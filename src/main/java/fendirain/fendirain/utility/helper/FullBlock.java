@@ -3,6 +3,9 @@ package fendirain.fendirain.utility.helper;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 public class FullBlock implements Comparable<FullBlock> {
 
     private final net.minecraft.block.Block block;
@@ -52,5 +55,18 @@ public class FullBlock implements Comparable<FullBlock> {
         nbtTagCompound.setLong("blockPos", blockPos.toLong());
         nbtTagCompound.setInteger("blockDamageValue", damageValue);
         return nbtTagCompound;
+    }
+
+    public Set<BlockPos> getSurroundingBlockPos(int dist) {
+        Set<BlockPos> surroundBlockPos = new LinkedHashSet<>();
+        for (int y = blockPos.getY() - dist; y <= blockPos.getY() + dist; y++) {
+            for (int z = blockPos.getZ() - dist; z <= blockPos.getZ() + dist; z++) {
+                for (int x = blockPos.getX() - dist; x <= blockPos.getX() + dist; x++) {
+                    if (!(x == blockPos.getX() && y == blockPos.getY() && z == blockPos.getZ()))
+                        surroundBlockPos.add(new BlockPos(x, y, z));
+                }
+            }
+        }
+        return surroundBlockPos;
     }
 }

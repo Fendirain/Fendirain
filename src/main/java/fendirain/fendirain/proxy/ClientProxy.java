@@ -34,8 +34,10 @@ public class ClientProxy extends CommonProxy {
         this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Default");
         this.setCustomModelResourceLocation(Item.getItemFromBlock(ModBlocks.blockFendi), "blockFendi");
         this.setCustomModelResourceLocation(Item.getItemFromBlock(ModBlocks.blockOreFendi), "blockOreFendi");
-        if (ConfigValues.isDebugSettingsEnabled)
+        if (ConfigValues.isDebugSettingsEnabled) {
             this.setCustomModelResourceLocation(ModItems.itemPlantClearer, "itemPlantClearer");
+            this.setCustomModelResourceLocation(ModItems.itemDebug, "itemDebug");
+        }
     }
 
     private void setCustomModelResourceLocation(Item item, String location) {

@@ -44,10 +44,10 @@ public class LayerHeldItem implements LayerRenderer {
             } else if (entityLivingBase instanceof EntityFenderiumMob && itemStack.getItem() instanceof ItemFenderiumAxe) {
                 GlStateManager.pushMatrix();
                 ModelFenderiumMob model = (ModelFenderiumMob) this.livingEntityRenderer.getMainModel();
-                model.leftArm1.postRender(0F);
-                GlStateManager.translate(.275F, 1.14F, .05F);
-                GlStateManager.scale(.65F, .65F, .65F);
-                GlStateManager.rotate(-45.0F, 1.0F, 0.0F, 0.0F);
+                model.rightArm1.postRender(0F);
+                GlStateManager.translate(.275F, 1.1F, -.0F);
+                GlStateManager.scale(.65F, .45F, .65F);
+                GlStateManager.rotate(80F, 1.0F, 0.0F, 0.0F);
                 Minecraft.getMinecraft().getItemRenderer().renderItem(entityLivingBase, itemStack, ItemCameraTransforms.TransformType.THIRD_PERSON);
                 GlStateManager.popMatrix();
             }

@@ -4,11 +4,13 @@ import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAIBegPlaye
 import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAICollectSaplings;
 import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAIPlantSapling;
 import fendirain.fendirain.init.ModCompatibility;
+import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.reference.Reference;
 import fendirain.fendirain.utility.helper.LogHelper;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIPanic;
 import net.minecraft.entity.ai.EntityAISwimming;
@@ -29,6 +31,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 
@@ -40,7 +43,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     private final EntityAICollectSaplings entityAICollectSaplings;
     private final EntityAIPlantSapling entityAIPlantSapling;
     private ItemStack[] inventory = new ItemStack[inventorySize];
-    private boolean firstUpdate, reloaded = false;
+    private boolean firstUpdate;
 
     public EntityFendinainMob(World world) {
         super(world);
@@ -60,18 +63,19 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
 
     @Override
     public void onLivingUpdate() {
-        if (!worldObj.isRemote) {
-            if (firstUpdate && !reloaded) {
-                this.addNewSpawnInventory();
-                this.setCurrentItemOrArmor(0, this.getRandomSlot());
-                firstUpdate = false;
-            } else if (firstUpdate) {
-                this.setCurrentItemOrArmor(0, this.getRandomSlot());
-                if (firstUpdate) firstUpdate = false;
-            }
-        } else firstUpdate = false;
+        if (firstUpdate) {
+            this.setCurrentItemOrArmor(0, this.getRandomSlot());
+            firstUpdate = false;
+        }
         super.onLivingUpdate();
         this.entityAIPlantSapling.addToTimeSinceLastPlacement(1);
+    }
+
+    @Override
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficultyInstance, IEntityLivingData iEntityLivingData) {
+        this.addNewSpawnInventory();
+        this.setCurrentItemOrArmor(0, this.getRandomSlot());
+        return iEntityLivingData;
     }
 
     private void addNewSpawnInventory() {
@@ -192,8 +196,9 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
 
             if (ConfigValues.isDebugSettingsEnabled) {
                 // Test / Debug Code Following
-                if (itemStack.getItem() == Items.wooden_hoe) {
-                    this.onDeath(DamageSource.causePlayerDamage(entityPlayer));
+                if (itemStack.getItem() == ModItems.itemDebug) {
+                    this.setHealth(0);
+                    this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
                     return true;
                 } else if (itemStack.getItem() == Items.arrow) {
                     String[] printQueue = new String[this.inventorySize];
@@ -465,7 +470,6 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                 this.inventory[j] = ItemStack.loadItemStackFromNBT(nbtTagCompound1);
             }
         }
-        reloaded = true;
     }
 
     @Override

@@ -1,9 +1,6 @@
 package fendirain.fendirain.init;
 
-import fendirain.fendirain.common.item.ItemFenderiumAxe;
-import fendirain.fendirain.common.item.ItemFendiPiece;
-import fendirain.fendirain.common.item.ItemFendirain;
-import fendirain.fendirain.common.item.ItemPlantClearer;
+import fendirain.fendirain.common.item.*;
 import fendirain.fendirain.reference.ConfigValues;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.util.EnumHelper;
@@ -14,10 +11,14 @@ public class ModItems {
     public static final ItemFendirain itemFendiPiece = new ItemFendiPiece();
     public static final ItemPlantClearer itemPlantClearer = new ItemPlantClearer();
     public static final ItemFenderiumAxe itemFenderiumAxe = new ItemFenderiumAxe();
+    public static final ItemDebug itemDebug = new ItemDebug();
 
     public static void init() {
         GameRegistry.registerItem(itemFendiPiece, "itemFendiPiece");
-        if (ConfigValues.isDebugSettingsEnabled) GameRegistry.registerItem(itemPlantClearer, "itemPlantClearer");
+        if (ConfigValues.isDebugSettingsEnabled) {
+            GameRegistry.registerItem(itemPlantClearer, "itemPlantClearer");
+            GameRegistry.registerItem(itemDebug, "itemDebug");
+        }
         GameRegistry.registerItem(itemFenderiumAxe, "itemFenderiumAxe");
     }
 

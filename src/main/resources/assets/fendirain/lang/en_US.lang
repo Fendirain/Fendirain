@@ -1,14 +1,13 @@
 
 # Keys
 keys.fendirain.category=Fendirain
-keys.fendirain.charge=Charge
-keys.fendirain.release=Release
 
 # Items
 item.itemSpawnEggFendirain.name=Spawn
 item.fendirain:itemFendiPiece.name=Fendi Piece
 item.fendirain:itemPlantClearer.name=Plant Clearer
 item.fendirain:itemFenderiumAxe.name=Fenderium Axe
+item.fendirain:itemDebug.name=Debug Item
 
 # Blocks
 tile.fendirain:blockOreFendi.name=Fendi Ore

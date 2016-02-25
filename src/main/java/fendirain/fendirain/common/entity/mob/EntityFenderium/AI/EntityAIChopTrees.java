@@ -28,7 +28,6 @@ public class EntityAIChopTrees extends EntityAIBase {
     private final float moveSpeed;
     private TreeChopper treeChopper;
     private boolean alreadyExecuting;
-    private boolean isChopping;
     private int timeToWaitUntilNextRun;
     private boolean reloaded = false;
 
@@ -42,7 +41,6 @@ public class EntityAIChopTrees extends EntityAIBase {
         this.timePer = timePer;
         this.pathFinder = entity.getNavigator();
         this.alreadyExecuting = false;
-        this.isChopping = false;
         this.timeToWaitUntilNextRun = 2400;
         this.treeChopper = null;
         this.setMutexBits(1);
@@ -118,10 +116,7 @@ public class EntityAIChopTrees extends EntityAIBase {
             treeChopper.resetBlockProgress();
             treeChopper = null;
             alreadyExecuting = false;
-            if (this.isChopping) {
-                PacketHandler.simpleNetworkWrapper.sendToAllAround(new EntityFenderiumChoppingPacket(entity.getEntityId(), false), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 32));
-                this.isChopping = false;
-            }
+            PacketHandler.simpleNetworkWrapper.sendToAllAround(new EntityFenderiumChoppingPacket(entity.getEntityId(), false), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 32));
         }
 
         for (Object potion : entity.getActivePotionEffects()) {
@@ -136,10 +131,7 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public void updateTask() {
         if (pathFinder.noPath() && entity.getDistance(treeChopper.getMainBlock().getBlockPos().getX(), treeChopper.getMainBlock().getBlockPos().getY(), treeChopper.getMainBlock().getBlockPos().getZ()) < 2) {
-            if (!this.isChopping) {
-                PacketHandler.simpleNetworkWrapper.sendToAllAround(new EntityFenderiumChoppingPacket(entity.getEntityId(), true), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 32));
-                this.isChopping = true;
-            }
+            PacketHandler.simpleNetworkWrapper.sendToAllAround(new EntityFenderiumChoppingPacket(entity.getEntityId(), true), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 32));
             entity.getLookHelper().setLookPosition(treeChopper.getMainBlock().getBlockPos().getX(), treeChopper.getMainBlock().getBlockPos().getY(), treeChopper.getMainBlock().getBlockPos().getZ(), 2, 1);
             ItemStack itemStack = treeChopper.continueBreaking(entity.getBreakSpeed());
             if (itemStack != null) {
@@ -152,10 +144,7 @@ public class EntityAIChopTrees extends EntityAIBase {
             if (treeChopper.isFinished() || (itemStack != null && !entity.isAnySpaceForItemPickup(itemStack)))
                 resetTask();
         } else if (pathFinder.noPath()) {
-            if (this.isChopping) {
-                PacketHandler.simpleNetworkWrapper.sendToAllAround(new EntityFenderiumChoppingPacket(entity.getEntityId(), false), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 32));
-                this.isChopping = false;
-            }
+            PacketHandler.simpleNetworkWrapper.sendToAllAround(new EntityFenderiumChoppingPacket(entity.getEntityId(), false), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 32));
             startExecuting();
         }
     }
