@@ -1,7 +1,6 @@
 package fendirain.fendirain.event;
 
 import fendirain.fendirain.common.item.ItemDebug;
-import fendirain.fendirain.common.item.ItemFenderiumAxe;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -31,13 +30,13 @@ public class RenderEvent {
         PlayerControllerMP playerControllerMP = Minecraft.getMinecraft().playerController;
         EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
         World world = entityPlayer.getEntityWorld();
-        if (entityPlayer.getCurrentEquippedItem() != null && (entityPlayer.getCurrentEquippedItem().getItem() instanceof ItemFenderiumAxe || entityPlayer.getCurrentEquippedItem().getItem() instanceof ItemDebug)) {
+        if (entityPlayer.getCurrentEquippedItem() != null && (entityPlayer.getCurrentEquippedItem().getItem() instanceof ItemDebug)) {
             MovingObjectPosition movingObjectPosition = entityPlayer.rayTrace(playerControllerMP.getBlockReachDistance(), renderWorldLastEvent.partialTicks);
             if (movingObjectPosition != null) {
                 Item item = entityPlayer.getCurrentEquippedItem().getItem();
                 Set<BlockPos> blockPosSet;
-                if (item instanceof ItemFenderiumAxe) blockPosSet = ((ItemFenderiumAxe) item).getBlocks();
-                else blockPosSet = ((ItemDebug) item).getBlocks();
+                if (item instanceof ItemDebug) blockPosSet = ((ItemDebug) item).getBlocks();
+                else return;
                 if (!blockPosSet.isEmpty()) {
                     blockPosSet.forEach(blockPos -> {
                         MovingObjectPosition movingObjectPositionIn = new MovingObjectPosition(new Vec3(0, 0, 0), null, blockPos);
