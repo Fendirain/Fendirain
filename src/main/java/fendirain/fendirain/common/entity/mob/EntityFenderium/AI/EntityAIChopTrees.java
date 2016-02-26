@@ -3,7 +3,7 @@ package fendirain.fendirain.common.entity.mob.EntityFenderium.AI;
 import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
 import fendirain.fendirain.network.PacketHandler;
 import fendirain.fendirain.network.packets.EntityFenderiumChoppingPacket;
-import fendirain.fendirain.utility.helper.FullBlock;
+import fendirain.fendirain.utility.helper.BlockTools;
 import fendirain.fendirain.utility.tools.TreeChecker;
 import fendirain.fendirain.utility.tools.TreeChopper;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -55,7 +55,7 @@ public class EntityAIChopTrees extends EntityAIBase {
         if ((timeToWaitUntilNextRun == 0 || rand.nextInt(1000) == 1)) {
             World world = entity.worldObj;
             int range = entity.getMaxRange();
-            FullBlock closest = null;
+            BlockPos closest = null;
             double currentDist = -1.0;
             for (int y = (int) entity.posY - range; y <= (int) entity.posY + range; y++) {
                 for (int x = (int) entity.posX - range; x <= (int) entity.posX + range; x++) {
@@ -66,15 +66,14 @@ public class EntityAIChopTrees extends EntityAIBase {
                             Vec3 lookVec = entity.getLookVec();
                             double degree = Math.acos(((blockVec.xCoord * lookVec.xCoord) + (blockVec.yCoord * lookVec.yCoord) + (blockVec.zCoord * lookVec.zCoord)) / (Math.sqrt((blockVec.xCoord * blockVec.xCoord) + (blockVec.yCoord * blockVec.yCoord) + (blockVec.zCoord * blockVec.zCoord)) * Math.sqrt((lookVec.xCoord * lookVec.xCoord) + (lookVec.yCoord * lookVec.yCoord) + (lookVec.zCoord * lookVec.zCoord)))) * 180 / Math.PI;
                             if (degree < 80 && TreeChecker.isTree(world, blockPos) != null) {
-                                FullBlock fullBlock = new FullBlock(world.getBlockState(blockPos).getBlock(), blockPos, world.getBlockState(blockPos).getBlock().getDamageValue(world, blockPos));
                                 double dist = entity.getDistance(x, y, z);
                                 PathEntity pathEntity = pathFinder.getPathToXYZ(x, y, z);
                                 if (pathEntity == null) break;
                                 BlockPos blockPos1 = new BlockPos(pathEntity.getFinalPathPoint().xCoord, pathEntity.getFinalPathPoint().yCoord, pathEntity.getFinalPathPoint().zCoord);
-                                boolean canReach = fullBlock.compareTo(new FullBlock(world.getBlockState(blockPos1).getBlock(), blockPos1, world.getBlockState(blockPos1).getBlock().getDamageValue(world, blockPos1))) <= 2;
+                                boolean canReach = BlockTools.compareTo(blockPos, blockPos1) <= 2;
                                 if (canReach && (closest == null || currentDist == -1 || dist < currentDist)) {
                                     currentDist = dist;
-                                    closest = fullBlock;
+                                    closest = blockPos;
                                 }
                             }
                         }
@@ -82,7 +81,7 @@ public class EntityAIChopTrees extends EntityAIBase {
                 }
             }
             if (closest != null) {
-                treeChopper = new TreeChopper(entity, closest, TreeChecker.isTree(world, closest.getBlockPos()), true);
+                treeChopper = new TreeChopper(entity, closest, TreeChecker.isTree(world, closest), true);
 
                 return true;
             } else timeToWaitUntilNextRun = timeToWaitUntilNextRun + 50;
@@ -93,8 +92,8 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public boolean continueExecuting() {
         if (treeChopper == null) return false;
-        if (entity.worldObj.getBlockState(treeChopper.getMainBlock().getBlockPos()).getBlock() != treeChopper.getMainBlock().getBlock()) {
-            treeChopper.setMainBlockToClosest();
+        if (entity.worldObj.getBlockState(treeChopper.getMainBlockPos()).getBlock() != treeChopper.getMainBlock()) {
+            treeChopper.setMainBlockPosToClosest();
         }
         return !treeChopper.isFinished();
     }
@@ -107,7 +106,7 @@ public class EntityAIChopTrees extends EntityAIBase {
             //currentTree = getAllConnectingTreeBlocks(entity.worldObj, treeTargetFullBlock, new HashSet<>(), true);
             reloaded = false;
         }
-        pathFinder.tryMoveToXYZ(treeChopper.getMainBlock().getBlockPos().getX(), treeChopper.getMainBlock().getBlockPos().getY(), treeChopper.getMainBlock().getBlockPos().getZ(), this.moveSpeed);
+        pathFinder.tryMoveToXYZ(treeChopper.getMainBlockPos().getX(), treeChopper.getMainBlockPos().getY(), treeChopper.getMainBlockPos().getZ(), this.moveSpeed);
     }
 
     @Override
@@ -130,9 +129,9 @@ public class EntityAIChopTrees extends EntityAIBase {
 
     @Override
     public void updateTask() {
-        if (pathFinder.noPath() && entity.getDistance(treeChopper.getMainBlock().getBlockPos().getX(), treeChopper.getMainBlock().getBlockPos().getY(), treeChopper.getMainBlock().getBlockPos().getZ()) < 2) {
+        if (pathFinder.noPath() && entity.getDistance(treeChopper.getMainBlockPos().getX(), treeChopper.getMainBlockPos().getY(), treeChopper.getMainBlockPos().getZ()) < 2) {
             PacketHandler.simpleNetworkWrapper.sendToAllAround(new EntityFenderiumChoppingPacket(entity.getEntityId(), true), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 32));
-            entity.getLookHelper().setLookPosition(treeChopper.getMainBlock().getBlockPos().getX(), treeChopper.getMainBlock().getBlockPos().getY(), treeChopper.getMainBlock().getBlockPos().getZ(), 2, 1);
+            entity.getLookHelper().setLookPosition(treeChopper.getMainBlockPos().getX(), treeChopper.getMainBlockPos().getY(), treeChopper.getMainBlockPos().getZ(), 2, 1);
             ItemStack itemStack = treeChopper.continueBreaking(entity.getBreakSpeed());
             if (itemStack != null) {
                 entity.putIntoInventory(itemStack.copy());

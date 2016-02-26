@@ -6,4 +6,6 @@ public interface IProxy {
     void registerRenderInit();
 
     void registerKeyBindings();
+
+    void registerEvents();
 }

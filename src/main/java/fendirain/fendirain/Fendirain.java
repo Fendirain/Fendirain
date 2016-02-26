@@ -58,6 +58,7 @@ public class Fendirain {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent postInitializationEvent) {
         // Finish up initialization, Run things after other mods initialization.
+        proxy.registerEvents();
         ModCompatibility.postInit();
         LogHelper.info("Post-Initialization Complete");
     }

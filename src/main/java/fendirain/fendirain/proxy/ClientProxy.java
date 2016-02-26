@@ -4,6 +4,7 @@ import fendirain.fendirain.client.render.mobs.RenderFenderium;
 import fendirain.fendirain.client.render.mobs.RenderFendinain;
 import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
 import fendirain.fendirain.common.entity.mob.EntityFendinain.EntityFendinainMob;
+import fendirain.fendirain.event.RenderEvent;
 import fendirain.fendirain.init.ModBlocks;
 import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.init.ModRenderer;
@@ -12,6 +13,7 @@ import fendirain.fendirain.reference.Reference;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy extends CommonProxy {
@@ -52,5 +54,10 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerKeyBindings() {
         //ClientRegistry.registerKeyBinding(KeyBindings.[key]);
+    }
+
+    @Override
+    public void registerEvents() {
+        MinecraftForge.EVENT_BUS.register(new RenderEvent());
     }
 }
