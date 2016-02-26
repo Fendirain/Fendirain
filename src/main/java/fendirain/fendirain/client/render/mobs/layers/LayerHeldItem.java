@@ -38,6 +38,7 @@ public class LayerHeldItem implements LayerRenderer {
                     GlStateManager.rotate(-75.0F, 1.0F, 0.0F, 0.0F);
                     GlStateManager.rotate(0.0F, 0.0F, 1.0F, 0.0F);
                     GlStateManager.rotate(-90.0F, 0.0F, 0.0F, 1.0F);
+                    //noinspection deprecation
                     Minecraft.getMinecraft().getItemRenderer().renderItem(entityLivingBase, itemStack, ItemCameraTransforms.TransformType.THIRD_PERSON);
                     GlStateManager.popMatrix();
                 }
@@ -48,6 +49,7 @@ public class LayerHeldItem implements LayerRenderer {
                 GlStateManager.translate(.275F, 1.1F, -.0F);
                 GlStateManager.scale(.65F, .45F, .65F);
                 GlStateManager.rotate(80F, 1.0F, 0.0F, 0.0F);
+                //noinspection deprecation
                 Minecraft.getMinecraft().getItemRenderer().renderItem(entityLivingBase, itemStack, ItemCameraTransforms.TransformType.THIRD_PERSON);
                 GlStateManager.popMatrix();
             }

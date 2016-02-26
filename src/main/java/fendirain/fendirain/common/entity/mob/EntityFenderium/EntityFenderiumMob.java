@@ -36,7 +36,9 @@ import net.minecraft.world.World;
 import java.util.Arrays;
 
 public class EntityFenderiumMob extends EntityCreature implements IInventory {
-    private final int inventorySize = 6, maxStackSize = 28, range = 12, breakSpeed = ConfigValues.fenderiumMob_breakSpeed;
+    private final int inventorySize = 6;
+    private final int maxStackSize = 28;
+    private final int breakSpeed = ConfigValues.fenderiumMob_breakSpeed;
     private final EntityAIChopTrees entityAIChopTrees;
     private ItemStack[] inventory = new ItemStack[inventorySize];
     private boolean isChopping = false;
@@ -44,7 +46,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     public EntityFenderiumMob(World world) {
         super(world);
         this.setSize(.39F, .99F);
-        entityAIChopTrees = new EntityAIChopTrees(this, rand, range, 1.0F, ConfigValues.fenderiumMob_waitPerTreeOrLog, ConfigValues.fenderiumMob_timePerBreak * 20);
+        entityAIChopTrees = new EntityAIChopTrees(this, rand, 1.0F, ConfigValues.fenderiumMob_waitPerTreeOrLog, ConfigValues.fenderiumMob_timePerBreak * 20);
         ((PathNavigateGround) this.getNavigator()).setAvoidsWater(true);
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, entityAIChopTrees);
@@ -389,10 +391,6 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
 
     }
 
-    public EntityAIChopTrees getEntityAIChopTrees() {
-        return entityAIChopTrees;
-    }
-
     public boolean isItemValidForBreaking(World world, BlockPos blockPos, Block block) {
         return block.isWood(world, blockPos);
     }
@@ -446,7 +444,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     }
 
     public int getMaxRange() {
-        return range;
+        return 12;
     }
 
     public boolean isCurrentlyChopping() {

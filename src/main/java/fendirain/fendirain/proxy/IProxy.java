@@ -5,6 +5,7 @@ public interface IProxy {
 
     void registerRenderInit();
 
+    @SuppressWarnings("EmptyMethod")
     void registerKeyBindings();
 
     void registerEvents();

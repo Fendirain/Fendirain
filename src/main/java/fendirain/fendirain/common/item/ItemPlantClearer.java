@@ -69,9 +69,4 @@ public class ItemPlantClearer extends ItemFendirain {
     public boolean onDroppedByPlayer(ItemStack item, EntityPlayer player) {
         return false;
     }
-
-   /* @Override
-    public int getEntityLifespan(ItemStack itemStack, World world) {
-        return 0;
-    }*/
 }

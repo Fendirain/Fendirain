@@ -7,6 +7,7 @@ import fendirain.fendirain.utility.tools.TreeChecker;
 import fendirain.fendirain.utility.tools.TreeChopper;
 import net.minecraft.block.Block;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemAxe;
@@ -20,7 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemFenderiumAxe extends ItemAxe {
     private TreeChopper treeChopper = null;
-    private int count = 0;
+    private int count = 0, lastUsed = 0;
 
     public ItemFenderiumAxe() {
         super(ModItems.fendi);
@@ -54,37 +55,12 @@ public class ItemFenderiumAxe extends ItemAxe {
     @Override
     public void onUsingTick(ItemStack itemStack, EntityPlayer entityPlayerIn, int count) {
         this.count = count;
-        //LogHelper.info(this.getMaxItemUseDuration(itemStack) - count);
-        /*if (!entityPlayerIn.worldObj.isRemote && treeChopper != null) {
-            MovingObjectPosition movingObjectPosition = entityPlayerIn.rayTrace(2, 1);
-            LogHelper.info(movingObjectPosition.hitVec.distanceTo(new Vec3(treeChopper.getMainBlockPos().getBlockPos().getX(), treeChopper.getMainBlockPos().getBlockPos().getY(), treeChopper.getMainBlockPos().getBlockPos().getZ())));
-            int timeUsed = this.getMaxItemUseDuration(itemStack) - count;
-            if (timeUsed > 0) {
-               *//* if (treeChopper.getNumberOfLogs() > timeUsed / 2) LogHelper.info(2 + " || " + (double) (timeUsed / 2) / (double) treeChopper.getNumberOfLogs());
-                LogHelper.info(3 + " || " + treeChopper.getNumberOfLogs() + " || " + timeUsed / 2);*//*
-            }
-        } else if (treeChopper == null && entityPlayerIn.getHeldItem() == itemStack) entityPlayerIn.clearItemInUse();*/
-        /*if (!entityPlayerIn.worldObj.isRemote) {
-            LogHelper.info("Ran2 || " + count);
-            if (count == 1) {
-                if (treeChopper != null) {
-                    int itemDamage = treeChopper.breakAllBlocks((itemStack.getMaxDamage() - itemStack.getItemDamage()) / 4);
-                    if (itemDamage > 0) itemStack.damageItem(itemDamage * 4, entityPlayerIn);
-                    entityPlayerIn.clearItemInUse();
-                }
-            }
-        }*/
+        this.lastUsed = 0;
     }
 
-    /*@Override
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityPlayer playerIn) {
-        //treeChopper = null;
-        return stack;
-    }*/
 
     @Override
     public void onPlayerStoppedUsing(ItemStack itemStack, World worldIn, EntityPlayer entityPlayerIn, int timeLeft) {
-        //LogHelper.info("Ran2 || " + (this.getMaxItemUseDuration(itemStack) - timeLeft) / 2);
         if (!worldIn.isRemote) {
             int maxToBreak = ((this.getMaxItemUseDuration(itemStack) - timeLeft) / 2 < (itemStack.getMaxDamage() - itemStack.getItemDamage()) / 4) ? (this.getMaxItemUseDuration(itemStack) - timeLeft) / 2 : (itemStack.getMaxDamage() - itemStack.getItemDamage()) / 4;
             int itemDamage = treeChopper.breakAllBlocks(maxToBreak);
@@ -96,13 +72,20 @@ public class ItemFenderiumAxe extends ItemAxe {
     }
 
     @Override
+    public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        if (treeChopper != null) { // This is clear treeChopper if the user doesn't use that axe for 2 minutes.
+            lastUsed++;
+            if (lastUsed > 2400) treeChopper = null;
+        }
+    }
+
+    @Override
     @SideOnly(Side.CLIENT)
     public ModelResourceLocation getModel(ItemStack itemStack, EntityPlayer player, int useRemaining) {
         String name = GameData.getItemRegistry().getNameForObject(this).toString();
 
         if (treeChopper != null && count > 0) {
             double percentageCharged = (double) ((this.getMaxItemUseDuration(itemStack) - count) / 2) / (double) treeChopper.getNumberOfLogs();
-            //LogHelper.info(name + " || " + percentageCharged + " || " + (this.getMaxItemUseDuration(itemStack) - count));
             if (percentageCharged >= 1)
                 return new ModelResourceLocation(name + "_Charging_9", "inventory");
             else if (percentageCharged > .85)
@@ -160,6 +143,7 @@ public class ItemFenderiumAxe extends ItemAxe {
                     itemStack.damageItem(1, entityPlayerIn);
                 }
                 if (treeChopper.isFinished()) treeChopper = null;
+                lastUsed = 0;
                 return true;
             } else return false;
         }

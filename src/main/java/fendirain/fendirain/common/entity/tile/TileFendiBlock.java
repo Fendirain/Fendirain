@@ -3,6 +3,7 @@ package fendirain.fendirain.common.entity.tile;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class TileFendiBlock extends TileFendirain {
+    @SuppressWarnings("FieldCanBeLocal")
     private final int amountNeededToComplete = 8;
     private int currentAmount = 0;
 

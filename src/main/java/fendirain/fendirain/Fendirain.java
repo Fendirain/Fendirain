@@ -46,7 +46,7 @@ public class Fendirain {
     }
 
     @Mod.EventHandler
-    public void init(FMLInitializationEvent initializationEvent) {
+    public void init(@SuppressWarnings("UnusedParameters") FMLInitializationEvent initializationEvent) {
         // Register Gui's, Tile Entity's, Crafting recipes, other event handlers.
 
         proxy.registerRenderInit();
@@ -55,6 +55,7 @@ public class Fendirain {
         LogHelper.info("Initialization Complete");
     }
 
+    @SuppressWarnings("UnusedParameters")
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent postInitializationEvent) {
         // Finish up initialization, Run things after other mods initialization.

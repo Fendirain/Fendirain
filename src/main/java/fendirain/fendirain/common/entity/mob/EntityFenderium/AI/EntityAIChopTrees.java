@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import java.util.Random;
 
 public class EntityAIChopTrees extends EntityAIBase {
-    private final int maxLogRange, timePer, sightRange;
+    private final int timePer;
     private final boolean doTimePerLog;
     private final Random rand;
     private final EntityFenderiumMob entity;
@@ -31,11 +31,9 @@ public class EntityAIChopTrees extends EntityAIBase {
     private int timeToWaitUntilNextRun;
     private boolean reloaded = false;
 
-    public EntityAIChopTrees(EntityFenderiumMob entity, Random rand, int sightRange, float moveSpeed, boolean doTimePerLog, int timePer) {
-        this.maxLogRange = 3;
+    public EntityAIChopTrees(EntityFenderiumMob entity, Random rand, float moveSpeed, boolean doTimePerLog, int timePer) {
         this.entity = entity;
         this.rand = rand;
-        this.sightRange = sightRange;
         this.moveSpeed = moveSpeed;
         this.doTimePerLog = doTimePerLog;
         this.timePer = timePer;
@@ -103,7 +101,6 @@ public class EntityAIChopTrees extends EntityAIBase {
         if (!alreadyExecuting) {
             alreadyExecuting = true;
         } else if (reloaded) {
-            //currentTree = getAllConnectingTreeBlocks(entity.worldObj, treeTargetFullBlock, new HashSet<>(), true);
             reloaded = false;
         }
         pathFinder.tryMoveToXYZ(treeChopper.getMainBlockPos().getX(), treeChopper.getMainBlockPos().getY(), treeChopper.getMainBlockPos().getZ(), this.moveSpeed);
@@ -166,21 +163,13 @@ public class EntityAIChopTrees extends EntityAIBase {
         this.timeToWaitUntilNextRun = timeToWaitUntilNextRun;
     }
 
+    // TODO Redo writeToNBT and readFromNBT
     public NBTTagCompound writeToNBT() {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
-        nbtTagCompound.setBoolean("alreadyExecuting", alreadyExecuting);
+        /*nbtTagCompound.setBoolean("alreadyExecuting", alreadyExecuting);
         if (alreadyExecuting) {
-            /*nbtTagCompound.setInteger("currentBlockProgress", currentBlockProgress);
-            nbtTagCompound.setDouble("treeTargetBlockProgress0", treeTargetBlockProgress[0]);
-            nbtTagCompound.setDouble("treeTargetBlockProgress1", treeTargetBlockProgress[1]);
-            nbtTagCompound.setDouble("treeTargetBlockProgress2", treeTargetBlockProgress[2]);
-            nbtTagCompound.setTag("targetTreeBlock", treeTargetFullBlock.writeToNBT(new NBTTagCompound()));
-            nbtTagCompound.setTag("treeLeafBlock", treeLeaf.writeToNBT(new NBTTagCompound()));*/
-           /* NBTTagCompound blocks = new NBTTagCompound();
-            final int[] i = {0};
-            currentTree.forEach(block -> blocks.setTag("block" + i[0]++, block.writeToNBT(blocks)));
-            nbtTagCompound.setTag("currentTree", blocks);*/
-        }
+
+        }*/
         nbtTagCompound.setInteger("timeToWaitUntilNextRun", timeToWaitUntilNextRun);
         return nbtTagCompound;
     }

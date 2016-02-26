@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 import java.util.Random;
 
 public class BlockOreFendi extends BlockFendirain {
+    @SuppressWarnings("FieldCanBeLocal")
     private final int dropAmountMin = 0, dropChance = 16;
 
     public BlockOreFendi() {

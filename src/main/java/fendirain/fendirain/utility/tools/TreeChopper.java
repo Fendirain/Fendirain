@@ -1,5 +1,6 @@
 package fendirain.fendirain.utility.tools;
 
+import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
 import fendirain.fendirain.network.PacketHandler;
 import fendirain.fendirain.network.packets.BlockHitEffectPacket;
 import fendirain.fendirain.utility.helper.BlockTools;
@@ -9,10 +10,12 @@ import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.block.BlockLog;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import java.util.*;
@@ -43,16 +46,13 @@ public class TreeChopper {
         this.treeLeaf = useLeavesToCheck ? world.getBlockState(treeLeaf).getBlock() : null;
         this.treeLeafDamageValue = useLeavesToCheck ? this.treeLeaf.getDamageValue(world, treeLeaf) : -1;
 
-
-        Long timer = System.currentTimeMillis();
         try {
             this.currentTree.addAll(getAllConnectingTreeBlocks(world, mainBlockPos, new LinkedHashSet<>(), useLeavesToCheck, true));
         } catch (StackOverflowError e) {
             LogHelper.info(e.toString());
         }
-        //LogHelper.info((System.currentTimeMillis() - timer) + " MilliSeconds.");
 
-        if (!(entity instanceof EntityPlayer)) {
+        if (entity instanceof EntityFenderiumMob) {
             currentBlockProgress = 0;
             treeTargetBlockProgress = new double[]{(double) 10 / currentTree.size(), Double.valueOf(currentTree.size()), 0.0d};
             currentlyBreakingPos = returnFurthestLog(currentTree);
@@ -63,42 +63,33 @@ public class TreeChopper {
         int amountBroken = 0;
         Set<BlockPos> blocksToBreak = new LinkedHashSet<>(currentTree.size());
         BlockPos closestBlock;
-        if (maxToBreak < currentTree.size()) {
-            Set<BlockPos> blocksToIterate = new LinkedHashSet<>(currentTree.size());
-            blocksToIterate.addAll(currentTree);
-            for (int i = 0; i < maxToBreak; i++) {
-                BlockPos blockToBreak = returnFurthestLog(blocksToIterate);
-                blocksToBreak.add(blockToBreak);
-                blocksToIterate.remove(blockToBreak);
-            }
-            closestBlock = returnClosestLog(blocksToBreak);
-            if (closestBlock == null) closestBlock = mainBlockPos;
-        } else {
-            blocksToBreak.addAll(currentTree);
-            closestBlock = mainBlockPos;
+
+        Set<BlockPos> blocksToIterate = new LinkedHashSet<>(currentTree.size());
+        blocksToIterate.addAll(currentTree);
+        for (int i = 0; i < ((maxToBreak < currentTree.size()) ? maxToBreak : currentTree.size()); i++) {
+            BlockPos blockToBreak = returnFurthestLog(blocksToIterate);
+            blocksToBreak.add(blockToBreak);
+            blocksToIterate.remove(blockToBreak);
         }
-        for (BlockPos blockPos : blocksToBreak) {
-            if (world.getBlockState(blockPos).getBlock() == mainBlock) {
-                world.playAuxSFX(2001, blockPos, Block.getIdFromBlock(mainBlock) + (mainBlockDamageValue << 12));
-                BlockLog log = (BlockLog) mainBlock;
-                log.breakBlock(world, blockPos, world.getBlockState(blockPos));
-                world.setBlockToAir(blockPos);
-                world.playSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), "dig.wood", 2, 5F, true);
-                world.playSoundAtEntity(entity, "dig.wood", 1, .5F);
-                amountBroken++;
-            }
-            currentTree.remove(blockPos);
-        }
+        closestBlock = returnClosestLog(blocksToBreak);
+        if (closestBlock == null) closestBlock = mainBlockPos;
+
+        Iterator<BlockPos> blockPosIterator = blocksToBreak.iterator();
+        while (blockPosIterator.hasNext())
+            if (world.getBlockState(blockPosIterator.next()).getBlock() != mainBlock) blockPosIterator.remove();
+        amountBroken = blocksToBreak.size();
         EntityItem entityItem = new EntityItem(world, closestBlock.getX(), closestBlock.getY(), closestBlock.getZ());
         entityItem.setEntityItemStack(new ItemStack(mainBlock, amountBroken, mainBlockDamageValue));
-        entityItem.setDefaultPickupDelay();
-        world.spawnEntityInWorld(entityItem);
+        entityItem.setPickupDelay(20);
+        MinecraftForge.EVENT_BUS.register(new BreakBlocksQueue(blocksToBreak, entityItem));
+        currentTree.removeAll(blocksToBreak);
         if (currentTree.isEmpty()) this.isFinished = true;
         return amountBroken;
     }
 
     public void breakFurthestBlock() {
         BlockPos logToBreak = returnFurthestLog(currentTree);
+        assert logToBreak != null;
         EntityItem entityItem = new EntityItem(world, logToBreak.getX(), logToBreak.getY(), logToBreak.getZ());
         entityItem.setEntityItemStack(new ItemStack(mainBlock, 1, mainBlockDamageValue));
         entityItem.setDefaultPickupDelay();
@@ -108,7 +99,6 @@ public class TreeChopper {
         log.breakBlock(world, logToBreak, world.getBlockState(logToBreak));
         world.setBlockToAir(logToBreak);
         world.playSound(logToBreak.getX(), logToBreak.getY(), logToBreak.getZ(), "dig.wood", 2, 5F, true);
-        //world.playSoundAtEntity(entity, "dig.wood", 2, .5F);
         if (currentTree.contains(logToBreak)) currentTree.remove(logToBreak);
         if (currentTree.isEmpty()) isFinished = true;
     }
@@ -161,8 +151,7 @@ public class TreeChopper {
             fullBlocks.add(mainBlockPos);
             searchedBlocks.add(mainBlockPos.toLong());
         }
-        int maxRange = 12;
-        //LogHelper.info(iteration);
+        int maxRange = 14;
         if (fullBlockPos.getX() < mainBlockPos.getX() + maxRange && fullBlockPos.getX() > mainBlockPos.getX() - maxRange && fullBlockPos.getZ() < mainBlockPos.getZ() + maxRange && fullBlockPos.getZ() > mainBlockPos.getZ() - maxRange) {
             Set<BlockPos> blocksAroundCurrent = new LinkedHashSet<>(26);
             BlockTools.getSurroundingBlockPos(fullBlockPos, 1).stream().filter(blockPos -> {
@@ -175,10 +164,7 @@ public class TreeChopper {
                 blocksAroundCurrent.add(blockPos);
                 fullBlocks.add(blockPos);
             });
-            //blocksAroundCurrent.forEach(fullBlock1 -> fullBlocks.addAll(getAllConnectingTreeBlocks(world, fullBlock1, searchedBlocks, useLeavesToCheck, false, iteration++)));
-            for (BlockPos blockPos : blocksAroundCurrent) {
-                fullBlocks.addAll(getAllConnectingTreeBlocks(world, blockPos, searchedBlocks, useLeavesToCheck, false));
-            }
+            blocksAroundCurrent.forEach(fullBlock1 -> fullBlocks.addAll(getAllConnectingTreeBlocks(world, fullBlock1, searchedBlocks, useLeavesToCheck, false)));
         }
         if (originalPass) {
             if (!fullBlocks.isEmpty()) {
@@ -288,5 +274,45 @@ public class TreeChopper {
 
     public Set<BlockPos> getCurrentTree() {
         return currentTree;
+    }
+
+    // Lets slow down the breaking a bit, No need to have it all try to happen in 1 tick.
+    private class BreakBlocksQueue {
+
+        private Set<BlockPos> blockPosSet;
+        private Iterator<BlockPos> blockPosIterator;
+        private EntityItem itemsToDrop;
+        private int i = 1;
+
+        public BreakBlocksQueue(Set<BlockPos> blockPosSet, EntityItem entityItem) {
+            if (!blockPosSet.isEmpty()) {
+                this.blockPosSet = blockPosSet;
+                this.blockPosIterator = blockPosSet.iterator();
+                this.itemsToDrop = entityItem;
+            } else this.finish();
+        }
+
+        @SubscribeEvent
+        public void breakBlock(TickEvent.WorldTickEvent worldTickEvent) {
+            if (i == 1) {
+                if (worldTickEvent.side.isServer()) {
+                    BlockPos blockPos = blockPosIterator.next();
+                    world.playAuxSFX(2001, blockPos, Block.getIdFromBlock(mainBlock) + (mainBlockDamageValue << 12));
+                    BlockLog log = (BlockLog) mainBlock;
+                    log.breakBlock(world, blockPos, world.getBlockState(blockPos));
+                    world.setBlockToAir(blockPos);
+                    world.playSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), "dig.wood", 2, 5F, true);
+                    world.playSoundAtEntity(entity, "dig.wood", 1, .5F);
+                    blockPosIterator.remove();
+                    i--;
+                    if (blockPosSet.isEmpty()) finish();
+                }
+            } else i++;
+        }
+
+        private void finish() {
+            world.spawnEntityInWorld(itemsToDrop);
+            MinecraftForge.EVENT_BUS.unregister(this);
+        }
     }
 }
