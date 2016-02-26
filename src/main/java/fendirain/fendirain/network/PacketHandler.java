@@ -1,6 +1,5 @@
 package fendirain.fendirain.network;
 
-import fendirain.fendirain.network.packets.BlockDestroyEffectPacket;
 import fendirain.fendirain.network.packets.BlockHitEffectPacket;
 import fendirain.fendirain.network.packets.EntityFenderiumChoppingPacket;
 import fendirain.fendirain.reference.Reference;
@@ -12,7 +11,6 @@ public class PacketHandler {
 
     public static void register() {
         simpleNetworkWrapper.registerMessage(BlockHitEffectPacket.Handler.class, BlockHitEffectPacket.class, 0, Side.CLIENT);
-        simpleNetworkWrapper.registerMessage(BlockDestroyEffectPacket.Handler.class, BlockDestroyEffectPacket.class, 1, Side.CLIENT);
         simpleNetworkWrapper.registerMessage(EntityFenderiumChoppingPacket.Handler.class, EntityFenderiumChoppingPacket.class, 2, Side.CLIENT);
     }
 }

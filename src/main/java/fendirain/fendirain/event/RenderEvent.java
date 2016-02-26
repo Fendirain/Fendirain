@@ -40,14 +40,12 @@ public class RenderEvent {
                 if (!blockPosSet.isEmpty()) {
                     blockPosSet.forEach(blockPos -> {
                         MovingObjectPosition movingObjectPositionIn = new MovingObjectPosition(new Vec3(0, 0, 0), null, blockPos);
-                        //renderWorldLastEvent.context.drawSelectionBox(entityPlayer, new MovingObjectPosition(new Vec3(0, 0, 0), null, blockPos), 0, renderWorldLastEvent.partialTicks);
                         GlStateManager.enableBlend();
                         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
                         GlStateManager.color(255F, 238F, 0.0F, 1F);
                         GL11.glLineWidth(2.0F);
                         GlStateManager.disableTexture2D();
                         GlStateManager.depthMask(false);
-                        float f = 0.002F;
                         BlockPos blockpos = movingObjectPositionIn.getBlockPos();
                         Block block = world.getBlockState(blockpos).getBlock();
                         if (block.getMaterial() != Material.air && world.getWorldBorder().contains(blockpos)) {

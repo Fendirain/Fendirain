@@ -393,8 +393,8 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         return entityAIChopTrees;
     }
 
-    public boolean isItemValidForBreaking(Block block) {
-        return block instanceof BlockLog;
+    public boolean isItemValidForBreaking(World world, BlockPos blockPos, Block block) {
+        return block.isWood(world, blockPos);
     }
 
     public int getPercentageOfInventoryFull() {

@@ -61,7 +61,7 @@ public class EntityAIChopTrees extends EntityAIBase {
                 for (int x = (int) entity.posX - range; x <= (int) entity.posX + range; x++) {
                     for (int z = (int) entity.posZ - range; z <= (int) entity.posZ + range; z++) {
                         BlockPos blockPos = new BlockPos(x, y, z);
-                        if (entity.isItemValidForBreaking(world.getBlockState(blockPos).getBlock()) && entity.isAnySpaceForItemPickup(new ItemStack(world.getBlockState(blockPos).getBlock(), 1))) {
+                        if (entity.isItemValidForBreaking(world, blockPos, world.getBlockState(blockPos).getBlock()) && entity.isAnySpaceForItemPickup(new ItemStack(world.getBlockState(blockPos).getBlock(), 1))) {
                             Vec3 blockVec = new Vec3(x, y, z).subtract(entity.getPositionVector());
                             Vec3 lookVec = entity.getLookVec();
                             double degree = Math.acos(((blockVec.xCoord * lookVec.xCoord) + (blockVec.yCoord * lookVec.yCoord) + (blockVec.zCoord * lookVec.zCoord)) / (Math.sqrt((blockVec.xCoord * blockVec.xCoord) + (blockVec.yCoord * blockVec.yCoord) + (blockVec.zCoord * blockVec.zCoord)) * Math.sqrt((lookVec.xCoord * lookVec.xCoord) + (lookVec.yCoord * lookVec.yCoord) + (lookVec.zCoord * lookVec.zCoord)))) * 180 / Math.PI;

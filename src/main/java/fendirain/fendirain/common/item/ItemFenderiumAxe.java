@@ -6,7 +6,6 @@ import fendirain.fendirain.reference.Reference;
 import fendirain.fendirain.utility.tools.TreeChecker;
 import fendirain.fendirain.utility.tools.TreeChopper;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockLog;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
@@ -18,9 +17,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 public class ItemFenderiumAxe extends ItemAxe {
     private TreeChopper treeChopper = null;
@@ -37,7 +33,7 @@ public class ItemFenderiumAxe extends ItemAxe {
         World world = entityPlayerIn.getEntityWorld();
         if (itemStack.getMaxDamage() - itemStack.getItemDamage() > 4) {
             Block block = world.getBlockState(blockPos).getBlock();
-            if (block instanceof BlockLog) {
+            if (block.isWood(world, blockPos)) {
                 if (treeChopper != null && treeChopper.isBlockContainedInTree(blockPos)) {
                     treeChopper.setMainBlockPos(blockPos);
                     entityPlayerIn.setItemInUse(itemStack, this.getMaxItemUseDuration(itemStack));
@@ -145,7 +141,7 @@ public class ItemFenderiumAxe extends ItemAxe {
         World world = entityPlayerIn.getEntityWorld();
         if (!entityPlayerIn.capabilities.isCreativeMode && !world.isRemote && itemStack.getMaxDamage() - itemStack.getItemDamage() > 0) {
             Block block = world.getBlockState(blockPos).getBlock();
-            if (block instanceof BlockLog) {
+            if (block.isWood(world, blockPos)) {
                 if (treeChopper == null || !treeChopper.isBlockContainedInTree(blockPos)) {
                     BlockPos treeLeaf = TreeChecker.isTree(world, blockPos);
                     if (treeLeaf != null) {
@@ -182,14 +178,6 @@ public class ItemFenderiumAxe extends ItemAxe {
 
     protected String getUnwrappedUnlocalizedName(String unlocalizedName) {
         return unlocalizedName.substring(unlocalizedName.indexOf(".") + 1);
-    }
-
-    public Set<BlockPos> getBlocks() {
-        Set<BlockPos> blockPosSet = new LinkedHashSet<>();
-        if (treeChopper != null && !treeChopper.isFinished()) {
-            blockPosSet.addAll(treeChopper.getCurrentTree());
-        }
-        return blockPosSet;
     }
 }
 

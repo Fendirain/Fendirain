@@ -37,7 +37,7 @@ public class ItemPlantClearer extends ItemFendirain {
                     for (int x = posX - range; x <= posX + range; x++) {
                         for (int z = posZ - range; z <= posZ + range; z++) {
                             Block block = world.getBlockState(new BlockPos(x, y, z)).getBlock();
-                            if (block instanceof BlockLeaves || block instanceof BlockLog || block instanceof BlockTallGrass || block instanceof BlockFlower || block instanceof BlockDoublePlant || (Item.getItemFromBlock(block) != null && ModCompatibility.saplings.contains(Item.getItemFromBlock(block))))
+                            if (block instanceof BlockLeaves || block.isWood(world, new BlockPos(x, y, z)) || block instanceof BlockTallGrass || block instanceof BlockFlower || block instanceof BlockDoublePlant || (Item.getItemFromBlock(block) != null && ModCompatibility.saplings.contains(Item.getItemFromBlock(block))))
                                 world.setBlockToAir(new BlockPos(x, y, z));
                         }
                     }

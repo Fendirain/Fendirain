@@ -3,7 +3,6 @@ package fendirain.fendirain.common.item;
 import fendirain.fendirain.utility.helper.LogHelper;
 import fendirain.fendirain.utility.tools.TreeChecker;
 import fendirain.fendirain.utility.tools.TreeChopper;
-import net.minecraft.block.BlockLog;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
@@ -24,7 +23,7 @@ public class ItemDebug extends ItemFendirain {
     }
 
     public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos blockPos, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (worldIn.getBlockState(blockPos).getBlock() instanceof BlockLog) {
+        if (worldIn.getBlockState(blockPos).getBlock().isWood(worldIn, blockPos)) {
             BlockPos blockPos1 = TreeChecker.isTree(worldIn, blockPos);
             if (playerIn.isSneaking()) {
                 if (blockPos1 != null && !worldIn.isRemote) {
