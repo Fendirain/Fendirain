@@ -1,7 +1,10 @@
 package fendirain.fendirain.utility.tools;
 
 import fendirain.fendirain.utility.helper.BlockTools;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockDirt;
+import net.minecraft.block.BlockGrass;
+import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
@@ -12,7 +15,7 @@ public class TreeChecker {
     public static BlockPos isTree(World world, BlockPos blockPos) {
         Block block = world.getBlockState(blockPos.down()).getBlock();
         if (block != Blocks.air && (block.isWood(world, blockPos.down()) || block instanceof BlockGrass || block instanceof BlockDirt)) {
-            Set<BlockPos> connectedBlocks = getBaseTree(world, blockPos, new HashSet<>(), true);
+            Set<BlockPos> connectedBlocks = getBaseTree(world, blockPos);
             Map<Integer, Integer> leaves = new HashMap<>();
             final int[] logs = {0};
             connectedBlocks.forEach(fullBlock1 -> {
@@ -49,24 +52,31 @@ public class TreeChecker {
         return null;
     }
 
-    private static Set<BlockPos> getBaseTree(World world, BlockPos blockPos, Set<Long> searchedBlocks, boolean originalPass) {
+    private static Set<BlockPos> getBaseTree(World world, BlockPos blockPos) {
         Set<BlockPos> baseTree = new LinkedHashSet<>();
-        if (originalPass) baseTree.add(blockPos);
-        Set<BlockPos> blocksAroundCurrent = new LinkedHashSet<>(26);
-        BlockTools.getSurroundingBlockPos(blockPos, 1).stream().filter(blockPos1 -> !(world.getBlockState(blockPos1) instanceof BlockAir)).forEach(blockPos1 -> {
-            if (!searchedBlocks.contains(blockPos1.toLong())) {
-                Block block = world.getBlockState(blockPos1).getBlock();
-                if (block.isWood(world, blockPos1) || block instanceof BlockLeavesBase) {
-                    searchedBlocks.add(blockPos1.toLong());
-                    blocksAroundCurrent.add(blockPos1);
-                    baseTree.add(blockPos1);
-                }
-            }
-        });
-        blocksAroundCurrent.forEach(fullBlock1 -> {
-            if (world.getBlockState(fullBlock1).getBlock().isWood(world, fullBlock1))
-                baseTree.addAll(getBaseTree(world, fullBlock1, searchedBlocks, false));
-        });
+        Set<Long> searchedBlocks = new HashSet<>();
+
+        searchedBlocks.add(blockPos.toLong());
+        baseTree.add(blockPos);
+
+        Set<BlockPos> blocksToSearch = new LinkedHashSet<>();
+        blocksToSearch.add(blockPos);
+
+        while (!blocksToSearch.isEmpty()) {
+            Set<BlockPos> currentTask = new LinkedHashSet<>(blocksToSearch);
+            blocksToSearch.clear();
+            currentTask.forEach(blockPos1 -> BlockTools.getSurroundingBlockPos(blockPos1, 1).stream().filter(blockPosChecking -> {
+                boolean searchedBlockContains = searchedBlocks.contains(blockPosChecking.toLong());
+                if (!searchedBlockContains) searchedBlocks.add(blockPosChecking.toLong());
+                Block block = world.getBlockState(blockPosChecking).getBlock();
+                return (!searchedBlockContains && ((block.isWood(world, blockPosChecking) || block instanceof BlockLeavesBase)));
+            }).forEach(blockPosAllowed -> {
+                baseTree.add(blockPosAllowed);
+                if (world.getBlockState(blockPosAllowed).getBlock().isWood(world, blockPosAllowed))
+                    blocksToSearch.add(blockPosAllowed);
+            }));
+        }
+
         return baseTree;
     }
 }

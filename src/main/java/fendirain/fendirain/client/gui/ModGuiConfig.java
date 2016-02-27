@@ -22,6 +22,7 @@ public class ModGuiConfig extends GuiConfig {
         list.add(categoryElement(ConfigurationHandler.CATEGORY_GENERAL, "General", "General"));
         list.add(categoryElement(ConfigurationHandler.CATEGORY_DEVELOPER, "Developer", "Developer"));
         list.add(categoryElement(ConfigurationHandler.CATEGORY_MOB, "Mob", "Mob"));
+        list.add(categoryElement(ConfigurationHandler.CATEGORY_ITEM, "Item", "Item"));
         return list;
     }
 

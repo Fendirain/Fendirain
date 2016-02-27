@@ -14,4 +14,7 @@ public class ConfigValues {
     public static int fenderiumMob_breakSpeed;
     public static boolean fenderiumMob_waitPerTreeOrLog;
     public static int fenderiumMob_timePerBreak;
+
+    // FenderiumAxe
+    public static boolean fenderiumAxe_dropItemPerLog;
 }

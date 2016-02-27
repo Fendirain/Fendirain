@@ -112,7 +112,7 @@ public class EntityAIChopTrees extends EntityAIBase {
             treeChopper.resetBlockProgress();
             treeChopper = null;
             alreadyExecuting = false;
-            PacketHandler.simpleNetworkWrapper.sendToAllAround(new EntityFenderiumChoppingPacket(entity.getEntityId(), false), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 32));
+            PacketHandler.simpleNetworkWrapper.sendToAllAround(new EntityFenderiumChoppingPacket(entity.getEntityId(), false, -1L, -1), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 32));
         }
 
         for (Object potion : entity.getActivePotionEffects()) {
@@ -127,7 +127,7 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public void updateTask() {
         if (pathFinder.noPath() && entity.getDistance(treeChopper.getMainBlockPos().getX(), treeChopper.getMainBlockPos().getY(), treeChopper.getMainBlockPos().getZ()) < 2) {
-            PacketHandler.simpleNetworkWrapper.sendToAllAround(new EntityFenderiumChoppingPacket(entity.getEntityId(), true), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 32));
+            PacketHandler.simpleNetworkWrapper.sendToAllAround(new EntityFenderiumChoppingPacket(entity.getEntityId(), true, treeChopper.getCurrentlyBreakingPos().toLong(), treeChopper.getWholeTreeProgress()), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 32));
             entity.getLookHelper().setLookPosition(treeChopper.getMainBlockPos().getX(), treeChopper.getMainBlockPos().getY(), treeChopper.getMainBlockPos().getZ(), 2, 1);
             ItemStack itemStack = treeChopper.continueBreaking(entity.getBreakSpeed());
             if (itemStack != null) {
@@ -140,7 +140,7 @@ public class EntityAIChopTrees extends EntityAIBase {
             if (treeChopper.isFinished() || (itemStack != null && !entity.isAnySpaceForItemPickup(itemStack)))
                 resetTask();
         } else if (pathFinder.noPath()) {
-            PacketHandler.simpleNetworkWrapper.sendToAllAround(new EntityFenderiumChoppingPacket(entity.getEntityId(), false), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 32));
+            PacketHandler.simpleNetworkWrapper.sendToAllAround(new EntityFenderiumChoppingPacket(entity.getEntityId(), false, -1L, -1), new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 32));
             startExecuting();
         }
     }

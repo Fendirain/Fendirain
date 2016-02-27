@@ -16,6 +16,7 @@ public class ConfigurationHandler {
     public static final String CATEGORY_GENERAL = "general";
     public static final String CATEGORY_DEVELOPER = "developer";
     public static final String CATEGORY_MOB = "mob";
+    public static final String CATEGORY_ITEM = "item";
     public static Configuration configuration;
 
     public static void init(File configFile) {
@@ -40,6 +41,9 @@ public class ConfigurationHandler {
 
         if (ConfigValues.fendinainMob_minTimeToWaitToPlant > ConfigValues.fendinainMob_maxTimeToWaitToPlant)
             Minecraft.getMinecraft().crashed(new CrashReport("fendinainMob_minTimeToWaitToPlant is not lower than or equal too fendinainMob_maxTimeToWaitToPlant, Please correct.", new CannotProceedException()));
+
+        // FenderiumAxe
+        ConfigValues.fenderiumAxe_dropItemPerLog = configuration.getBoolean("FenderiumAxe_DropItemPerLog", CATEGORY_ITEM, false, "If true, The Fenderium Axe right-click ability will cause logs to be dropped as broken instead as one ItemStack at the end.");
 
         if (configuration.hasChanged()) configuration.save();
     }

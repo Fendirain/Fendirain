@@ -10,6 +10,8 @@ import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.init.ModRenderer;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.reference.Reference;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
@@ -58,6 +60,8 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void registerEvents() {
-        MinecraftForge.EVENT_BUS.register(new RenderEvent());
+        RenderEvent renderEvent = new RenderEvent();
+        MinecraftForge.EVENT_BUS.register(renderEvent);
+        ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(renderEvent);
     }
 }

@@ -42,6 +42,8 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     private final EntityAIChopTrees entityAIChopTrees;
     private ItemStack[] inventory = new ItemStack[inventorySize];
     private boolean isChopping = false;
+    private BlockPos currentlyBreakingPos = null;
+    private int currentlyBreakingProgress = -1;
 
     public EntityFenderiumMob(World world) {
         super(world);
@@ -453,5 +455,21 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
 
     public void setIsChopping(boolean chopping) {
         isChopping = chopping;
+    }
+
+    public void setCurrentlyBreakingProgress(int currentlyBreakingProgress) {
+        this.currentlyBreakingProgress = currentlyBreakingProgress;
+    }
+
+    public BlockPos getCurrentlyBreakingPos() {
+        return this.currentlyBreakingPos;
+    }
+
+    public void setCurrentlyBreakingPos(BlockPos blockPos) {
+        this.currentlyBreakingPos = blockPos;
+    }
+
+    public int getWholeTreeProgress() {
+        return this.currentlyBreakingProgress;
     }
 }

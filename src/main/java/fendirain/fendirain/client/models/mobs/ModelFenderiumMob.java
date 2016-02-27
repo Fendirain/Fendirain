@@ -101,7 +101,6 @@ public class ModelFenderiumMob extends ModelFendirain {
             if (this.rightArm1.rotateAngleX <= -3.5) lowerArm = true;
             else if (this.rightArm1.rotateAngleX >= -2.5) lowerArm = false;
         } else this.rightArm1.rotateAngleX = 0.0F;
-
     }
 
     @Override
