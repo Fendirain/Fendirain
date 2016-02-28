@@ -14,20 +14,24 @@ import java.util.List;
 public class ModGuiConfig extends GuiConfig {
 
     public ModGuiConfig(GuiScreen guiScreen) {
-        super(guiScreen, getConfigElements(), Reference.MOD_ID, false, true, "Fendirain's Configuration");
+        super(guiScreen, getConfigElements(), Reference.MOD_ID, false, false, "Fendirain's Configuration");
     }
 
     private static List<IConfigElement> getConfigElements() {
         List<IConfigElement> list = new ArrayList<>();
-        list.add(categoryElement(ConfigurationHandler.CATEGORY_GENERAL, "General", "General"));
-        list.add(categoryElement(ConfigurationHandler.CATEGORY_DEVELOPER, "Developer", "Developer"));
-        list.add(categoryElement(ConfigurationHandler.CATEGORY_MOB, "Mob", "Mob"));
-        list.add(categoryElement(ConfigurationHandler.CATEGORY_ITEM, "Item", "Item"));
+        list.add(categoryElement(ConfigurationHandler.CATEGORY_GENERAL, "General", "general", false, false));
+        list.add(categoryElement(ConfigurationHandler.CATEGORY_WORLD, "World", "world", true, true));
+        list.add(categoryElement(ConfigurationHandler.CATEGORY_DEVELOPER, "Developer", "developer", false, true));
+        list.add(categoryElement(ConfigurationHandler.CATEGORY_MOB, "Mob", "mob", false, true));
+        list.add(categoryElement(ConfigurationHandler.CATEGORY_ITEM, "Item", "item", false, false));
         return list;
     }
 
-    private static IConfigElement categoryElement(String category, String name, String tooltip_key) {
+    private static IConfigElement categoryElement(String category, String name, String tooltip_key, boolean requiresWorldRestart, boolean requiresMcRestart) {
         //noinspection unchecked
-        return new DummyConfigElement.DummyCategoryElement(name, tooltip_key, new ConfigElement(ConfigurationHandler.configuration.getCategory(category)).getChildElements());
+        DummyConfigElement dummyConfigElement = new DummyConfigElement.DummyCategoryElement(name, tooltip_key, new ConfigElement(ConfigurationHandler.configuration.getCategory(category)).getChildElements());
+        dummyConfigElement.setRequiresWorldRestart(requiresWorldRestart);
+        dummyConfigElement.setRequiresMcRestart(requiresMcRestart);
+        return dummyConfigElement;
     }
 }

@@ -33,9 +33,9 @@ public class LayerHeldItem implements LayerRenderer {
                     GlStateManager.pushMatrix();
                     ModelFendinainMob model = (ModelFendinainMob) this.livingEntityRenderer.getMainModel();
                     model.leftArm2.postRender(-1.2F);
-                    GlStateManager.translate(-0.11F, 1.18F, -0.17F);
+                    GlStateManager.translate(-0.11F, 1.2F, -0.12F);
                     GlStateManager.scale(0.5F, 0.5F, 0.5F);
-                    GlStateManager.rotate(-75.0F, 1.0F, 0.0F, 0.0F);
+                    GlStateManager.rotate(-60.0F, 1.0F, 0.0F, 0.0F);
                     GlStateManager.rotate(0.0F, 0.0F, 1.0F, 0.0F);
                     GlStateManager.rotate(-90.0F, 0.0F, 0.0F, 1.0F);
                     //noinspection deprecation
@@ -47,7 +47,7 @@ public class LayerHeldItem implements LayerRenderer {
                 ModelFenderiumMob model = (ModelFenderiumMob) this.livingEntityRenderer.getMainModel();
                 model.rightArm1.postRender(0F);
                 GlStateManager.translate(.275F, 1.1F, .0F);
-                GlStateManager.scale(.65F, .45F, .65F);
+                GlStateManager.scale(.45F, .45F, .45F);
                 GlStateManager.rotate(80F, 1.0F, 0.0F, 0.0F);
                 //noinspection deprecation
                 Minecraft.getMinecraft().getItemRenderer().renderItem(entityLivingBase, itemStack, ItemCameraTransforms.TransformType.THIRD_PERSON);

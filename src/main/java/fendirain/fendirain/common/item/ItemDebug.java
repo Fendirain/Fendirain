@@ -22,12 +22,12 @@ public class ItemDebug extends ItemFendirain {
         this.setUnlocalizedName("itemDebug");
     }
 
-    public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos blockPos, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onItemUse(ItemStack itemStack, EntityPlayer playerIn, World worldIn, BlockPos blockPos, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (worldIn.getBlockState(blockPos).getBlock().isWood(worldIn, blockPos)) {
             BlockPos blockPos1 = TreeChecker.isTree(worldIn, blockPos);
             if (playerIn.isSneaking()) {
                 if (blockPos1 != null && !worldIn.isRemote) {
-                    TreeChopper treeChopper = new TreeChopper(playerIn, blockPos, blockPos1, true);
+                    TreeChopper treeChopper = new TreeChopper(playerIn, blockPos, blockPos1, true, itemStack);
                     treeChopper.breakAllBlocks(Integer.MAX_VALUE);
                 }
             } else {
@@ -36,7 +36,7 @@ public class ItemDebug extends ItemFendirain {
                     playerIn.addChatComponentMessage(new ChatComponentText(response));
                     LogHelper.info(response);
                     if (blockPos1 != null) {
-                        this.treeChopper = new TreeChopper(playerIn, blockPos, blockPos1, true);
+                        this.treeChopper = new TreeChopper(playerIn, blockPos, blockPos1, true, itemStack);
                     }
                 }
             }

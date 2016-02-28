@@ -19,3 +19,10 @@ itemGroup.fendirain=Fendirain
 # Mobs
 entity.fendirain.fendirain:fendinain.name=Fendinain
 entity.fendirain.fendirain:fenderium.name=Fenderium
+
+# Tooltips
+general.tooltip=General Settings
+world.tooltip=World Settings
+developer.tooltip=Developer Tools (Game-breaking stuff)
+mob.tooltip=Mob Settings
+item.tooltip=Item Settings

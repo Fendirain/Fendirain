@@ -1,10 +1,7 @@
 package fendirain.fendirain.utility.tools;
 
 import fendirain.fendirain.utility.helper.BlockTools;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirt;
-import net.minecraft.block.BlockGrass;
-import net.minecraft.block.BlockLeavesBase;
+import net.minecraft.block.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
@@ -56,6 +53,8 @@ public class TreeChecker {
         Set<BlockPos> baseTree = new LinkedHashSet<>();
         Set<Long> searchedBlocks = new HashSet<>();
 
+        int maxRange = 8;
+
         searchedBlocks.add(blockPos.toLong());
         baseTree.add(blockPos);
 
@@ -66,10 +65,12 @@ public class TreeChecker {
             Set<BlockPos> currentTask = new LinkedHashSet<>(blocksToSearch);
             blocksToSearch.clear();
             currentTask.forEach(blockPos1 -> BlockTools.getSurroundingBlockPos(blockPos1, 1).stream().filter(blockPosChecking -> {
-                boolean searchedBlockContains = searchedBlocks.contains(blockPosChecking.toLong());
-                if (!searchedBlockContains) searchedBlocks.add(blockPosChecking.toLong());
+                if (searchedBlocks.contains(blockPosChecking.toLong())) return false;
+                searchedBlocks.add(blockPosChecking.toLong());
+                if (!(blockPosChecking.getX() < blockPos.getX() + maxRange && blockPosChecking.getX() > blockPos.getX() - maxRange && blockPosChecking.getZ() < blockPos.getZ() + maxRange && blockPosChecking.getZ() > blockPos.getZ() - maxRange))
+                    return false;
                 Block block = world.getBlockState(blockPosChecking).getBlock();
-                return (!searchedBlockContains && ((block.isWood(world, blockPosChecking) || block instanceof BlockLeavesBase)));
+                return ((block.isWood(world, blockPosChecking) || (block instanceof BlockLeavesBase && world.getBlockState(blockPosChecking).getValue(BlockLeaves.DECAYABLE))));
             }).forEach(blockPosAllowed -> {
                 baseTree.add(blockPosAllowed);
                 if (world.getBlockState(blockPosAllowed).getBlock().isWood(world, blockPosAllowed))

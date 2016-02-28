@@ -47,7 +47,7 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public boolean shouldExecute() {
         if (reloaded) return true;
-        if (alreadyExecuting || timeToWaitUntilNextRun > 0) {
+        if (this.entity.worldObj.getGameRules().getBoolean("mobGriefing") || alreadyExecuting || timeToWaitUntilNextRun > 0) {
             return false;
         }
         if ((timeToWaitUntilNextRun == 0 || rand.nextInt(1000) == 1)) {
@@ -79,7 +79,7 @@ public class EntityAIChopTrees extends EntityAIBase {
                 }
             }
             if (closest != null) {
-                treeChopper = new TreeChopper(entity, closest, TreeChecker.isTree(world, closest), true);
+                treeChopper = new TreeChopper(entity, closest, TreeChecker.isTree(world, closest), true, null);
 
                 return true;
             } else timeToWaitUntilNextRun = timeToWaitUntilNextRun + 50;

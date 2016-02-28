@@ -246,13 +246,11 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         return inventory;
     }
 
-    public boolean isAnySpaceForItemPickup(ItemStack item) {
-        if (item != null) {
-            for (ItemStack itemStack : inventory) {
-                if (itemStack == null || itemStack.getUnlocalizedName().matches(item.getUnlocalizedName()) && itemStack.stackSize != this.getInventoryStackLimit()) {
+    public boolean isAnySpaceForItemPickup(ItemStack itemToPickup) {
+        if (itemToPickup != null) {
+            for (ItemStack itemStack : inventory)
+                if (itemStack == null || itemStack.getUnlocalizedName().matches(itemToPickup.getUnlocalizedName()) && itemStack.stackSize != this.getInventoryStackLimit())
                     return true;
-                }
-            }
         }
         return false;
     }
@@ -288,9 +286,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     @Override
     public void onDeath(DamageSource damageSource) {
         super.onDeath(damageSource);
-        if (entityAIChopTrees.isAlreadyExecuting()) {
-            this.entityAIChopTrees.resetTask();
-        }
+        if (entityAIChopTrees.isAlreadyExecuting()) this.entityAIChopTrees.resetTask();
         if (damageSource.getEntity() != null && damageSource.getEntity() instanceof EntityPlayer) {
             EntityPlayer entityPlayer = (EntityPlayer) damageSource.getEntity();
             if (!entityPlayer.capabilities.isCreativeMode || entityPlayer.getHeldItem().getItem() instanceof ItemHoe) {
@@ -322,9 +318,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                 return itemstack;
             } else {
                 itemstack = this.inventory[slot].splitStack(amount);
-                if (this.inventory[slot].stackSize == 0) {
-                    this.inventory[slot] = null;
-                }
+                if (this.inventory[slot].stackSize == 0) this.inventory[slot] = null;
                 return itemstack;
             }
         } else return null;
@@ -339,9 +333,8 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     @Override
     public void setInventorySlotContents(int slot, ItemStack item) {
         this.inventory[slot] = item;
-        if (item != null && item.stackSize > this.getInventoryStackLimit()) {
+        if (item != null && item.stackSize > this.getInventoryStackLimit())
             item.stackSize = this.getInventoryStackLimit();
-        }
     }
 
     @Override
@@ -401,15 +394,12 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         int maxSize = this.maxStackSize * this.inventorySize, inventoryAmount = 0;
         boolean slotNull = false;
         for (ItemStack itemStack : inventory) {
-            if (itemStack != null) {
-                inventoryAmount += itemStack.stackSize;
-            } else slotNull = true;
+            if (itemStack != null) inventoryAmount += itemStack.stackSize;
+            else slotNull = true;
         }
         if (inventoryAmount > 0) {
             int result = (inventoryAmount * 100) / maxSize;
-            if (!slotNull && result < 50) {
-                result = 50;
-            }
+            if (!slotNull && result < 50) result = 50;
             return result;
         } else return 0;
     }
@@ -422,9 +412,8 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         for (int i = 0; i < nbttaglist.tagCount(); ++i) {
             NBTTagCompound nbtTagCompound1 = nbttaglist.getCompoundTagAt(i);
             int j = nbtTagCompound1.getByte("Slot") & 255;
-            if (j >= 0 && j < this.inventory.length) {
+            if (j >= 0 && j < this.inventory.length)
                 this.inventory[j] = ItemStack.loadItemStackFromNBT(nbtTagCompound1);
-            }
         }
         entityAIChopTrees.readFromNBT(nbtTagCompound.getCompoundTag("entityAIChopTrees"));
     }

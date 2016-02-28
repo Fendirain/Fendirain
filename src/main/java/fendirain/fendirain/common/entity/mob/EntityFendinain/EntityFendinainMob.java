@@ -203,37 +203,29 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                 } else if (itemStack.getItem() == Items.arrow) {
                     String[] printQueue = new String[this.inventorySize];
                     for (int slot = 0; slot < inventory.length; slot++) {
-                        if (inventory[slot] != null) {
+                        if (inventory[slot] != null)
                             printQueue[slot] = (inventory[slot].getItem().getItemStackDisplayName(inventory[slot]) + "x" + inventory[slot].stackSize);
-                        } else {
-                            printQueue[slot] = (slot + " is null");
-                        }
+                        else printQueue[slot] = (slot + " is null");
                     }
-                    if (!worldObj.isRemote) {
+                    if (!worldObj.isRemote)
                         entityPlayer.addChatMessage(new ChatComponentText(Arrays.toString(printQueue)));
-                    }
                     LogHelper.info(Arrays.toString(printQueue));
                     return true;
                 } else if (itemStack.getItem() == Items.blaze_rod) {
                     entityAIPlantSapling.startExecuting();
                     return true;
                 } else if (itemStack.getItem() == Items.diamond_axe) {
-                    for (int slot = 0; slot < inventory.length; slot++) {
-                        inventory[slot] = null;
-                    }
+                    for (int slot = 0; slot < inventory.length; slot++) inventory[slot] = null;
                     this.setCurrentItemOrArmor(0, null);
                     return true;
                 } else if (itemStack.getItem() == Items.wooden_axe) {
                     Boolean alreadyChanged = false;
                     for (int slot = 0; slot < inventory.length; slot++) {
                         if (inventory[slot] != null) {
-                            if (alreadyChanged) {
-                                inventory[slot] = null;
-                            } else {
+                            if (alreadyChanged) inventory[slot] = null;
+                            else {
                                 inventory[slot].stackSize -= 1;
-                                if (inventory[slot].stackSize == 0) {
-                                    inventory[slot] = null;
-                                }
+                                if (inventory[slot].stackSize == 0) inventory[slot] = null;
                                 alreadyChanged = true;
                             }
                         }
@@ -243,11 +235,9 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                 } else if (itemStack.getItem() == Items.paper) {
                     String[] printQueue = new String[this.inventorySize];
                     for (int slot = 0; slot < inventory.length; slot++) {
-                        if (inventory[slot] != null) {
+                        if (inventory[slot] != null)
                             printQueue[slot] = (inventory[slot].getItem().getItemStackDisplayName(inventory[slot]) + "x" + inventory[slot].stackSize);
-                        } else {
-                            printQueue[slot] = (slot + " is null");
-                        }
+                        else printQueue[slot] = (slot + " is null");
                     }
                     if (!worldObj.isRemote) {
                         entityPlayer.addChatMessage(new ChatComponentText("Health: " + this.getHealth()));
@@ -298,35 +288,29 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
             for (int slot = 0; slot < inventory.length; slot++) {
                 if (inventory[slot] == null) {
                     int amountToAdd;
-                    if (this.getInventoryStackLimit() < itemStack.stackSize) {
+                    if (this.getInventoryStackLimit() < itemStack.stackSize)
                         amountToAdd = this.getInventoryStackLimit();
-                    } else amountToAdd = itemStack.stackSize;
+                    else amountToAdd = itemStack.stackSize;
                     inventory[slot] = itemStack.copy();
                     inventory[slot].stackSize = amountToAdd;
                     itemStack.stackSize -= amountToAdd;
                 } else if (inventory[slot].getUnlocalizedName().matches(itemStack.getUnlocalizedName())) {
                     int freeSpace = this.getInventoryStackLimit() - this.inventory[slot].stackSize, amountToAdd;
-                    if (freeSpace < itemStack.stackSize) {
-                        amountToAdd = freeSpace;
-                    } else amountToAdd = itemStack.stackSize;
+                    if (freeSpace < itemStack.stackSize) amountToAdd = freeSpace;
+                    else amountToAdd = itemStack.stackSize;
                     this.inventory[slot].stackSize += amountToAdd;
                     itemStack.stackSize -= amountToAdd;
                 }
                 if (itemStack.stackSize == 0) break;
             }
-            if (this.getHeldItem() == null) {
-                this.setCurrentItemOrArmor(0, getRandomSlot());
-            }
+            if (this.getHeldItem() == null) this.setCurrentItemOrArmor(0, getRandomSlot());
         }
     }
 
     @Override
     public void dropFewItems(boolean wasHitRecently, int lootingLevel) {
-        for (ItemStack itemStack : inventory) {
-            if (itemStack != null) {
-                this.entityDropItem(itemStack, 1F);
-            }
-        }
+        for (ItemStack itemStack : inventory)
+            if (itemStack != null) this.entityDropItem(itemStack, 1F);
     }
 
     @Override
@@ -384,9 +368,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                 return itemstack;
             } else {
                 itemstack = this.inventory[slot].splitStack(amount);
-                if (this.inventory[slot].stackSize == 0) {
-                    this.inventory[slot] = null;
-                }
+                if (this.inventory[slot].stackSize == 0) this.inventory[slot] = null;
                 return itemstack;
             }
         } else return null;
@@ -401,9 +383,8 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     @Override
     public void setInventorySlotContents(int slot, ItemStack item) {
         this.inventory[slot] = item;
-        if (item != null && item.stackSize > this.getInventoryStackLimit()) {
+        if (item != null && item.stackSize > this.getInventoryStackLimit())
             item.stackSize = this.getInventoryStackLimit();
-        }
     }
 
     @Override
@@ -461,14 +442,11 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         super.readFromNBT(nbtTagCompound);
         NBTTagList nbttaglist = nbtTagCompound.getTagList("Items", 10);
         this.inventory = new ItemStack[this.getSizeInventory()];
-
         for (int i = 0; i < nbttaglist.tagCount(); ++i) {
             NBTTagCompound nbtTagCompound1 = nbttaglist.getCompoundTagAt(i);
             int j = nbtTagCompound1.getByte("Slot") & 255;
-
-            if (j >= 0 && j < this.inventory.length) {
+            if (j >= 0 && j < this.inventory.length)
                 this.inventory[j] = ItemStack.loadItemStackFromNBT(nbtTagCompound1);
-            }
         }
     }
 
@@ -502,33 +480,25 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                         break;
                     }
                 }
-                if (!contained) {
-                    items.add(item);
-                }
+                if (!contained) items.add(item);
             }
         }
-        if (!items.isEmpty()) {
-            return items.get(rand.nextInt(items.size()));
-        } else return null;
+        if (!items.isEmpty()) return items.get(rand.nextInt(items.size()));
+        else return null;
     }
 
     public boolean isAnySpaceForItemPickup(ItemStack item) {
         if (item != null) {
-            for (ItemStack itemStack : inventory) {
-                if (itemStack == null || itemStack.getUnlocalizedName().matches(item.getUnlocalizedName()) && itemStack.stackSize != this.getInventoryStackLimit()) {
+            for (ItemStack itemStack : inventory)
+                if (itemStack == null || itemStack.getUnlocalizedName().matches(item.getUnlocalizedName()) && itemStack.stackSize != this.getInventoryStackLimit())
                     return true;
-                }
-            }
         }
         return false;
     }
 
     public boolean isItemToPlace() {
-        for (ItemStack itemStack : inventory) {
-            if (itemStack != null) {
-                return true;
-            }
-        }
+        for (ItemStack itemStack : inventory)
+            if (itemStack != null) return true;
         return false;
     }
 
@@ -542,19 +512,13 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                 if (inventory[slot].stackSize >= amount) {
                     inventory[slot].stackSize -= amount;
                     amount = 0;
-                    if (inventory[slot].stackSize <= 0) {
-                        inventory[slot] = null;
-                    }
+                    if (inventory[slot].stackSize <= 0) inventory[slot] = null;
                 } else {
                     amount -= inventory[slot].stackSize;
                     inventory[slot] = null;
                 }
-                if (resetCurrentSapling) {
-                    this.setCurrentItemOrArmor(0, this.getRandomSlot());
-                }
-                if (amount == 0) {
-                    break;
-                }
+                if (resetCurrentSapling) this.setCurrentItemOrArmor(0, this.getRandomSlot());
+                if (amount == 0) break;
             }
         }
     }
@@ -563,15 +527,12 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         int maxSize = this.maxStackSize * this.inventorySize, inventoryAmount = 0;
         boolean slotNull = false;
         for (ItemStack itemStack : inventory) {
-            if (itemStack != null) {
-                inventoryAmount += itemStack.stackSize;
-            } else slotNull = true;
+            if (itemStack != null) inventoryAmount += itemStack.stackSize;
+            else slotNull = true;
         }
         if (inventoryAmount > 0) {
             int result = (inventoryAmount * 100) / maxSize;
-            if (!slotNull && result < 50) {
-                result = 50;
-            }
+            if (!slotNull && result < 50) result = 50;
             return result;
         } else return 0;
     }

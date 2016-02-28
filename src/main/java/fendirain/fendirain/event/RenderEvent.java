@@ -1,16 +1,14 @@
 package fendirain.fendirain.event;
 
-import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
 import fendirain.fendirain.common.item.ItemDebug;
+import fendirain.fendirain.utility.helper.BlockTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.IResourceManager;
@@ -36,72 +34,66 @@ public class RenderEvent implements IResourceManagerReloadListener {
 
     @SubscribeEvent
     public void renderEvent(RenderWorldLastEvent renderWorldLastEvent) {
-        PlayerControllerMP playerControllerMP = Minecraft.getMinecraft().playerController;
         EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
         World world = entityPlayer.worldObj;
 
         // Temp code for debugging
         if (entityPlayer.getCurrentEquippedItem() != null && (entityPlayer.getCurrentEquippedItem().getItem() instanceof ItemDebug)) {
-            MovingObjectPosition movingObjectPosition = entityPlayer.rayTrace(playerControllerMP.getBlockReachDistance(), renderWorldLastEvent.partialTicks);
-            if (movingObjectPosition != null) {
-                Item item = entityPlayer.getCurrentEquippedItem().getItem();
-                Set<BlockPos> blockPosSet;
-                if (item instanceof ItemDebug) blockPosSet = ((ItemDebug) item).getBlocks();
-                else return;
-                if (!blockPosSet.isEmpty()) {
-                    blockPosSet.forEach(blockPos -> {
-                        MovingObjectPosition movingObjectPositionIn = new MovingObjectPosition(new Vec3(0, 0, 0), null, blockPos);
-                        GlStateManager.enableBlend();
-                        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-                        GlStateManager.color(255F, 238F, 0.0F, 1F);
-                        GL11.glLineWidth(2.0F);
-                        GlStateManager.disableTexture2D();
-                        GlStateManager.depthMask(false);
-                        BlockPos blockpos = movingObjectPositionIn.getBlockPos();
-                        Block block = world.getBlockState(blockpos).getBlock();
-                        if (block.getMaterial() != Material.air && world.getWorldBorder().contains(blockpos)) {
-                            block.setBlockBoundsBasedOnState(world, blockpos);
-                            double d0 = entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * (double) renderWorldLastEvent.partialTicks;
-                            double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * (double) renderWorldLastEvent.partialTicks;
-                            double d2 = entityPlayer.lastTickPosZ + (entityPlayer.posZ - entityPlayer.lastTickPosZ) * (double) renderWorldLastEvent.partialTicks;
-                            AxisAlignedBB boundingBox = block.getSelectedBoundingBox(world, blockpos).expand(0.0020000000949949026D, 0.0020000000949949026D, 0.0020000000949949026D).offset(-d0, -d1, -d2);
-                            Tessellator tessellator = Tessellator.getInstance();
-                            WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-                            worldrenderer.begin(3, DefaultVertexFormats.POSITION);
-                            worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
-                            worldrenderer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex();
-                            worldrenderer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).endVertex();
-                            worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).endVertex();
-                            worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
-                            tessellator.draw();
-                            worldrenderer.begin(3, DefaultVertexFormats.POSITION);
-                            worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
-                            worldrenderer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).endVertex();
-                            worldrenderer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).endVertex();
-                            worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).endVertex();
-                            worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
-                            tessellator.draw();
-                            worldrenderer.begin(1, DefaultVertexFormats.POSITION);
-                            worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
-                            worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
-                            worldrenderer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex();
-                            worldrenderer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).endVertex();
-                            worldrenderer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).endVertex();
-                            worldrenderer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).endVertex();
-                            worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).endVertex();
-                            worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).endVertex();
-                            tessellator.draw();
-                        }
-                        GlStateManager.depthMask(true);
-                        GlStateManager.enableTexture2D();
-                        GlStateManager.disableBlend();
-                    });
-                }
+            Item item = entityPlayer.getCurrentEquippedItem().getItem();
+            Set<BlockPos> blockPosSet = ((ItemDebug) item).getBlocks();
+            if (!blockPosSet.isEmpty()) {
+                blockPosSet.stream().filter(blockPos -> BlockTools.compareTo(entityPlayer.getPosition(), blockPos) <= 64).forEach(blockPos -> {
+                    MovingObjectPosition movingObjectPositionIn = new MovingObjectPosition(new Vec3(0, 0, 0), null, blockPos);
+                    GlStateManager.enableBlend();
+                    GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+                    GlStateManager.color(255F, 238F, 0.0F, 1F);
+                    GL11.glLineWidth(2.0F);
+                    GlStateManager.disableTexture2D();
+                    GlStateManager.depthMask(false);
+                    BlockPos blockpos = movingObjectPositionIn.getBlockPos();
+                    Block block = world.getBlockState(blockpos).getBlock();
+                    if (block.getMaterial() != Material.air && world.getWorldBorder().contains(blockpos)) {
+                        block.setBlockBoundsBasedOnState(world, blockpos);
+                        double d0 = entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * (double) renderWorldLastEvent.partialTicks;
+                        double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * (double) renderWorldLastEvent.partialTicks;
+                        double d2 = entityPlayer.lastTickPosZ + (entityPlayer.posZ - entityPlayer.lastTickPosZ) * (double) renderWorldLastEvent.partialTicks;
+                        AxisAlignedBB boundingBox = block.getSelectedBoundingBox(world, blockpos).expand(0.0020000000949949026D, 0.0020000000949949026D, 0.0020000000949949026D).offset(-d0, -d1, -d2);
+                        Tessellator tessellator = Tessellator.getInstance();
+                        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+                        worldrenderer.begin(3, DefaultVertexFormats.POSITION);
+                        worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
+                        worldrenderer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex();
+                        worldrenderer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).endVertex();
+                        worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).endVertex();
+                        worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
+                        tessellator.draw();
+                        worldrenderer.begin(3, DefaultVertexFormats.POSITION);
+                        worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
+                        worldrenderer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).endVertex();
+                        worldrenderer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).endVertex();
+                        worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).endVertex();
+                        worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
+                        tessellator.draw();
+                        worldrenderer.begin(1, DefaultVertexFormats.POSITION);
+                        worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
+                        worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
+                        worldrenderer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex();
+                        worldrenderer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).endVertex();
+                        worldrenderer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).endVertex();
+                        worldrenderer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).endVertex();
+                        worldrenderer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).endVertex();
+                        worldrenderer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).endVertex();
+                        tessellator.draw();
+                    }
+                    GlStateManager.depthMask(true);
+                    GlStateManager.enableTexture2D();
+                    GlStateManager.disableBlend();
+                });
             }
-        }
+        } // End of temp code
 
-        // Not yet working - Will fix at a later time.
-        for (EntityFenderiumMob entityFenderiumMob : world.getEntitiesWithinAABB(EntityFenderiumMob.class, entityPlayer.getEntityBoundingBox().expand(31, 31, 31))) {
+        // Not yet working - TODO Will fix at a later time.
+        /*for (EntityFenderiumMob entityFenderiumMob : world.getEntitiesWithinAABB(EntityFenderiumMob.class, entityPlayer.getEntityBoundingBox().expand(31, 31, 31))) {
             if (entityFenderiumMob.isCurrentlyChopping() && entityFenderiumMob.getCurrentlyBreakingPos() != null && entityFenderiumMob.getWholeTreeProgress() != -1) {
                 double d0 = entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * (double) renderWorldLastEvent.partialTicks;
                 double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * (double) renderWorldLastEvent.partialTicks;
@@ -144,7 +136,7 @@ public class RenderEvent implements IResourceManagerReloadListener {
                 GlStateManager.popMatrix();
                 // postRenderDamagedBlocks END
             }
-        }
+        }*/
     }
 
     @Override

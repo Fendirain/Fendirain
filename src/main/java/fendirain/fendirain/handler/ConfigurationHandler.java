@@ -14,6 +14,7 @@ import java.io.File;
 public class ConfigurationHandler {
 
     public static final String CATEGORY_GENERAL = "general";
+    public static final String CATEGORY_WORLD = "world";
     public static final String CATEGORY_DEVELOPER = "developer";
     public static final String CATEGORY_MOB = "mob";
     public static final String CATEGORY_ITEM = "item";
@@ -25,7 +26,7 @@ public class ConfigurationHandler {
     }
 
     private static void loadConfiguration() {
-        ConfigValues.isGenerationEnabled = configuration.getBoolean("oreGeneration", CATEGORY_GENERAL, true, "Disable ore generation.");
+        ConfigValues.isGenerationEnabled = configuration.getBoolean("oreGeneration", CATEGORY_WORLD, true, "Disable ore generation.");
         ConfigValues.isDebugSettingsEnabled = configuration.getBoolean("debug", CATEGORY_DEVELOPER, false, "Enables debug settings.");
 
         // EntityFendinainMob

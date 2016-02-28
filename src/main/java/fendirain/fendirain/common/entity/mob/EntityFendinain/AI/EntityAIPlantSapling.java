@@ -24,7 +24,7 @@ public class EntityAIPlantSapling extends EntityAIBase {
 
     @Override
     public boolean shouldExecute() {
-        return timeSinceLastPlacement > minTimeToWaitToPlant && (timeSinceLastPlacement > maxTimeToWaitToPlant || new Random().nextInt(600) == 0) && entity.isItemToPlace();
+        return this.entity.worldObj.getGameRules().getBoolean("mobGriefing") && timeSinceLastPlacement > minTimeToWaitToPlant && (timeSinceLastPlacement > maxTimeToWaitToPlant || new Random().nextInt(600) == 0) && entity.isItemToPlace();
     }
 
     @Override

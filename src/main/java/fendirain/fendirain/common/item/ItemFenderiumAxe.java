@@ -47,7 +47,8 @@ public class ItemFenderiumAxe extends ItemAxe {
                 } else {
                     BlockPos treeLeaf = TreeChecker.isTree(world, blockPos);
                     if (treeLeaf != null) {
-                        if (!world.isRemote) treeChopper = new TreeChopper(entityPlayerIn, blockPos, treeLeaf, true);
+                        if (!world.isRemote)
+                            treeChopper = new TreeChopper(entityPlayerIn, blockPos, treeLeaf, true, itemStack);
                         entityPlayerIn.setItemInUse(itemStack, this.getMaxItemUseDuration(itemStack));
                         return true;
                     }
@@ -68,8 +69,7 @@ public class ItemFenderiumAxe extends ItemAxe {
     public void onPlayerStoppedUsing(ItemStack itemStack, World worldIn, EntityPlayer entityPlayerIn, int timeLeft) {
         if (!worldIn.isRemote) {
             int maxToBreak = ((this.getMaxItemUseDuration(itemStack) - timeLeft) / 2 < (itemStack.getMaxDamage() - itemStack.getItemDamage()) / axeDamagePerBlock) ? (this.getMaxItemUseDuration(itemStack) - timeLeft) / 2 : (itemStack.getMaxDamage() - itemStack.getItemDamage()) / axeDamagePerBlock;
-            int itemDamage = treeChopper.breakAllBlocks(maxToBreak);
-            if (itemDamage > 0) itemStack.damageItem(itemDamage * axeDamagePerBlock, entityPlayerIn);
+            treeChopper.breakAllBlocks(maxToBreak);
         }
         if (itemStack.getMaxDamage() <= itemStack.getItemDamage()) {
             PacketHandler.simpleNetworkWrapper.sendTo(new DestroyItemPacket(entityPlayerIn.getCurrentEquippedItem()), (EntityPlayerMP) entityPlayerIn);
@@ -138,19 +138,16 @@ public class ItemFenderiumAxe extends ItemAxe {
                 if (treeChopper == null || !treeChopper.isBlockContainedInTree(blockPos)) {
                     BlockPos treeLeaf = TreeChecker.isTree(world, blockPos);
                     if (treeLeaf != null) {
-                        treeChopper = new TreeChopper(entityPlayerIn, blockPos, treeLeaf, true);
+                        treeChopper = new TreeChopper(entityPlayerIn, blockPos, treeLeaf, true, itemStack);
                         treeChopper.breakFurthestBlock();
-                        itemStack.damageItem(1, entityPlayerIn);
                     } else {
-                        treeChopper = new TreeChopper(entityPlayerIn, blockPos, null, false);
+                        treeChopper = new TreeChopper(entityPlayerIn, blockPos, null, false, itemStack);
                         treeChopper.breakFurthestBlock();
-                        itemStack.damageItem(1, entityPlayerIn);
                     }
                 } else {
                     if (treeChopper.getMainBlockPos().toLong() != blockPos.toLong())
                         treeChopper.setMainBlockPos(blockPos);
                     treeChopper.breakFurthestBlock();
-                    itemStack.damageItem(1, entityPlayerIn);
                 }
                 if (treeChopper.isFinished()) treeChopper = null;
                 lastUsed = 0;
@@ -172,6 +169,10 @@ public class ItemFenderiumAxe extends ItemAxe {
     @Override
     public String getUnlocalizedName(ItemStack itemStack) {
         return String.format("item.%s%s", Reference.MOD_ID + ":", getUnwrappedUnlocalizedName(super.getUnlocalizedName()));
+    }
+
+    public int getDamageAmplifier() {
+        return this.axeDamagePerBlock;
     }
 
     protected String getUnwrappedUnlocalizedName(String unlocalizedName) {

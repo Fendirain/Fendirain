@@ -44,9 +44,8 @@ public class EntityAIBegPlayer extends EntityAIBase {
     public boolean continueExecuting() {
         if (entity.worldObj != null) {
             if (targetEntity != null && targetEntity.getHeldItem() != null) {
-                if (entity.isValidForPickup(targetEntity.getHeldItem().getItem()) && entity.isAnySpaceForItemPickup(targetEntity.getHeldItem()) && !targetEntity.isInWater() && !(entity.getDistanceToEntity(targetEntity) > 8)) {
+                if (entity.isValidForPickup(targetEntity.getHeldItem().getItem()) && entity.isAnySpaceForItemPickup(targetEntity.getHeldItem()) && !targetEntity.isInWater() && !(entity.getDistanceToEntity(targetEntity) > 8))
                     return true;
-                }
             }
         }
         if (entity.worldObj != null && targetEntity != null) {
@@ -94,15 +93,12 @@ public class EntityAIBegPlayer extends EntityAIBase {
     public void updateTask() {
         if (rand.nextInt(200) == 0) {
             int newInt = -1;
-            while (newInt == -1 || newInt == randInt) {
-                newInt = rand.nextInt(4);
-            }
+            while (newInt == -1 || newInt == randInt) newInt = rand.nextInt(4);
             randInt = newInt;
             startExecuting();
         }
-        if (targetEntity != null && entity.getDistanceToEntity(targetEntity) > 2 && continueExecuting()) {
+        if (targetEntity != null && entity.getDistanceToEntity(targetEntity) > 2 && continueExecuting())
             startExecuting();
-        }
     }
 
     @Override

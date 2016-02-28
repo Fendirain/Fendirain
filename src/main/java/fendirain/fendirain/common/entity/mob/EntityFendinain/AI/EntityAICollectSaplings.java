@@ -51,9 +51,7 @@ public class EntityAICollectSaplings extends EntityAIBase {
 
     @Override
     public void startExecuting() {
-        if (targetItem != null) {
-            pathFinder.tryMoveToXYZ(targetItem.posX, targetItem.posY, targetItem.posZ, this.speed);
-        }
+        if (targetItem != null) pathFinder.tryMoveToXYZ(targetItem.posX, targetItem.posY, targetItem.posZ, this.speed);
     }
 
     @Override
@@ -64,13 +62,9 @@ public class EntityAICollectSaplings extends EntityAIBase {
                 int beforePickupSize = itemStack.stackSize;
                 entity.putIntoInventory(itemStack);
                 if (beforePickupSize != itemStack.stackSize) {
-                    if (itemStack.stackSize == 0) {
-                        targetItem.setDead();
-                    }
+                    if (itemStack.stackSize == 0) targetItem.setDead();
                 }
             }
         }
     }
-
-
 }

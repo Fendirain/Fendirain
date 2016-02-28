@@ -81,7 +81,7 @@ public class EntityAIThrowWoodAtPlayer extends EntityAIBase {
                     }
                 }
                 entity.clearInventory();
-                switch (rand.nextInt(4)) {
+                /*switch (rand.nextInt(4)) {
                     case 0:
                         pathFinder.tryMoveToXYZ(targetEntity.posX + (rand.nextInt(6) + 2), targetEntity.posY, targetEntity.posZ + (rand.nextInt(6) + 2), this.speed);
                         break;
@@ -94,7 +94,7 @@ public class EntityAIThrowWoodAtPlayer extends EntityAIBase {
                     case 3:
                         pathFinder.tryMoveToXYZ(targetEntity.posX - (rand.nextInt(6) + 2), targetEntity.posY, targetEntity.posZ - (rand.nextInt(6) + 2), this.speed);
                         break;
-                }
+                }*/
             }
         }
         if (targetEntity != null && pathFinder.noPath() && entity.getDistanceToEntity(targetEntity) > 4 && continueExecuting())

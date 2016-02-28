@@ -92,7 +92,7 @@ public class ModelFenderiumMob extends ModelFendirain {
     public void renderFenderium(EntityFenderiumMob entityFenderiumMob, float time, float walkSpeed, float otherAngle, float rotationYaw, float rotationPitch, float scale) {
         this.mainBody.render(scale);
         setRotationAngles(time, walkSpeed, otherAngle, rotationYaw, rotationPitch, scale, entityFenderiumMob);
-        if (entityFenderiumMob.getHeldItem() != null && entityFenderiumMob.isCurrentlyChopping()) {
+        /*if (entityFenderiumMob.getHeldItem() != null && entityFenderiumMob.isCurrentlyChopping()) {
             if (this.rightArm1.rotateAngleX == 0) {
                 this.rightArm1.rotateAngleX = -2.5F;
                 lowerArm = false;
@@ -100,24 +100,27 @@ public class ModelFenderiumMob extends ModelFendirain {
             this.rightArm1.rotateAngleX = lowerArm ? this.rightArm1.rotateAngleX + 0.18F : this.rightArm1.rotateAngleX - 0.18F;
             if (this.rightArm1.rotateAngleX <= -3.5) lowerArm = true;
             else if (this.rightArm1.rotateAngleX >= -2.5) lowerArm = false;
-        } else this.rightArm1.rotateAngleX = 0.0F;
+        } else this.rightArm1.rotateAngleX = 0.0F;*/
     }
 
     @Override
     public void setRotationAngles(float time, float walkSpeed, float otherAngle, float rotationYaw, float rotationPitch, float scale, Entity entity) {
         this.head.rotateAngleY = rotationYaw / (180F / (float) Math.PI);
         this.head.rotateAngleX = rotationPitch / (180F / (float) Math.PI);
+        this.leftArm1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 2.0F * walkSpeed * 0.5F;
+        this.leftArm1.rotateAngleZ = 0.0F;
         EntityFenderiumMob entityFenderiumMob = (EntityFenderiumMob) entity;
-        if (entityFenderiumMob.getHeldItem() == null || !entityFenderiumMob.isCurrentlyChopping()) {
-            this.rightArm1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 2.0F * walkSpeed * 0.5F;
-            this.rightArm1.rotateAngleZ = 0.0F;
-            this.leftLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 1.4F * walkSpeed;
-            this.leftLeg1.rotateAngleY = 0.0F;
-            this.rightLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 1.4F * walkSpeed;
-            this.rightLeg1.rotateAngleY = 0.0F;
-        } else if (this.leftLeg1.rotateAngleX != 0 || this.rightLeg1.rotateAngleX != 0) {
+        /*if (entityFenderiumMob.getHeldItem() == null || !entityFenderiumMob.isCurrentlyChopping()) {
+            this.rightArm1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 2.0F * walkSpeed * 0.5F;*/
+        this.rightArm1.rotateAngleX = 0.0F;
+        this.rightArm1.rotateAngleZ = 0.0F;
+        this.leftLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 1.4F * walkSpeed;
+        this.leftLeg1.rotateAngleY = 0.0F;
+        this.rightLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 1.4F * walkSpeed;
+        this.rightLeg1.rotateAngleY = 0.0F;
+        /*} else if (this.leftLeg1.rotateAngleX != 0 || this.rightLeg1.rotateAngleX != 0) {
             this.leftLeg1.rotateAngleX = 0.0F;
             this.rightLeg1.rotateAngleX = 0.0F;
-        }
+        }*/
     }
 }

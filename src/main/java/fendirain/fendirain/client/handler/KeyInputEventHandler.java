@@ -9,11 +9,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 public class KeyInputEventHandler {
 
     private static Key getPressedKeyBinding() {
-
-        /*if (KeyBindings.[key].isPressed()) {
-            return Key.[key];
-        }*/
-
+        //if (KeyBindings.[key].isPressed()) return Key.[key];
         return Key.UNKNOWN;
     }
 
