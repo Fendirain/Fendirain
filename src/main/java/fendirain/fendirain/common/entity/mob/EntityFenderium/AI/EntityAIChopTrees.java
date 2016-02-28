@@ -47,7 +47,7 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public boolean shouldExecute() {
         if (reloaded) return true;
-        if (this.entity.worldObj.getGameRules().getBoolean("mobGriefing") || alreadyExecuting || timeToWaitUntilNextRun > 0) {
+        if (!this.entity.worldObj.getGameRules().getBoolean("mobGriefing") || alreadyExecuting || timeToWaitUntilNextRun > 0) {
             return false;
         }
         if ((timeToWaitUntilNextRun == 0 || rand.nextInt(1000) == 1)) {
@@ -93,6 +93,8 @@ public class EntityAIChopTrees extends EntityAIBase {
         if (entity.worldObj.getBlockState(treeChopper.getMainBlockPos()).getBlock() != treeChopper.getMainBlock()) {
             treeChopper.setMainBlockPosToClosest();
         }
+        if (rand.nextInt(12) == 0)
+            treeChopper.updateCurrentTreeBlocks(); // Occasionally checks if all the blocks are valid so the entity won't get stuck if the whole tree was suddenly destroyed.
         return !treeChopper.isFinished();
     }
 

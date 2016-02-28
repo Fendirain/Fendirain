@@ -272,6 +272,13 @@ public class TreeChopper {
             world.sendBlockBreakProgress(entity.getEntityId(), mainBlockPos, -1);
     }
 
+    public void updateCurrentTreeBlocks() {
+        Iterator<BlockPos> blockPosIterator = currentTree.iterator();
+        while (blockPosIterator.hasNext())
+            if (world.getBlockState(blockPosIterator.next()).getBlock() != mainBlock) blockPosIterator.remove();
+        if (currentTree.isEmpty()) this.isFinished = true;
+    }
+
     public int getNumberOfLogs() {
         return this.currentTree.size();
     }
