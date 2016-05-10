@@ -3,7 +3,7 @@ package fendirain.fendirain.worldgen;
 import com.google.common.base.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 
@@ -23,7 +23,7 @@ public class WorldGenCustom extends WorldGenerator {
 
     @Override
     public boolean generate(World world, Random rand, BlockPos blockPos) {
-        if (world.getBlockState(blockPos).getBlock().isReplaceableOreGen(world, blockPos, target)) {
+        if (world.getBlockState(blockPos).getBlock().isReplaceableOreGen(world.getBlockState(blockPos), world, blockPos, target)) {
             world.setBlockState(blockPos, this.block.getDefaultState());
             return true;
         }
@@ -31,7 +31,7 @@ public class WorldGenCustom extends WorldGenerator {
     }
 
     public boolean generate(World world, Random rand, BlockPos blockPos, int numberOfBlocks) {
-        if (world.getBlockState(blockPos).getBlock().isReplaceableOreGen(world, blockPos, target)) {
+        if (world.getBlockState(blockPos).getBlock().isReplaceableOreGen(world.getBlockState(blockPos), world, blockPos, target)) {
             world.setBlockState(blockPos, this.block.getStateFromMeta(this.blockMeta), 2);
             int lastDirection = -1;
             while (numberOfBlocks > 1) {
@@ -57,7 +57,7 @@ public class WorldGenCustom extends WorldGenerator {
                         blockPos.north();
                         break;
                 }
-                if (world.getBlockState(blockPos).getBlock().isReplaceableOreGen(world, blockPos, this.target))
+                if (world.getBlockState(blockPos).getBlock().isReplaceableOreGen(world.getBlockState(blockPos), world, blockPos, this.target))
                     world.setBlockState(blockPos, this.block.getStateFromMeta(this.blockMeta), 2);
                 lastDirection = randomInt;
                 numberOfBlocks--;

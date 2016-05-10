@@ -4,7 +4,8 @@ import fendirain.fendirain.client.models.blocks.ModelFendirain;
 import fendirain.fendirain.common.entity.mob.EntityFendinain.EntityFendinainMob;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.MathHelper;
 
 public class ModelFendinainMob extends ModelFendirain {
     public ModelRenderer head;
@@ -99,7 +100,7 @@ public class ModelFendinainMob extends ModelFendirain {
         this.rightLeg.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 1.4F * walkSpeed;
         this.rightLeg.rotateAngleY = 0.0F;
         EntityFendinainMob entityFendinainMob = (EntityFendinainMob) entity;
-        if (entityFendinainMob.getHeldItem() != null) {
+        if (entityFendinainMob.getHeldItem(EnumHand.MAIN_HAND) != null) {
             if (this.leftArm1.rotateAngleX != -70.43F) this.leftArm1.rotateAngleX = -70.43F;
         } else {
             if (this.leftArm1.rotateAngleX == -70.43F) this.leftArm1.rotateAngleX = 0.0F;

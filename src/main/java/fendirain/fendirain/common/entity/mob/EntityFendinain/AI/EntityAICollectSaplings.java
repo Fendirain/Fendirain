@@ -5,7 +5,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathNavigate;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class EntityAICollectSaplings extends EntityAIBase {
         }
         if (entity.worldObj != null) {
             @SuppressWarnings("unchecked")
-            List<EntityItem> items = entity.worldObj.getEntitiesWithinAABB(EntityItem.class, AxisAlignedBB.fromBounds(entity.posX - 1, entity.posY - 1, entity.posZ - 1, entity.posX + 1, entity.posY + 1, entity.posZ + 1).expand(10.0, 10.0, 10.0));
+            List<EntityItem> items = entity.worldObj.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(entity.posX - 1, entity.posY - 1, entity.posZ - 1, entity.posX + 1, entity.posY + 1, entity.posZ + 1).expand(10.0, 10.0, 10.0));
             EntityItem closest = null;
             double closestDistance = Double.MAX_VALUE;
             for (EntityItem item : items) {

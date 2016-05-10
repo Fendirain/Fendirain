@@ -3,10 +3,11 @@ package fendirain.fendirain.worldgen;
 import fendirain.fendirain.init.ModBlocks;
 import fendirain.fendirain.reference.ConfigValues;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.pattern.BlockHelper;
+import net.minecraft.block.state.pattern.BlockMatcher;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
@@ -15,16 +16,16 @@ import java.util.Random;
 public class FendiOreGenerator implements IWorldGenerator {
 
     @Override
-    public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
+    public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
         if (ConfigValues.isGenerationEnabled) {
             Block blockToGenerate = ModBlocks.blockOreFendi;
-            switch (world.provider.getDimensionId()) {
-                case -1: // Nether
+            switch (world.provider.getDimensionType()) {
+                case NETHER: // Nether
                     break;
-                case 0: // Over-world
-                    generateOres(world, random, blockToGenerate, Blocks.stone, chunkX, chunkZ, 4, 1, 88, 1);
+                case OVERWORLD: // Over-world
+                    generateOres(world, random, blockToGenerate, Blocks.STONE, chunkX, chunkZ, 4, 1, 88, 1);
                     break;
-                case 1: // End
+                case THE_END: // End
                     break;
             }
         }
@@ -33,7 +34,7 @@ public class FendiOreGenerator implements IWorldGenerator {
     @SuppressWarnings("unchecked")
     private void generateOres(World world, Random rand, Block blockToGenerate, Block blockToReplace, int chunkX, int chunkZ, int maxVeinSize, int minHeight, int maxHeight, int chanceToGenerate) {
         int heightDiff = (maxHeight - minHeight) + 1;
-        WorldGenCustom worldGenCustom = new WorldGenCustom(blockToGenerate, maxVeinSize, BlockHelper.forBlock(blockToReplace));
+        WorldGenCustom worldGenCustom = new WorldGenCustom(blockToGenerate, maxVeinSize, BlockMatcher.forBlock(blockToReplace));
         for (int i = 1; i <= chanceToGenerate; i++) {
             if (rand.nextInt(4) == 1) {
                 BlockPos blockPos = new BlockPos(chunkX + rand.nextInt(16), minHeight + rand.nextInt(heightDiff), chunkZ + rand.nextInt(16));
@@ -43,4 +44,6 @@ public class FendiOreGenerator implements IWorldGenerator {
             }
         }
     }
+
+
 }

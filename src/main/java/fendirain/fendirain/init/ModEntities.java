@@ -6,7 +6,7 @@ import fendirain.fendirain.common.entity.mob.EntityFendinain.EntityFendinainMob;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.reference.EntityNames;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.init.Biomes;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 public class ModEntities {
@@ -24,24 +24,24 @@ public class ModEntities {
 
     @SuppressWarnings("unchecked")
     private static void registerSpawningInTreeBiomes(Class mobClass, int spawnCutter) {
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.birchForest);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.birchForestHills);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.coldTaiga);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.coldTaigaHills);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.extremeHills);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.extremeHillsEdge);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.extremeHillsPlus);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.forest);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.forestHills);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.megaTaiga);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.megaTaigaHills);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.roofedForest);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.savanna);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.savannaPlateau);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.taiga);
-        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.taigaHills);
-        EntityRegistry.addSpawn(mobClass, 150 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.jungleHills);
-        EntityRegistry.addSpawn(mobClass, 150 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.jungle);
-        EntityRegistry.addSpawn(mobClass, 150 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, BiomeGenBase.jungleEdge);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.BIRCH_FOREST);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.BIRCH_FOREST_HILLS);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.COLD_TAIGA);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.COLD_TAIGA_HILLS);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.EXTREME_HILLS);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.EXTREME_HILLS_EDGE);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.EXTREME_HILLS_WITH_TREES);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.FOREST);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.FOREST_HILLS);
+        //EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.megaTaiga); //TODO Fix
+        //EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.megaTaigaHills);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.ROOFED_FOREST);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.SAVANNA);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.SAVANNA_PLATEAU);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.TAIGA);
+        EntityRegistry.addSpawn(mobClass, 200 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.TAIGA_HILLS);
+        EntityRegistry.addSpawn(mobClass, 150 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.JUNGLE_HILLS);
+        EntityRegistry.addSpawn(mobClass, 150 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.JUNGLE);
+        EntityRegistry.addSpawn(mobClass, 150 / spawnCutter, 1, 1, EnumCreatureType.CREATURE, Biomes.JUNGLE_EDGE);
     }
 }

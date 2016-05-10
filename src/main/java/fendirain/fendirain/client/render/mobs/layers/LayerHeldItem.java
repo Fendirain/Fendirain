@@ -9,24 +9,25 @@ import fendirain.fendirain.init.ModCompatibility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.entity.RendererLivingEntity;
+import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class LayerHeldItem implements LayerRenderer {
-    private final RendererLivingEntity livingEntityRenderer;
+public class LayerHeldItem implements LayerRenderer<EntityLivingBase> {
+    private final RenderLivingBase livingEntityRenderer;
 
-    public LayerHeldItem(RendererLivingEntity livingEntityRendererIn) {
+    public LayerHeldItem(RenderLivingBase livingEntityRendererIn) {
         this.livingEntityRenderer = livingEntityRendererIn;
     }
 
     public void doRenderLayer(EntityLivingBase entityLivingBase, float f1, float f2, float partialTicks, float f3, float f4, float f5, float scale) {
-        ItemStack itemStack = entityLivingBase.getHeldItem();
+        ItemStack itemStack = entityLivingBase.getHeldItem(EnumHand.MAIN_HAND);
         if (itemStack != null && itemStack.getItem() != null) {
             if (entityLivingBase instanceof EntityFendinainMob) {
                 if (itemStack.getItem() instanceof ItemBlock && ModCompatibility.saplings.contains(itemStack.getItem())) {
@@ -39,18 +40,20 @@ public class LayerHeldItem implements LayerRenderer {
                     GlStateManager.rotate(0.0F, 0.0F, 1.0F, 0.0F);
                     GlStateManager.rotate(-90.0F, 0.0F, 0.0F, 1.0F);
                     //noinspection deprecation
-                    Minecraft.getMinecraft().getItemRenderer().renderItem(entityLivingBase, itemStack, ItemCameraTransforms.TransformType.THIRD_PERSON);
+                    Minecraft.getMinecraft().getItemRenderer().renderItem(entityLivingBase, itemStack, ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND);
                     GlStateManager.popMatrix();
                 }
             } else if (entityLivingBase instanceof EntityFenderiumMob && itemStack.getItem() instanceof ItemFenderiumAxe) {
                 GlStateManager.pushMatrix();
                 ModelFenderiumMob model = (ModelFenderiumMob) this.livingEntityRenderer.getMainModel();
                 model.rightArm1.postRender(0F);
-                GlStateManager.translate(.275F, 1.1F, .0F);
+                if (((EntityFenderiumMob) entityLivingBase).isCurrentlyChopping())
+                    GlStateManager.translate(.0F, -1.6F, .0F);
+                GlStateManager.translate(.275F, 1.1F, -.025F);
                 GlStateManager.scale(.45F, .45F, .45F);
                 GlStateManager.rotate(80F, 1.0F, 0.0F, 0.0F);
                 //noinspection deprecation
-                Minecraft.getMinecraft().getItemRenderer().renderItem(entityLivingBase, itemStack, ItemCameraTransforms.TransformType.THIRD_PERSON);
+                Minecraft.getMinecraft().getItemRenderer().renderItem(entityLivingBase, itemStack, ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND);
                 GlStateManager.popMatrix();
             }
         }

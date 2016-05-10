@@ -1,5 +1,6 @@
 package fendirain.fendirain.common.item;
 
+import com.google.common.collect.Sets;
 import fendirain.fendirain.creativetab.CreativeTabFendirain;
 import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.network.PacketHandler;
@@ -9,79 +10,113 @@ import fendirain.fendirain.utility.helper.LogHelper;
 import fendirain.fendirain.utility.tools.TreeChecker;
 import fendirain.fendirain.utility.tools.TreeChopper;
 import net.minecraft.block.Block;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumAction;
-import net.minecraft.item.ItemAxe;
+import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
+import net.minecraft.item.ItemTool;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemFenderiumAxe extends ItemAxe {
+public class ItemFenderiumAxe extends ItemTool {
     private final int axeDamagePerBlock = 4;
     private TreeChopper treeChopper = null;
     private int count = 0, lastUsed = 0;
 
     public ItemFenderiumAxe() {
-        super(ModItems.fendi);
+        super(ModItems.fendi, Sets.newHashSet(Blocks.PLANKS, Blocks.BOOKSHELF, Blocks.LOG, Blocks.LOG2, Blocks.CHEST, Blocks.PUMPKIN, Blocks.LIT_PUMPKIN, Blocks.MELON_BLOCK, Blocks.LADDER, Blocks.WOODEN_BUTTON, Blocks.WOODEN_PRESSURE_PLATE));
+        GameRegistry.register(this, new ResourceLocation(Reference.MOD_PREFIX + "itemFenderiumAxe"));
         this.setUnlocalizedName("itemFenderiumAxe");
         this.setCreativeTab(CreativeTabFendirain.FENDIRAIN_TAB);
+        this.addPropertyOverride(new ResourceLocation("pull"), new IItemPropertyGetter() {
+            @SideOnly(Side.CLIENT)
+            public float apply(ItemStack stack, World worldIn, EntityLivingBase entityIn) {
+                if (entityIn == null) {
+                    return 0.0F;
+                } else {
+                    ItemStack itemStack = entityIn.getActiveItemStack();
+                    if (itemStack != null && itemStack.getItem() == ModItems.itemFenderiumAxe && treeChopper != null)
+                        return (float) ((getMaxItemUseDuration(itemStack) - count) / 2) / (treeChopper.getNumberOfLogs() <= ((itemStack.getMaxDamage() - itemStack.getItemDamage()) / axeDamagePerBlock) ? (float) treeChopper.getNumberOfLogs() : ((float) (itemStack.getMaxDamage() - itemStack.getItemDamage()) / axeDamagePerBlock));
+                    else return 0.0F;
+                }
+            }
+        });
+        this.addPropertyOverride(new ResourceLocation("pulling"), new IItemPropertyGetter() {
+            @SideOnly(Side.CLIENT)
+            public float apply(ItemStack stack, World worldIn, EntityLivingBase entityIn) {
+                return entityIn != null && entityIn.isHandActive() && entityIn.getActiveItemStack() == stack ? 1.0F : 0.0F;
+            }
+        });
     }
 
     @Override
-    public boolean onItemUse(ItemStack itemStack, EntityPlayer entityPlayerIn, World worldIn, BlockPos blockPos, EnumFacing side, float hitX, float hitY, float hitZ) {
-        World world = entityPlayerIn.getEntityWorld();
-        if (itemStack.getMaxDamage() - itemStack.getItemDamage() > 4) {
-            Block block = world.getBlockState(blockPos).getBlock();
-            if (block.isWood(world, blockPos)) {
-                if (treeChopper != null && treeChopper.isBlockContainedInTree(blockPos)) {
-                    treeChopper.setMainBlockPos(blockPos);
-                    entityPlayerIn.setItemInUse(itemStack, this.getMaxItemUseDuration(itemStack));
-                    return true;
-                } else {
-                    BlockPos treeLeaf = TreeChecker.isTree(world, blockPos);
-                    if (treeLeaf != null) {
-                        if (!world.isRemote)
-                            treeChopper = new TreeChopper(entityPlayerIn, blockPos, treeLeaf, true, itemStack);
-                        entityPlayerIn.setItemInUse(itemStack, this.getMaxItemUseDuration(itemStack));
-                        return true;
+    public float getStrVsBlock(ItemStack stack, IBlockState state) {
+        Material material = state.getMaterial();
+        return material != Material.WOOD && material != Material.PLANTS && material != Material.VINE ? super.getStrVsBlock(stack, state) : this.efficiencyOnProperMaterial;
+    }
+
+    @Override
+    public EnumActionResult onItemUse(ItemStack itemStack, EntityPlayer entityPlayerIn, World world, BlockPos blockPos, EnumHand enumHand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (EnumHand.MAIN_HAND.equals(enumHand)) {
+            if (itemStack.getMaxDamage() - itemStack.getItemDamage() > 4) {
+                Block block = world.getBlockState(blockPos).getBlock();
+                if (block.isWood(world, blockPos)) {
+                    if (treeChopper != null && treeChopper.isBlockContainedInTree(blockPos)) {
+                        treeChopper.setMainBlockPos(blockPos);
+                        entityPlayerIn.setActiveHand(enumHand);
+                        return EnumActionResult.SUCCESS;
+                    } else {
+                        BlockPos treeLeaf = TreeChecker.isTree(world, blockPos);
+                        if (treeLeaf != null) {
+                            if (!world.isRemote)
+                                treeChopper = new TreeChopper(entityPlayerIn, blockPos, treeLeaf, true, itemStack);
+                            entityPlayerIn.setActiveHand(enumHand);
+                            return EnumActionResult.SUCCESS;
+                        }
                     }
                 }
             }
         }
-        return false;
+        return EnumActionResult.PASS;
     }
 
     @Override
-    public void onUsingTick(ItemStack itemStack, EntityPlayer entityPlayerIn, int count) {
+    public void onUsingTick(ItemStack itemStack, EntityLivingBase entityLivingBase, int count) {
         this.count = count;
         this.lastUsed = 0;
     }
 
 
     @Override
-    public void onPlayerStoppedUsing(ItemStack itemStack, World worldIn, EntityPlayer entityPlayerIn, int timeLeft) {
+    public void onPlayerStoppedUsing(ItemStack itemStack, World worldIn, EntityLivingBase entityLivingBase, int timeLeft) {
         if (!worldIn.isRemote) {
             int maxToBreak = ((this.getMaxItemUseDuration(itemStack) - timeLeft) / 2 < (itemStack.getMaxDamage() - itemStack.getItemDamage()) / axeDamagePerBlock) ? (this.getMaxItemUseDuration(itemStack) - timeLeft) / 2 : (itemStack.getMaxDamage() - itemStack.getItemDamage()) / axeDamagePerBlock;
             treeChopper.breakAllBlocks(maxToBreak);
         }
         if (itemStack.getMaxDamage() <= itemStack.getItemDamage()) {
-            PacketHandler.simpleNetworkWrapper.sendTo(new DestroyItemPacket(entityPlayerIn.getCurrentEquippedItem()), (EntityPlayerMP) entityPlayerIn);
-            entityPlayerIn.destroyCurrentEquippedItem();
-        } else entityPlayerIn.clearItemInUse();
+            PacketHandler.simpleNetworkWrapper.sendTo(new DestroyItemPacket(entityLivingBase.getHeldItemMainhand()), (EntityPlayerMP) entityLivingBase);
+            entityLivingBase.setHeldItem(EnumHand.MAIN_HAND, null);
+        }
         if (treeChopper.isFinished()) treeChopper = null;
         count = 0;
     }
 
     @Override
     public void onUpdate(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (treeChopper != null) { // This is clear treeChopper if the user doesn't use that axe for 2 minutes.
+        if (treeChopper != null) { // This will clear treeChopper if the user doesn't use that axe for 2 minutes.
             lastUsed++;
             if (lastUsed > 2400) {
                 treeChopper = null;
@@ -90,7 +125,7 @@ public class ItemFenderiumAxe extends ItemAxe {
         }
     }
 
-    @Override
+    /*@Override
     @SideOnly(Side.CLIENT)
     public ModelResourceLocation getModel(ItemStack itemStack, EntityPlayer player, int useRemaining) {
         String name = GameData.getItemRegistry().getNameForObject(this).toString();
@@ -116,7 +151,7 @@ public class ItemFenderiumAxe extends ItemAxe {
                 return new ModelResourceLocation(name + "_Charging_1", "inventory");
         }
         return new ModelResourceLocation(name + "_Default", "inventory");
-    }
+    }*/
 
 
     @Override
@@ -152,8 +187,8 @@ public class ItemFenderiumAxe extends ItemAxe {
                 if (treeChopper.isFinished()) treeChopper = null;
                 lastUsed = 0;
                 if (itemStack.getMaxDamage() <= itemStack.getItemDamage()) {
-                    PacketHandler.simpleNetworkWrapper.sendTo(new DestroyItemPacket(entityPlayerIn.getCurrentEquippedItem()), (EntityPlayerMP) entityPlayerIn);
-                    entityPlayerIn.destroyCurrentEquippedItem();
+                    PacketHandler.simpleNetworkWrapper.sendTo(new DestroyItemPacket(entityPlayerIn.getHeldItemMainhand()), (EntityPlayerMP) entityPlayerIn);
+                    entityPlayerIn.setHeldItem(EnumHand.MAIN_HAND, null);
                 }
                 return true;
             } else return false;

@@ -21,7 +21,7 @@ public class TileFendiBlock extends TileFendirain {
 
     public void addToCurrentAmount(int amountToAdd) {
         currentAmount += amountToAdd;
-        worldObj.markBlockForUpdate(pos);
+        //worldObj.markBlockForUpdate(pos);
     }
 
     public int getCurrentAmount() {

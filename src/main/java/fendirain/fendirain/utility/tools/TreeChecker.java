@@ -1,9 +1,12 @@
 package fendirain.fendirain.utility.tools;
 
 import fendirain.fendirain.utility.helper.BlockTools;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockDirt;
+import net.minecraft.block.BlockGrass;
+import net.minecraft.block.BlockLeaves;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -11,17 +14,17 @@ import java.util.*;
 public class TreeChecker {
     public static BlockPos isTree(World world, BlockPos blockPos) {
         Block block = world.getBlockState(blockPos.down()).getBlock();
-        if (block != Blocks.air && (block.isWood(world, blockPos.down()) || block instanceof BlockGrass || block instanceof BlockDirt)) {
+        if (block != Blocks.AIR && (block.isWood(world, blockPos.down()) || block instanceof BlockGrass || block instanceof BlockDirt)) {
             Set<BlockPos> connectedBlocks = getBaseTree(world, blockPos);
             Map<Integer, Integer> leaves = new HashMap<>();
             final int[] logs = {0};
             connectedBlocks.forEach(fullBlock1 -> {
                 Block block1 = world.getBlockState(fullBlock1).getBlock();
-                int damageValue = block1.getDamageValue(world, fullBlock1);
                 if (block1.isWood(world, fullBlock1)) logs[0]++;
-                else if (block1 instanceof BlockLeavesBase) {
-                    if (!leaves.containsKey(damageValue)) leaves.put(damageValue, 0);
-                    leaves.replace(damageValue, leaves.get(damageValue) + 1);
+                else if (block1 instanceof BlockLeaves) {
+                    int blockMeta = BlockTools.getBlockMeta(world.getBlockState(fullBlock1));
+                    if (!leaves.containsKey(blockMeta)) leaves.put(blockMeta, 0);
+                    leaves.replace(blockMeta, leaves.get(blockMeta) + 1);
                 }
             });
 
@@ -37,7 +40,7 @@ public class TreeChecker {
                     }
                 });
                 for (BlockPos blockPos1 : connectedBlocks) {
-                    if (world.getBlockState(blockPos1).getBlock().getDamageValue(world, blockPos1) == leafType[0] && world.getBlockState(blockPos1).getBlock() instanceof BlockLeavesBase) {
+                    if (world.getBlockState(blockPos1).getBlock() instanceof BlockLeaves && BlockTools.getBlockMeta(world.getBlockState(blockPos1)) == leafType[0]) {
                         leafBlock = blockPos1;
                         break;
                     }
@@ -70,7 +73,7 @@ public class TreeChecker {
                 if (!(blockPosChecking.getX() < blockPos.getX() + maxRange && blockPosChecking.getX() > blockPos.getX() - maxRange && blockPosChecking.getZ() < blockPos.getZ() + maxRange && blockPosChecking.getZ() > blockPos.getZ() - maxRange))
                     return false;
                 Block block = world.getBlockState(blockPosChecking).getBlock();
-                return ((block.isWood(world, blockPosChecking) || (block instanceof BlockLeavesBase && world.getBlockState(blockPosChecking).getValue(BlockLeaves.DECAYABLE))));
+                return ((block.isWood(world, blockPosChecking) || (block instanceof BlockLeaves && world.getBlockState(blockPosChecking).getValue(BlockLeaves.DECAYABLE))));
             }).forEach(blockPosAllowed -> {
                 baseTree.add(blockPosAllowed);
                 if (world.getBlockState(blockPosAllowed).getBlock().isWood(world, blockPosAllowed))

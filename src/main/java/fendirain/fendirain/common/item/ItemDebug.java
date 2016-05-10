@@ -1,13 +1,16 @@
 package fendirain.fendirain.common.item;
 
+import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.utility.helper.LogHelper;
 import fendirain.fendirain.utility.tools.TreeChecker;
 import fendirain.fendirain.utility.tools.TreeChopper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 import java.util.LinkedHashSet;
@@ -17,12 +20,13 @@ public class ItemDebug extends ItemFendirain {
     TreeChopper treeChopper = null;
 
     public ItemDebug() {
-        super();
+        super("itemDebug");
         this.setMaxStackSize(1);
         this.setUnlocalizedName("itemDebug");
     }
 
-    public boolean onItemUse(ItemStack itemStack, EntityPlayer playerIn, World worldIn, BlockPos blockPos, EnumFacing side, float hitX, float hitY, float hitZ) {
+    @Override
+    public EnumActionResult onItemUse(ItemStack itemStack, EntityPlayer playerIn, World worldIn, BlockPos blockPos, EnumHand enumHand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (worldIn.getBlockState(blockPos).getBlock().isWood(worldIn, blockPos)) {
             BlockPos blockPos1 = TreeChecker.isTree(worldIn, blockPos);
             if (playerIn.isSneaking()) {
@@ -33,16 +37,16 @@ public class ItemDebug extends ItemFendirain {
             } else {
                 String response = "Block at \"" + blockPos.toString() + "\" is " + ((blockPos1 != null) ? "contained in a tree" : "not contained in a tree") + ".";
                 if (!worldIn.isRemote) {
-                    playerIn.addChatComponentMessage(new ChatComponentText(response));
+                    playerIn.addChatComponentMessage(new TextComponentString(response));
                     LogHelper.info(response);
                     if (blockPos1 != null) {
                         this.treeChopper = new TreeChopper(playerIn, blockPos, blockPos1, true, itemStack);
                     }
                 }
             }
-            return true;
+            return EnumActionResult.SUCCESS;
         }
-        return false;
+        return EnumActionResult.PASS;
     }
 
     public Set<BlockPos> getBlocks() {
@@ -51,5 +55,10 @@ public class ItemDebug extends ItemFendirain {
             blockPosSet.addAll(treeChopper.getCurrentTree());
         }
         return blockPosSet;
+    }
+
+    @Override
+    protected boolean shouldRegister() {
+        return ConfigValues.isDebugSettingsEnabled;
     }
 }

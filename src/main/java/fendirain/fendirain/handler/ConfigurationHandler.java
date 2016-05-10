@@ -51,6 +51,6 @@ public class ConfigurationHandler {
 
     @SubscribeEvent
     public void onConfigurationChangedEvent(ConfigChangedEvent.OnConfigChangedEvent onConfigChangedEvent) {
-        if (onConfigChangedEvent.modID.equalsIgnoreCase(Reference.MOD_ID)) loadConfiguration();
+        if (onConfigChangedEvent.getModID().equalsIgnoreCase(Reference.MOD_ID)) loadConfiguration();
     }
 }

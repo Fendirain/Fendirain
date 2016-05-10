@@ -6,7 +6,7 @@ import net.minecraft.block.BlockSapling;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Random;
@@ -34,7 +34,7 @@ public class EntityAIPlantSapling extends EntityAIBase {
             World world = entity.worldObj;
             int posX = (int) entity.posX, posY = (int) entity.posY, posZ = (int) entity.posZ;
             Block blockToPlaceOn = world.getBlockState(new BlockPos(posX, posY - 1, posZ)).getBlock();
-            if (BlockSapling.getBlockFromItem(itemToPlace.getItem()).canPlaceBlockAt(world, new BlockPos(posX, posY, posZ)) && (blockToPlaceOn == Blocks.grass || blockToPlaceOn == Blocks.dirt || blockToPlaceOn == Blocks.farmland)) {
+            if (BlockSapling.getBlockFromItem(itemToPlace.getItem()).canPlaceBlockAt(world, new BlockPos(posX, posY, posZ)) && (blockToPlaceOn == Blocks.GLASS || blockToPlaceOn == Blocks.DIRT || blockToPlaceOn == Blocks.FARMLAND)) {
                 if (world.setBlockState(new BlockPos(posX, posY, posZ), BlockSapling.getBlockFromItem(itemToPlace.getItem()).getStateFromMeta(itemToPlace.getItemDamage()), 3)) {
                     entity.removeItemFromInventory(itemToPlace, 1, true);
                     timeSinceLastPlacement = 0;

@@ -1,6 +1,8 @@
 package fendirain.fendirain.utility.helper;
 
-import net.minecraft.util.BlockPos;
+import net.minecraft.block.*;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -21,5 +23,22 @@ public class BlockTools {
             }
         }
         return surroundBlockPos;
+    }
+
+    public static int getBlockMeta(IBlockState iBlockState) {
+        if (iBlockState.getBlock() instanceof BlockLeaves) {
+            if (iBlockState.getBlock() instanceof BlockNewLeaf) {
+                return ((BlockPlanks.EnumType) iBlockState.getProperties().get(BlockNewLeaf.VARIANT)).getMetadata();
+            } else if (iBlockState.getBlock() instanceof BlockOldLeaf) {
+                return ((BlockPlanks.EnumType) iBlockState.getProperties().get(BlockOldLeaf.VARIANT)).getMetadata();
+            }
+        } else if (iBlockState.getBlock() instanceof BlockLog) {
+            if (iBlockState.getBlock() instanceof BlockNewLog) {
+                return ((BlockPlanks.EnumType) iBlockState.getProperties().get(BlockNewLog.VARIANT)).getMetadata();
+            } else if (iBlockState.getBlock() instanceof BlockOldLog) {
+                return ((BlockPlanks.EnumType) iBlockState.getProperties().get(BlockOldLog.VARIANT)).getMetadata();
+            }
+        }
+        return -1;
     }
 }

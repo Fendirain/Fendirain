@@ -5,10 +5,7 @@
 /Fendirain.ipr
 
 # other #
-/.gradle
-/build
 /run
-/runserver
 /Fendirain.iws
 /.idea
 

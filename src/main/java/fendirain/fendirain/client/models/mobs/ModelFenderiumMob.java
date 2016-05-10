@@ -4,7 +4,8 @@ import fendirain.fendirain.client.models.blocks.ModelFendirain;
 import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.MathHelper;
 
 public class ModelFenderiumMob extends ModelFendirain {
 
@@ -92,15 +93,15 @@ public class ModelFenderiumMob extends ModelFendirain {
     public void renderFenderium(EntityFenderiumMob entityFenderiumMob, float time, float walkSpeed, float otherAngle, float rotationYaw, float rotationPitch, float scale) {
         this.mainBody.render(scale);
         setRotationAngles(time, walkSpeed, otherAngle, rotationYaw, rotationPitch, scale, entityFenderiumMob);
-        /*if (entityFenderiumMob.getHeldItem() != null && entityFenderiumMob.isCurrentlyChopping()) {
+        if (entityFenderiumMob.getHeldItem(EnumHand.MAIN_HAND) != null && entityFenderiumMob.isCurrentlyChopping()) {
             if (this.rightArm1.rotateAngleX == 0) {
                 this.rightArm1.rotateAngleX = -2.5F;
                 lowerArm = false;
             }
-            this.rightArm1.rotateAngleX = lowerArm ? this.rightArm1.rotateAngleX + 0.18F : this.rightArm1.rotateAngleX - 0.18F;
+            this.rightArm1.rotateAngleX = lowerArm ? this.rightArm1.rotateAngleX + 0.1F : this.rightArm1.rotateAngleX - 0.1F;
             if (this.rightArm1.rotateAngleX <= -3.5) lowerArm = true;
             else if (this.rightArm1.rotateAngleX >= -2.5) lowerArm = false;
-        } else this.rightArm1.rotateAngleX = 0.0F;*/
+        } else this.rightArm1.rotateAngleX = 0.0F;
     }
 
     @Override
@@ -110,17 +111,16 @@ public class ModelFenderiumMob extends ModelFendirain {
         this.leftArm1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 2.0F * walkSpeed * 0.5F;
         this.leftArm1.rotateAngleZ = 0.0F;
         EntityFenderiumMob entityFenderiumMob = (EntityFenderiumMob) entity;
-        /*if (entityFenderiumMob.getHeldItem() == null || !entityFenderiumMob.isCurrentlyChopping()) {
-            this.rightArm1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 2.0F * walkSpeed * 0.5F;*/
-        this.rightArm1.rotateAngleX = 0.0F;
-        this.rightArm1.rotateAngleZ = 0.0F;
-        this.leftLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 1.4F * walkSpeed;
-        this.leftLeg1.rotateAngleY = 0.0F;
-        this.rightLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 1.4F * walkSpeed;
-        this.rightLeg1.rotateAngleY = 0.0F;
-        /*} else if (this.leftLeg1.rotateAngleX != 0 || this.rightLeg1.rotateAngleX != 0) {
+        if (entityFenderiumMob.getHeldItem(EnumHand.MAIN_HAND) == null || !entityFenderiumMob.isCurrentlyChopping()) {
+            this.rightArm1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 2.0F * walkSpeed * 0.5F;
+            this.rightArm1.rotateAngleZ = 0.0F;
+            this.leftLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 1.4F * walkSpeed;
+            this.leftLeg1.rotateAngleY = 0.0F;
+            this.rightLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 1.4F * walkSpeed;
+            this.rightLeg1.rotateAngleY = 0.0F;
+        } else if (this.leftLeg1.rotateAngleX != 0 || this.rightLeg1.rotateAngleX != 0) {
             this.leftLeg1.rotateAngleX = 0.0F;
             this.rightLeg1.rotateAngleX = 0.0F;
-        }*/
+        }
     }
 }

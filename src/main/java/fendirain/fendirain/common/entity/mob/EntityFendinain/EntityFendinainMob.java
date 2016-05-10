@@ -6,7 +6,6 @@ import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAIPlantSap
 import fendirain.fendirain.init.ModCompatibility;
 import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.reference.ConfigValues;
-import fendirain.fendirain.reference.Reference;
 import fendirain.fendirain.utility.helper.LogHelper;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -17,6 +16,7 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
@@ -26,14 +26,13 @@ import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +50,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         this.entityAIPlantSapling = new EntityAIPlantSapling(this, ConfigValues.fendinainMob_minTimeToWaitToPlant, ConfigValues.fendinainMob_maxTimeToWaitToPlant);
         this.entityAICollectSaplings = new EntityAICollectSaplings(this, 1F);
         firstUpdate = true;
-        ((PathNavigateGround) this.getNavigator()).setAvoidsWater(true);
+        //((PathNavigateGround) this.getNavigator()).setAvoidsWater(true);
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIPanic(this, 1.2F));
         this.tasks.addTask(2, entityAIPlantSapling);
@@ -64,7 +63,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     @Override
     public void onLivingUpdate() {
         if (firstUpdate) {
-            this.setCurrentItemOrArmor(0, this.getRandomSlot());
+            this.setHeldItem(EnumHand.MAIN_HAND, this.getRandomSlot());
             firstUpdate = false;
         }
         super.onLivingUpdate();
@@ -74,88 +73,88 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     @Override
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficultyInstance, IEntityLivingData iEntityLivingData) {
         this.addNewSpawnInventory();
-        this.setCurrentItemOrArmor(0, this.getRandomSlot());
+        this.setHeldItem(EnumHand.MAIN_HAND, this.getRandomSlot());
         return iEntityLivingData;
     }
 
     private void addNewSpawnInventory() {
-        String biome = this.worldObj.getBiomeGenForCoords(new BlockPos(this.posX, this.posY, this.posZ)).biomeName;
+        String biome = this.worldObj.getBiomeGenForCoords(new BlockPos(this.posX, this.posY, this.posZ)).getBiomeName();
         int amountOfSaplings = rand.nextInt(this.getInventoryStackLimit()) + 1;
         // Adds the proper type of saplings for the biome it's spawned in. Done this way for future compatibility with mods. May be changed later.
         if (biome != null) {
             ArrayList<String> saplings = new ArrayList<>();
             // Mixed Oak or Spruce
-            saplings.add(BiomeGenBase.extremeHills.biomeName);
-            saplings.add(BiomeGenBase.extremeHillsEdge.biomeName);
-            saplings.add(BiomeGenBase.extremeHillsPlus.biomeName);
+            saplings.add(Biomes.EXTREME_HILLS.getBiomeName());
+            saplings.add(Biomes.EXTREME_HILLS_EDGE.getBiomeName());
+            saplings.add(Biomes.EXTREME_HILLS_WITH_TREES.getBiomeName());
             if (saplings.contains(biome)) {
                 if (rand.nextInt(2) == 0) {
                     // Oak Saplings
-                    this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 0));
+                    this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 0));
                 } else {
                     // Spruce Saplings
-                    this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 1));
+                    this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 1));
                 }
             } else {
                 saplings.clear();
                 // Mixed Birch or Oak
-                saplings.add(BiomeGenBase.forest.biomeName);
-                saplings.add(BiomeGenBase.forestHills.biomeName);
+                saplings.add(Biomes.FOREST.getBiomeName());
+                saplings.add(Biomes.FOREST_HILLS.getBiomeName());
                 if (saplings.contains(biome)) {
                     if (rand.nextInt(10) == 0) {
                         // Birch Saplings
-                        this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 2));
+                        this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 2));
                     } else {
                         // Oak Saplings
-                        this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 0));
+                        this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 0));
                     }
                 } else {
                     saplings.clear();
-                    saplings.add(BiomeGenBase.plains.biomeName);
+                    saplings.add(Biomes.PLAINS.getBiomeName());
                     if (saplings.contains(biome)) {
                         // Oak Saplings
-                        if (biome.matches(BiomeGenBase.plains.biomeName))
-                            this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings / 2, 0)); // Since its planes, It should start with less.
-                        this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 0));
+                        if (biome.matches(Biomes.PLAINS.getBiomeName()))
+                            this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings / 2, 0)); // Since its planes, It should start with less.
+                        this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 0));
                     } else {
                         saplings.clear();
-                        saplings.add(BiomeGenBase.coldTaiga.biomeName);
-                        saplings.add(BiomeGenBase.coldTaigaHills.biomeName);
-                        saplings.add(BiomeGenBase.taiga.biomeName);
-                        saplings.add(BiomeGenBase.taigaHills.biomeName);
-                        saplings.add(BiomeGenBase.megaTaiga.biomeName);
-                        saplings.add(BiomeGenBase.megaTaigaHills.biomeName);
+                        saplings.add(Biomes.COLD_TAIGA.getBiomeName());
+                        saplings.add(Biomes.COLD_TAIGA_HILLS.getBiomeName());
+                        saplings.add(Biomes.TAIGA.getBiomeName());
+                        saplings.add(Biomes.TAIGA_HILLS.getBiomeName());
+                        //saplings.add(Biomes.megaTaiga.getBiomeName()); // TODO Correct
+                        //saplings.add(Biomes.megaTaigaHills.getBiomeName());
                         if (saplings.contains(biome)) {
                             // Spruce Saplings
-                            this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 1));
+                            this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 1));
                         } else {
                             saplings.clear();
-                            saplings.add(BiomeGenBase.birchForest.biomeName);
-                            saplings.add(BiomeGenBase.birchForestHills.biomeName);
+                            saplings.add(Biomes.BIRCH_FOREST.getBiomeName());
+                            saplings.add(Biomes.BIRCH_FOREST_HILLS.getBiomeName());
                             if (saplings.contains(biome)) {
                                 // Birch Saplings
-                                this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 2));
+                                this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 2));
                             } else {
                                 saplings.clear();
-                                saplings.add(BiomeGenBase.jungle.biomeName);
-                                saplings.add(BiomeGenBase.jungleEdge.biomeName);
-                                saplings.add(BiomeGenBase.jungleHills.biomeName);
+                                saplings.add(Biomes.JUNGLE.getBiomeName());
+                                saplings.add(Biomes.JUNGLE_EDGE.getBiomeName());
+                                saplings.add(Biomes.JUNGLE_HILLS.getBiomeName());
                                 if (saplings.contains(biome)) {
                                     // Jungle Saplings
-                                    this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 3));
+                                    this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 3));
                                 } else {
                                     saplings.clear();
-                                    saplings.add(BiomeGenBase.savanna.biomeName);
-                                    saplings.add(BiomeGenBase.savannaPlateau.biomeName);
+                                    saplings.add(Biomes.SAVANNA.getBiomeName());
+                                    saplings.add(Biomes.SAVANNA_PLATEAU.getBiomeName());
                                     if (saplings.contains(biome)) {
                                         // Acacia Saplings
-                                        this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 4));
+                                        this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 4));
                                     } else {
                                         saplings.clear();
-                                        saplings.add(BiomeGenBase.roofedForest.biomeName);
+                                        saplings.add(Biomes.ROOFED_FOREST.getBiomeName());
                                         if (saplings.contains(biome)) {
                                             // Roofed Oak Saplings
-                                            this.putIntoInventory(new ItemStack(Blocks.sapling, amountOfSaplings, 5));
+                                            this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 5));
                                         }
                                     }
                                 }
@@ -171,23 +170,17 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     @Override
     public void applyEntityAttributes() {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(25.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.3D);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(25.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3D);
     }
 
     @Override
     public boolean getCanSpawnHere() {
-        return super.getCanSpawnHere() && (worldObj.getBlockState(new BlockPos(this.posX, this.posY - 1, this.posZ)) != Blocks.leaves || worldObj.getBlockState(new BlockPos(this.posX, this.posY - 1, this.posZ)) != Blocks.leaves2);
+        return super.getCanSpawnHere() && (worldObj.getBlockState(new BlockPos(this.posX, this.posY - 1, this.posZ)) != Blocks.LEAVES || worldObj.getBlockState(new BlockPos(this.posX, this.posY - 1, this.posZ)) != Blocks.LEAVES2);
     }
 
     @Override
-    public boolean allowLeashing() {
-        return false;
-    }
-
-    @Override
-    public boolean interact(EntityPlayer entityPlayer) {
-        ItemStack itemStack = entityPlayer.inventory.getCurrentItem();
+    protected boolean processInteract(EntityPlayer entityPlayer, EnumHand hand, ItemStack itemStack) {
         if (itemStack != null) {
             if (this.isValidForPickup(itemStack.getItem()) && this.isAnySpaceForItemPickup(itemStack)) {
                 putIntoInventory(itemStack);
@@ -200,7 +193,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                     this.setHealth(0);
                     this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
                     return true;
-                } else if (itemStack.getItem() == Items.arrow) {
+                } else if (itemStack.getItem() == Items.ARROW) {
                     String[] printQueue = new String[this.inventorySize];
                     for (int slot = 0; slot < inventory.length; slot++) {
                         if (inventory[slot] != null)
@@ -208,17 +201,17 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                         else printQueue[slot] = (slot + " is null");
                     }
                     if (!worldObj.isRemote)
-                        entityPlayer.addChatMessage(new ChatComponentText(Arrays.toString(printQueue)));
+                        entityPlayer.addChatMessage(new TextComponentString(Arrays.toString(printQueue)));
                     LogHelper.info(Arrays.toString(printQueue));
                     return true;
-                } else if (itemStack.getItem() == Items.blaze_rod) {
+                } else if (itemStack.getItem() == Items.BLAZE_ROD) {
                     entityAIPlantSapling.startExecuting();
                     return true;
-                } else if (itemStack.getItem() == Items.diamond_axe) {
+                } else if (itemStack.getItem() == Items.DIAMOND_AXE) {
                     for (int slot = 0; slot < inventory.length; slot++) inventory[slot] = null;
-                    this.setCurrentItemOrArmor(0, null);
+                    this.setHeldItem(EnumHand.MAIN_HAND, null);
                     return true;
-                } else if (itemStack.getItem() == Items.wooden_axe) {
+                } else if (itemStack.getItem() == Items.WOODEN_AXE) {
                     Boolean alreadyChanged = false;
                     for (int slot = 0; slot < inventory.length; slot++) {
                         if (inventory[slot] != null) {
@@ -230,9 +223,9 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                             }
                         }
                     }
-                    this.setCurrentItemOrArmor(0, this.getRandomSlot());
+                    this.setHeldItem(EnumHand.MAIN_HAND, this.getRandomSlot());
                     return true;
-                } else if (itemStack.getItem() == Items.paper) {
+                } else if (itemStack.getItem() == Items.PAPER) {
                     String[] printQueue = new String[this.inventorySize];
                     for (int slot = 0; slot < inventory.length; slot++) {
                         if (inventory[slot] != null)
@@ -240,24 +233,24 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                         else printQueue[slot] = (slot + " is null");
                     }
                     if (!worldObj.isRemote) {
-                        entityPlayer.addChatMessage(new ChatComponentText("Health: " + this.getHealth()));
-                        entityPlayer.addChatMessage(new ChatComponentText("Last Placed: " + entityAIPlantSapling.getTimeSinceLastPlacement() + '/' + ConfigValues.fendinainMob_maxTimeToWaitToPlant + " (Max)"));
+                        entityPlayer.addChatMessage(new TextComponentString("Health: " + this.getHealth()));
+                        entityPlayer.addChatMessage(new TextComponentString("Last Placed: " + entityAIPlantSapling.getTimeSinceLastPlacement() + '/' + ConfigValues.fendinainMob_maxTimeToWaitToPlant + " (Max)"));
                         LogHelper.info("Health: " + this.getHealth());
                         LogHelper.info("Last Placed: " + entityAIPlantSapling.getTimeSinceLastPlacement() + '/' + ConfigValues.fendinainMob_maxTimeToWaitToPlant + " (Max)");
                         for (Object object : this.getActivePotionEffects()) {
                             PotionEffect potionEffect = (PotionEffect) object;
                             LogHelper.info("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration());
-                            entityPlayer.addChatMessage(new ChatComponentText("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration()));
+                            entityPlayer.addChatMessage(new TextComponentString("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration()));
                         }
-                        entityPlayer.addChatMessage(new ChatComponentText("Inventory: " + Arrays.toString(printQueue)));
+                        entityPlayer.addChatMessage(new TextComponentString("Inventory: " + Arrays.toString(printQueue)));
                         LogHelper.info("Inventory: " + Arrays.toString(printQueue));
-                        entityPlayer.addChatMessage(new ChatComponentText("Percent Full: " + this.getPercentageOfInventoryFull()));
+                        entityPlayer.addChatMessage(new TextComponentString("Percent Full: " + this.getPercentageOfInventoryFull()));
                         LogHelper.info("Percent Full: " + this.getPercentageOfInventoryFull());
                         int timesKilled;
                         if (entityPlayer.getEntityData().hasKey("fendirainMobOne"))
                             timesKilled = entityPlayer.getEntityData().getInteger("fendirainMobOne");
                         else timesKilled = 0;
-                        entityPlayer.addChatMessage(new ChatComponentText("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s)."));
+                        entityPlayer.addChatMessage(new TextComponentString("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s)."));
                         LogHelper.info("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s).");
                     }
                     return true;
@@ -272,7 +265,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         super.onDeath(damageSource);
         if (damageSource.getEntity() != null && damageSource.getEntity() instanceof EntityPlayer) {
             EntityPlayer entityPlayer = (EntityPlayer) damageSource.getEntity();
-            if (!entityPlayer.capabilities.isCreativeMode || entityPlayer.getHeldItem().getItem() instanceof ItemHoe) {
+            if (!entityPlayer.capabilities.isCreativeMode || entityPlayer.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemHoe) {
                 NBTTagCompound nbtTagCompound = entityPlayer.getEntityData();
                 // Named as "fendirainMobOne" for simplicity in the future if I decide to change the mobs name.
                 if (nbtTagCompound.hasKey("fendirainMobOne"))
@@ -303,7 +296,8 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                 }
                 if (itemStack.stackSize == 0) break;
             }
-            if (this.getHeldItem() == null) this.setCurrentItemOrArmor(0, getRandomSlot());
+            if (this.getHeldItem(EnumHand.MAIN_HAND) == null)
+                this.setHeldItem(EnumHand.MAIN_HAND, this.getRandomSlot());
         }
     }
 
@@ -311,6 +305,12 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     public void dropFewItems(boolean wasHitRecently, int lootingLevel) {
         for (ItemStack itemStack : inventory)
             if (itemStack != null) this.entityDropItem(itemStack, 1F);
+    }
+
+    // TODO Fix
+   /* @Override
+    public boolean allowLeashing() {
+        return false;
     }
 
     @Override
@@ -326,7 +326,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     @Override
     public String getDeathSound() {
         return Reference.MOD_ID + ":" + "mob.fendirain.hurt";
-    }
+    }*/
 
     @Override
     public float getSoundVolume() {
@@ -466,7 +466,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     public ItemStack getItemToPlace() {
-        return this.getHeldItem();
+        return this.getHeldItem(EnumHand.MAIN_HAND);
     }
 
     private ItemStack getRandomSlot() {
@@ -517,7 +517,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                     amount -= inventory[slot].stackSize;
                     inventory[slot] = null;
                 }
-                if (resetCurrentSapling) this.setCurrentItemOrArmor(0, this.getRandomSlot());
+                if (resetCurrentSapling) this.setHeldItem(EnumHand.MAIN_HAND, this.getRandomSlot());
                 if (amount == 0) break;
             }
         }

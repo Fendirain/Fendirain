@@ -4,6 +4,7 @@ import fendirain.fendirain.common.entity.mob.EntityFendinain.EntityFendinainMob;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.util.EnumHand;
 
 import java.util.Random;
 
@@ -29,8 +30,8 @@ public class EntityAIBegPlayer extends EntityAIBase {
         }
         if (entity.worldObj != null) {
             EntityPlayer player = entity.worldObj.getClosestPlayerToEntity(entity, 8);
-            if (player != null && player.getHeldItem() != null) {
-                if (entity.getEntitySenses().canSee(player) && entity.isValidForPickup(player.getHeldItem().getItem()) && entity.isAnySpaceForItemPickup(player.getHeldItem()) && !player.isInWater()) {
+            if (player != null && player.getHeldItem(EnumHand.MAIN_HAND) != null) { //TODO Allow Left hand
+                if (entity.getEntitySenses().canSee(player) && entity.isValidForPickup(player.getHeldItem(EnumHand.MAIN_HAND).getItem()) && entity.isAnySpaceForItemPickup(player.getHeldItem(EnumHand.MAIN_HAND)) && !player.isInWater()) {
                     targetEntity = player;
                     randInt = rand.nextInt(4);
                     return true;
@@ -43,8 +44,8 @@ public class EntityAIBegPlayer extends EntityAIBase {
     @Override
     public boolean continueExecuting() {
         if (entity.worldObj != null) {
-            if (targetEntity != null && targetEntity.getHeldItem() != null) {
-                if (entity.isValidForPickup(targetEntity.getHeldItem().getItem()) && entity.isAnySpaceForItemPickup(targetEntity.getHeldItem()) && !targetEntity.isInWater() && !(entity.getDistanceToEntity(targetEntity) > 8))
+            if (targetEntity != null && targetEntity.getHeldItem(EnumHand.MAIN_HAND) != null) { //TODO Allow Left hand
+                if (entity.isValidForPickup(targetEntity.getHeldItem(EnumHand.MAIN_HAND).getItem()) && entity.isAnySpaceForItemPickup(targetEntity.getHeldItem(EnumHand.MAIN_HAND)) && !targetEntity.isInWater() && !(entity.getDistanceToEntity(targetEntity) > 8))
                     return true;
             }
         }
