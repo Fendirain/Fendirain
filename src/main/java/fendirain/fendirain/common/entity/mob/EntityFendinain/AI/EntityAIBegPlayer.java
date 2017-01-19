@@ -25,10 +25,8 @@ public class EntityAIBegPlayer extends EntityAIBase {
 
     @Override
     public boolean shouldExecute() {
-        if (!pathFinder.noPath()) {
-            return false;
-        }
-        if (entity.world != null) {
+        if (!pathFinder.noPath()) return false;
+        if (entity.world != null && entity.getPercentageOfInventoryFull() < 10) {
             EntityPlayer player = entity.world.getClosestPlayerToEntity(entity, 8);
             if (player != null) { //TODO Allow Left hand
                 if (entity.getEntitySenses().canSee(player) && entity.isItemValidForEntity(player.getHeldItem(EnumHand.MAIN_HAND).getItem()) && entity.isAnySpaceForItemPickup(player.getHeldItem(EnumHand.MAIN_HAND)) && !player.isInWater()) {

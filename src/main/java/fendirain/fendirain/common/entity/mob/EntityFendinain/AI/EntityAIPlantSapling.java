@@ -1,6 +1,7 @@
 package fendirain.fendirain.common.entity.mob.EntityFendinain.AI;
 
 import fendirain.fendirain.common.entity.mob.EntityFendinain.EntityFendinainMob;
+import fendirain.fendirain.reference.ConfigValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -24,7 +25,7 @@ public class EntityAIPlantSapling extends EntityAIBase {
 
     @Override
     public boolean shouldExecute() {
-        return this.entity.world.getGameRules().getBoolean("mobGriefing") && timeSinceLastPlacement > minTimeToWaitToPlant && (timeSinceLastPlacement > maxTimeToWaitToPlant || new Random().nextInt(600) == 0) && entity.isItemToPlace();
+        return (!ConfigValues.isMobGriefingGameRuleFollowed || this.entity.world.getGameRules().getBoolean("mobGriefing")) && timeSinceLastPlacement > minTimeToWaitToPlant && (timeSinceLastPlacement > maxTimeToWaitToPlant || new Random().nextInt(600) == 0) && entity.isItemToPlace();
     }
 
     @Override

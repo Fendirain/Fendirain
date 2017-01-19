@@ -63,7 +63,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
 
     @Override
     public void onLivingUpdate() {
-        super.onLivingUpdate();
+        //super.onLivingUpdate();
         if (!entityAIChopTrees.isAlreadyExecuting() && !(entityAIChopTrees.getTimeToWaitUntilNextRun() <= 0))
             this.entityAIChopTrees.setTimeToWaitUntilNextRun(this.entityAIChopTrees.getTimeToWaitUntilNextRun() - 1);
     }

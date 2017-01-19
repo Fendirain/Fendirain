@@ -28,6 +28,7 @@ public class ConfigurationHandler {
     private static void loadConfiguration() {
         ConfigValues.isGenerationEnabled = configuration.getBoolean("oreGeneration", CATEGORY_WORLD, true, "Disable ore generation.");
         ConfigValues.isDebugSettingsEnabled = configuration.getBoolean("debug", CATEGORY_DEVELOPER, false, "Enables debug settings.");
+        ConfigValues.isMobGriefingGameRuleFollowed = configuration.getBoolean("mobGriefing", CATEGORY_GENERAL, true, "Disables this mods mobs following the mobGriefing gamerule.");
 
         // EntityFendinainMob
         ConfigValues.fendinainMob_enableSpawning = configuration.getBoolean("Fendinain_Spawning", CATEGORY_MOB, true, "Enables spawning of the Fendinain.");

@@ -3,6 +3,7 @@ package fendirain.fendirain.common.entity.mob.EntityFenderium.AI;
 import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
 import fendirain.fendirain.network.PacketHandler;
 import fendirain.fendirain.network.packets.EntityFenderiumChoppingPacket;
+import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.utility.helper.BlockTools;
 import fendirain.fendirain.utility.tools.TreeChecker;
 import fendirain.fendirain.utility.tools.TreeChopper;
@@ -47,7 +48,7 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public boolean shouldExecute() {
         if (reloaded) return true;
-        if (!this.entity.world.getGameRules().getBoolean("mobGriefing") || alreadyExecuting || timeToWaitUntilNextRun > 0) {
+        if ((!this.entity.world.getGameRules().getBoolean("mobGriefing") && ConfigValues.isMobGriefingGameRuleFollowed) || alreadyExecuting || timeToWaitUntilNextRun > 0) {
             return false;
         }
         if ((timeToWaitUntilNextRun == 0 || rand.nextInt(1000) == 1)) {

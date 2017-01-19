@@ -98,12 +98,14 @@ public class TreeChopper {
     public void breakFurthestBlock() {
         BlockPos logToBreak = returnFurthestLog(currentTree);
         assert logToBreak != null;
-        EntityItem entityItem = new EntityItem(world, logToBreak.getX(), logToBreak.getY(), logToBreak.getZ());
-        ItemStack itemStack = mainBlock.getPickBlock(world.getBlockState(mainBlockPos), null, world, mainBlockPos, null);
-        itemStack.setCount(1);
-        entityItem.setEntityItemStack(itemStack);
-        entityItem.setDefaultPickupDelay();
-        world.spawnEntity(entityItem);
+        if (world.getGameRules().getBoolean("doTileDrops")) {
+            EntityItem entityItem = new EntityItem(world, logToBreak.getX(), logToBreak.getY(), logToBreak.getZ());
+            ItemStack itemStack = mainBlock.getPickBlock(world.getBlockState(mainBlockPos), null, world, mainBlockPos, null);
+            itemStack.setCount(1);
+            entityItem.setEntityItemStack(itemStack);
+            entityItem.setDefaultPickupDelay();
+            world.spawnEntity(entityItem);
+        }
         world.playEvent(2001, logToBreak, Block.getIdFromBlock(mainBlock) + (mainBlockMeta << 12));
         BlockLog log = (BlockLog) mainBlock;
         log.breakBlock(world, logToBreak, world.getBlockState(logToBreak));
@@ -350,7 +352,7 @@ public class TreeChopper {
                         world.playSound(null, blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.BLOCK_WOOD_BREAK, SoundCategory.BLOCKS, 1, .5F);
                         //world.playSoundEffect(blockPos.getX(), blockPos.getY(), blockPos.getZ(), "dig.wood", 1, .5F);
                         // world.playSound(blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.BLOCK_WOOD_HIT, SoundCategory.BLOCKS, 2, 5F, true);
-                        if (ConfigValues.fenderiumAxe_dropItemPerLog) {
+                        if (world.getGameRules().getBoolean("doTileDrops") && ConfigValues.fenderiumAxe_dropItemPerLog) {
                             EntityItem entityItem = new EntityItem(world);
                             entityItem.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                             itemStack.setCount(1);
@@ -367,7 +369,7 @@ public class TreeChopper {
         }
 
         private void finish() {
-            if (!ConfigValues.fenderiumAxe_dropItemPerLog) {
+            if (world.getGameRules().getBoolean("doTileDrops") && !ConfigValues.fenderiumAxe_dropItemPerLog) {
                 EntityItem entityItem = new EntityItem(world);
                 entityItem.setPosition(closestPos.getX(), closestPos.getY(), closestPos.getZ());
                 itemStack.setCount(logsToDrop);

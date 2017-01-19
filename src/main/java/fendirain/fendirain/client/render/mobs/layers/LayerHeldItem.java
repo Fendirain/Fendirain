@@ -30,7 +30,7 @@ public class LayerHeldItem implements LayerRenderer<EntityLivingBase> {
             if (((EntityFendinainMob) entityLivingBase).isItemValidForEntity(itemStack.getItem())) {
                 GlStateManager.pushMatrix();
                 ModelFendinainMob model = (ModelFendinainMob) this.livingEntityRenderer.getMainModel();
-                model.leftArm2.postRender(-1.2F);
+                model.rightArm2.postRender(-1.2F);
                 GlStateManager.translate(-.08F, 1.06F, -0.17F);
                 // GlStateManager.translate(-.055F, 1.12F, -0.22F);
                 GlStateManager.scale(0.5F, 0.5F, 0.5F);
@@ -45,12 +45,14 @@ public class LayerHeldItem implements LayerRenderer<EntityLivingBase> {
         } else if (entityLivingBase instanceof EntityFenderiumMob && itemStack.getItem() instanceof ItemFenderiumAxe) {
             GlStateManager.pushMatrix();
             ModelFenderiumMob model = (ModelFenderiumMob) this.livingEntityRenderer.getMainModel();
-            model.rightArm1.postRender(0F);
-            if (((EntityFenderiumMob) entityLivingBase).isCurrentlyChopping())
-                GlStateManager.translate(.0F, -1.6F, .0F);
-            GlStateManager.translate(.275F, 1.1F, -.025F);
+            model.leftArm2.postRender(0F);
+            if (true || ((EntityFenderiumMob) entityLivingBase).isCurrentlyChopping())
+                GlStateManager.translate(.0F, -1.5F, .0F);
+            //GlStateManager.translate(.27F, 1F, -.2F);
+            GlStateManager.translate(.27F, 1F, -.2F);
             GlStateManager.scale(.45F, .45F, .45F);
-            GlStateManager.rotate(80F, 1.0F, 0.0F, 0.0F);
+            //GlStateManager.translate(0F, -2F, 0F);
+            // GlStateManager.rotate(0F, 1.0F, 0.0F, 0.0F);
             //noinspection deprecation
             Minecraft.getMinecraft().getItemRenderer().renderItem(entityLivingBase, itemStack, ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND);
             GlStateManager.popMatrix();

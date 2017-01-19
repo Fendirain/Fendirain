@@ -2,10 +2,7 @@ package fendirain.fendirain.utility.tools;
 
 import fendirain.fendirain.utility.helper.BlockTools;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirt;
-import net.minecraft.block.BlockGrass;
 import net.minecraft.block.BlockLeaves;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -13,8 +10,8 @@ import java.util.*;
 
 public class TreeChecker {
     public static BlockPos isTree(World world, BlockPos blockPos) {
-        Block block = world.getBlockState(blockPos.down()).getBlock();
-        if (block != Blocks.AIR && (block.isWood(world, blockPos.down()) || block instanceof BlockGrass || block instanceof BlockDirt)) {
+        // Block block = world.getBlockState(blockPos.down()).getBlock();
+        //if (!block.isAssociatedBlock(Blocks.AIR) && (block.isWood(world, blockPos.down()) || block instanceof BlockGrass || block instanceof BlockDirt)) {
             Set<BlockPos> connectedBlocks = getBaseTree(world, blockPos);
             Map<Integer, Integer> leaves = new HashMap<>();
             final int[] logs = {0};
@@ -48,7 +45,7 @@ public class TreeChecker {
                 if (leafBlock == null) return null;
             }
             if (mostLeaves[0] > 4) return leafBlock;
-        }
+        // }
         return null;
     }
 
