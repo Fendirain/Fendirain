@@ -9,7 +9,6 @@ import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -24,6 +23,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +40,20 @@ public class BlockFendi extends BlockContainer {
         this.registerItemForm();
     }
 
+    public static void addCollisionBoxToList(BlockPos blockPos, AxisAlignedBB axisAlignedBB, List<AxisAlignedBB> collidingBoxes, @Nullable AxisAlignedBB blockBox) {
+        ArrayList<AxisAlignedBB> axisAlignedBBArrayList = new ArrayList<>();
+        axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.125F, 0.125F, 0.125F, 0.200F, 0.885F, 0.885F));
+        axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.125F, 0.125F, 0.125F, 0.885F, 0.885F, 0.200F));
+        axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.125F, 0.125F, 0.800F, 0.885F, 0.885F, 0.885F));
+        axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.800F, 0.125F, 0.125F, 0.885F, 0.885F, 0.885F));
+        //noinspection unchecked
+        collidingBoxes.addAll(axisAlignedBBArrayList.stream().filter(aAxisAlignedBB -> aAxisAlignedBB != null && axisAlignedBB.intersectsWith(aAxisAlignedBB)).collect(Collectors.toList()));
+    }
+
+    private static AxisAlignedBB getBoundingBox(int x, int y, int z, double x1, double y1, double z1, double x2, double y2, double z2) {
+        return new AxisAlignedBB(x + x1, y + y1, z + z1, x + x2, y + y2, z + z2);
+    }
+
     private void registerItemForm() {
         GameRegistry.register(new ItemBlockFendirain(this), getRegistryName());
     }
@@ -54,24 +68,8 @@ public class BlockFendi extends BlockContainer {
         return EnumBlockRenderType.INVISIBLE;
     }
 
-    @Override
-    public void addCollisionBoxToList(IBlockState iBlockState, World worldIn, BlockPos blockPos, AxisAlignedBB axisAlignedBB, List<AxisAlignedBB> collidingBoxes, Entity entityIn) {
-        ArrayList<AxisAlignedBB> axisAlignedBBArrayList = new ArrayList<>();
-        axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.125F, 0.125F, 0.125F, 0.200F, 0.885F, 0.885F));
-        axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.125F, 0.125F, 0.125F, 0.885F, 0.885F, 0.200F));
-        axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.125F, 0.125F, 0.800F, 0.885F, 0.885F, 0.885F));
-        axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.800F, 0.125F, 0.125F, 0.885F, 0.885F, 0.885F));
-        //noinspection unchecked
-        collidingBoxes.addAll(axisAlignedBBArrayList.stream().filter(aAxisAlignedBB -> aAxisAlignedBB != null && axisAlignedBB.intersectsWith(aAxisAlignedBB)).collect(Collectors.toList()));
-    }
-
-    @Override
     public AxisAlignedBB getCollisionBoundingBox(IBlockState iBlockState, World world, BlockPos blockPos) {
         return new AxisAlignedBB((double) blockPos.getX() + 0.125F, (double) blockPos.getY() + 0.125F, (double) blockPos.getZ() + 0.125F, (double) blockPos.getX() + 0.885F, (double) blockPos.getY() + 0.885F, (double) blockPos.getZ() + 0.885F);
-    }
-
-    private AxisAlignedBB getBoundingBox(int x, int y, int z, double x1, double y1, double z1, double x2, double y2, double z2) {
-        return new AxisAlignedBB(x + x1, y + y1, z + z1, x + x2, y + y2, z + z2);
     }
 
     @Override
@@ -129,11 +127,11 @@ public class BlockFendi extends BlockContainer {
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
         ItemStack itemStack = player.getHeldItem(EnumHand.MAIN_HAND);
         TileFendiBlock tileFendiBlock = (TileFendiBlock) world.getTileEntity(pos);
-        if (itemStack != null && itemStack.getItem() == ModItems.itemFendiPiece && tileFendiBlock.getCurrentAmount() != tileFendiBlock.getAmountNeededToComplete()) {
-            player.getHeldItem(EnumHand.MAIN_HAND).stackSize -= 1;
+        if (itemStack.getItem() == ModItems.itemFendiPiece && tileFendiBlock != null && tileFendiBlock.getCurrentAmount() != tileFendiBlock.getAmountNeededToComplete()) {
+            itemStack.setCount(itemStack.getCount() - 1);
             tileFendiBlock.addToCurrentAmount(1);
             return true;
         }

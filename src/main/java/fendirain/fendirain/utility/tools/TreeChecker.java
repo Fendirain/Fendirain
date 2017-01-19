@@ -55,15 +55,11 @@ public class TreeChecker {
     private static Set<BlockPos> getBaseTree(World world, BlockPos blockPos) {
         Set<BlockPos> baseTree = new LinkedHashSet<>();
         Set<Long> searchedBlocks = new HashSet<>();
-
         int maxRange = 8;
-
         searchedBlocks.add(blockPos.toLong());
         baseTree.add(blockPos);
-
         Set<BlockPos> blocksToSearch = new LinkedHashSet<>();
         blocksToSearch.add(blockPos);
-
         while (!blocksToSearch.isEmpty()) {
             Set<BlockPos> currentTask = new LinkedHashSet<>(blocksToSearch);
             blocksToSearch.clear();
@@ -80,7 +76,6 @@ public class TreeChecker {
                     blocksToSearch.add(blockPosAllowed);
             }));
         }
-
         return baseTree;
     }
 }

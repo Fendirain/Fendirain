@@ -4,6 +4,7 @@ import fendirain.fendirain.client.models.mobs.ModelFendinainMob;
 import fendirain.fendirain.client.render.mobs.layers.LayerHeldItem;
 import fendirain.fendirain.common.entity.mob.EntityFendinain.EntityFendinainMob;
 import fendirain.fendirain.reference.Reference;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
@@ -21,11 +22,16 @@ public class RenderFendinain extends RenderLivingBase<EntityFendinainMob> {
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(EntityFendinainMob entity) {
+    public ResourceLocation getEntityTexture(EntityFendinainMob entity) {
         return resourceLocation;
     }
 
-    protected boolean canRenderName(EntityFendinainMob entity) {
+    public boolean canRenderName(EntityFendinainMob entity) {
         return super.canRenderName(entity) && (entity.getAlwaysRenderNameTagForRender() || entity.hasCustomName() && entity == this.renderManager.pointedEntity);
+    }
+
+    @Override
+    public void transformHeldFull3DItemLayer() {
+        GlStateManager.translate(0.0F, 0F, 0.0F);
     }
 }

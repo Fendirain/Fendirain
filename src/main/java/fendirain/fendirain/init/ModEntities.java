@@ -7,6 +7,7 @@ import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.reference.EntityNames;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 public class ModEntities {
@@ -15,10 +16,10 @@ public class ModEntities {
     public static void init() {
 
         // Fendinain
-        EntityRegistry.registerModEntity(EntityFendinainMob.class, EntityNames.EntityFendinain, 0, Fendirain.instance, 64, 3, true, 0x27624D, 0x212121);
+        EntityRegistry.registerModEntity(new ResourceLocation(EntityNames.EntityFendinain), EntityFendinainMob.class, EntityNames.EntityFendinain, 0, Fendirain.instance, 64, 3, true, 0x27624D, 0x212121);
         if (ConfigValues.fendinainMob_enableSpawning) registerSpawningInTreeBiomes(EntityFendinainMob.class, 1);
         // Fenderium
-        EntityRegistry.registerModEntity(EntityFenderiumMob.class, EntityNames.EntityFenderium, 1, Fendirain.instance, 64, 3, true, 0x24424D, 0x210021);
+        EntityRegistry.registerModEntity(new ResourceLocation(EntityNames.EntityFenderium), EntityFenderiumMob.class, EntityNames.EntityFenderium, 1, Fendirain.instance, 64, 3, true, 0x24424D, 0x210021);
         if (ConfigValues.fenderiumMob_enableSpawning) registerSpawningInTreeBiomes(EntityFenderiumMob.class, 2);
     }
 

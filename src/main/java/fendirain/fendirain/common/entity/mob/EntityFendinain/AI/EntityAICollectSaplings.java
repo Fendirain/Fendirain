@@ -27,15 +27,15 @@ public class EntityAICollectSaplings extends EntityAIBase {
         if (!pathFinder.noPath()) {
             return false;
         }
-        if (entity.worldObj != null) {
+        if (entity.world != null) {
             @SuppressWarnings("unchecked")
-            List<EntityItem> items = entity.worldObj.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(entity.posX - 1, entity.posY - 1, entity.posZ - 1, entity.posX + 1, entity.posY + 1, entity.posZ + 1).expand(10.0, 10.0, 10.0));
+            List<EntityItem> items = entity.world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(entity.posX - 1, entity.posY - 1, entity.posZ - 1, entity.posX + 1, entity.posY + 1, entity.posZ + 1).expand(10.0, 10.0, 10.0));
             EntityItem closest = null;
             double closestDistance = Double.MAX_VALUE;
             for (EntityItem item : items) {
                 if (!item.isDead && item.onGround) {
                     double dist = item.getDistanceToEntity(entity);
-                    if (dist < closestDistance && entity.getEntitySenses().canSee(item) && (entity.isValidForPickup(item.getEntityItem().getItem()) && entity.isAnySpaceForItemPickup(item.getEntityItem())) && !item.isInWater()) {
+                    if (dist < closestDistance && entity.getEntitySenses().canSee(item) && (entity.isItemValidForEntity(item.getEntityItem().getItem()) && entity.isAnySpaceForItemPickup(item.getEntityItem())) && !item.isInWater()) {
                         closest = item;
                         closestDistance = dist;
                     }
@@ -56,13 +56,13 @@ public class EntityAICollectSaplings extends EntityAIBase {
 
     @Override
     public void updateTask() {
-        if (!entity.worldObj.isRemote) {
+        if (!entity.world.isRemote) {
             if (targetItem != null && entity.getDistanceToEntity(targetItem) < 1.0) {
                 ItemStack itemStack = targetItem.getEntityItem();
-                int beforePickupSize = itemStack.stackSize;
+                int beforePickupSize = itemStack.getCount();
                 entity.putIntoInventory(itemStack);
-                if (beforePickupSize != itemStack.stackSize) {
-                    if (itemStack.stackSize == 0) targetItem.setDead();
+                if (beforePickupSize != itemStack.getCount()) {
+                    if (itemStack.getCount() == 0) targetItem.setDead();
                 }
             }
         }

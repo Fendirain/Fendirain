@@ -100,7 +100,7 @@ public class ModelFendinainMob extends ModelFendirain {
         this.rightLeg.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 1.4F * walkSpeed;
         this.rightLeg.rotateAngleY = 0.0F;
         EntityFendinainMob entityFendinainMob = (EntityFendinainMob) entity;
-        if (entityFendinainMob.getHeldItem(EnumHand.MAIN_HAND) != null) {
+        if (entityFendinainMob.isItemValidForEntity(entityFendinainMob.getHeldItem(EnumHand.MAIN_HAND).getItem())) {
             if (this.leftArm1.rotateAngleX != -70.43F) this.leftArm1.rotateAngleX = -70.43F;
         } else {
             if (this.leftArm1.rotateAngleX == -70.43F) this.leftArm1.rotateAngleX = 0.0F;

@@ -7,6 +7,7 @@ import fendirain.fendirain.init.ModCompatibility;
 import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.utility.helper.LogHelper;
+import net.minecraft.block.BlockPlanks;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.IEntityLivingData;
@@ -39,18 +40,18 @@ import java.util.Arrays;
 
 public class EntityFendinainMob extends EntityCreature implements IInventory {
     private final int inventorySize = 6, maxStackSize = 12;
-    private final EntityAICollectSaplings entityAICollectSaplings;
-    private final EntityAIPlantSapling entityAIPlantSapling;
+    private EntityAICollectSaplings entityAICollectSaplings;
+    private EntityAIPlantSapling entityAIPlantSapling;
     private ItemStack[] inventory = new ItemStack[inventorySize];
     private boolean firstUpdate;
 
     public EntityFendinainMob(World world) {
         super(world);
         this.setSize(.39F, .85F);
-        this.entityAIPlantSapling = new EntityAIPlantSapling(this, ConfigValues.fendinainMob_minTimeToWaitToPlant, ConfigValues.fendinainMob_maxTimeToWaitToPlant);
-        this.entityAICollectSaplings = new EntityAICollectSaplings(this, 1F);
         firstUpdate = true;
         //((PathNavigateGround) this.getNavigator()).setAvoidsWater(true);
+        this.entityAIPlantSapling = new EntityAIPlantSapling(this, ConfigValues.fendinainMob_minTimeToWaitToPlant, ConfigValues.fendinainMob_maxTimeToWaitToPlant);
+        this.entityAICollectSaplings = new EntityAICollectSaplings(this, 1F);
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIPanic(this, 1.2F));
         this.tasks.addTask(2, entityAIPlantSapling);
@@ -63,7 +64,8 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     @Override
     public void onLivingUpdate() {
         if (firstUpdate) {
-            this.setHeldItem(EnumHand.MAIN_HAND, this.getRandomSlot());
+            if (this.getHeldItem(EnumHand.MAIN_HAND).isEmpty())
+                this.setHeldItem(EnumHand.MAIN_HAND, this.getRandomSlot());
             firstUpdate = false;
         }
         super.onLivingUpdate();
@@ -78,84 +80,73 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     private void addNewSpawnInventory() {
-        String biome = this.worldObj.getBiomeGenForCoords(new BlockPos(this.posX, this.posY, this.posZ)).getBiomeName();
+        String biome = this.world.getBiome(new BlockPos(this.posX, this.posY, this.posZ)).getBiomeName();
         int amountOfSaplings = rand.nextInt(this.getInventoryStackLimit()) + 1;
         // Adds the proper type of saplings for the biome it's spawned in. Done this way for future compatibility with mods. May be changed later.
-        if (biome != null) {
-            ArrayList<String> saplings = new ArrayList<>();
-            // Mixed Oak or Spruce
-            saplings.add(Biomes.EXTREME_HILLS.getBiomeName());
-            saplings.add(Biomes.EXTREME_HILLS_EDGE.getBiomeName());
-            saplings.add(Biomes.EXTREME_HILLS_WITH_TREES.getBiomeName());
+        ArrayList<String> saplings = new ArrayList<>();
+        // Mixed Oak or Spruce
+        saplings.add(Biomes.EXTREME_HILLS.getBiomeName());
+        saplings.add(Biomes.EXTREME_HILLS_EDGE.getBiomeName());
+        saplings.add(Biomes.EXTREME_HILLS_WITH_TREES.getBiomeName());
+        if (saplings.contains(biome)) {
+            if (rand.nextInt(2) == 0) {
+                // Oak Saplings
+                this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.OAK.getMetadata()));
+            } else {
+                // Spruce Saplings
+                this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.SPRUCE.getMetadata()));
+            }
+        } else {
+            saplings.clear();
+            // Mixed Birch or Oak
+            saplings.add(Biomes.FOREST.getBiomeName());
+            saplings.add(Biomes.FOREST_HILLS.getBiomeName());
             if (saplings.contains(biome)) {
-                if (rand.nextInt(2) == 0) {
-                    // Oak Saplings
-                    this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 0));
+                if (rand.nextInt(10) == 0) {
+                    this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.BIRCH.getMetadata()));
                 } else {
-                    // Spruce Saplings
-                    this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 1));
+                    this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.OAK.getMetadata()));
                 }
             } else {
                 saplings.clear();
-                // Mixed Birch or Oak
-                saplings.add(Biomes.FOREST.getBiomeName());
-                saplings.add(Biomes.FOREST_HILLS.getBiomeName());
+                saplings.add(Biomes.PLAINS.getBiomeName());
                 if (saplings.contains(biome)) {
-                    if (rand.nextInt(10) == 0) {
-                        // Birch Saplings
-                        this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 2));
-                    } else {
-                        // Oak Saplings
-                        this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 0));
-                    }
+                    if (biome.matches(Biomes.PLAINS.getBiomeName()))
+                        this.putIntoInventory(new ItemStack(Blocks.SAPLING, (amountOfSaplings > 2) ? amountOfSaplings / 2 : 1, BlockPlanks.EnumType.OAK.getMetadata())); // Since its planes, It should start with less.
                 } else {
                     saplings.clear();
-                    saplings.add(Biomes.PLAINS.getBiomeName());
+                    saplings.add(Biomes.COLD_TAIGA.getBiomeName());
+                    saplings.add(Biomes.COLD_TAIGA_HILLS.getBiomeName());
+                    saplings.add(Biomes.TAIGA.getBiomeName());
+                    saplings.add(Biomes.TAIGA_HILLS.getBiomeName());
+                    //saplings.add(Biomes.megaTaiga.getBiomeName()); // TODO Correct
+                    //saplings.add(Biomes.megaTaigaHills.getBiomeName());
                     if (saplings.contains(biome)) {
-                        // Oak Saplings
-                        if (biome.matches(Biomes.PLAINS.getBiomeName()))
-                            this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings / 2, 0)); // Since its planes, It should start with less.
-                        this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 0));
+                        this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.SPRUCE.getMetadata()));
                     } else {
                         saplings.clear();
-                        saplings.add(Biomes.COLD_TAIGA.getBiomeName());
-                        saplings.add(Biomes.COLD_TAIGA_HILLS.getBiomeName());
-                        saplings.add(Biomes.TAIGA.getBiomeName());
-                        saplings.add(Biomes.TAIGA_HILLS.getBiomeName());
-                        //saplings.add(Biomes.megaTaiga.getBiomeName()); // TODO Correct
-                        //saplings.add(Biomes.megaTaigaHills.getBiomeName());
+                        saplings.add(Biomes.BIRCH_FOREST.getBiomeName());
+                        saplings.add(Biomes.BIRCH_FOREST_HILLS.getBiomeName());
                         if (saplings.contains(biome)) {
-                            // Spruce Saplings
-                            this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 1));
+                            this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.BIRCH.getMetadata()));
                         } else {
                             saplings.clear();
-                            saplings.add(Biomes.BIRCH_FOREST.getBiomeName());
-                            saplings.add(Biomes.BIRCH_FOREST_HILLS.getBiomeName());
+                            saplings.add(Biomes.JUNGLE.getBiomeName());
+                            saplings.add(Biomes.JUNGLE_EDGE.getBiomeName());
+                            saplings.add(Biomes.JUNGLE_HILLS.getBiomeName());
                             if (saplings.contains(biome)) {
-                                // Birch Saplings
-                                this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 2));
+                                this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.JUNGLE.getMetadata()));
                             } else {
                                 saplings.clear();
-                                saplings.add(Biomes.JUNGLE.getBiomeName());
-                                saplings.add(Biomes.JUNGLE_EDGE.getBiomeName());
-                                saplings.add(Biomes.JUNGLE_HILLS.getBiomeName());
+                                saplings.add(Biomes.SAVANNA.getBiomeName());
+                                saplings.add(Biomes.SAVANNA_PLATEAU.getBiomeName());
                                 if (saplings.contains(biome)) {
-                                    // Jungle Saplings
-                                    this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 3));
+                                    this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.ACACIA.getMetadata()));
                                 } else {
                                     saplings.clear();
-                                    saplings.add(Biomes.SAVANNA.getBiomeName());
-                                    saplings.add(Biomes.SAVANNA_PLATEAU.getBiomeName());
+                                    saplings.add(Biomes.ROOFED_FOREST.getBiomeName());
                                     if (saplings.contains(biome)) {
-                                        // Acacia Saplings
-                                        this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 4));
-                                    } else {
-                                        saplings.clear();
-                                        saplings.add(Biomes.ROOFED_FOREST.getBiomeName());
-                                        if (saplings.contains(biome)) {
-                                            // Roofed Oak Saplings
-                                            this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, 5));
-                                        }
+                                        this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.DARK_OAK.getMetadata()));
                                     }
                                 }
                             }
@@ -176,86 +167,86 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
 
     @Override
     public boolean getCanSpawnHere() {
-        return super.getCanSpawnHere() && (worldObj.getBlockState(new BlockPos(this.posX, this.posY - 1, this.posZ)) != Blocks.LEAVES || worldObj.getBlockState(new BlockPos(this.posX, this.posY - 1, this.posZ)) != Blocks.LEAVES2);
+        return super.getCanSpawnHere() && (world.getBlockState(new BlockPos(this.posX, this.posY - 1, this.posZ)) != Blocks.LEAVES || world.getBlockState(new BlockPos(this.posX, this.posY - 1, this.posZ)) != Blocks.LEAVES2);
     }
 
-    @Override
-    protected boolean processInteract(EntityPlayer entityPlayer, EnumHand hand, ItemStack itemStack) {
-        if (itemStack != null) {
-            if (this.isValidForPickup(itemStack.getItem()) && this.isAnySpaceForItemPickup(itemStack)) {
-                putIntoInventory(itemStack);
-                return true;
-            }
+    protected boolean processInteract(EntityPlayer entityPlayer, EnumHand hand) {
+        ItemStack itemStack = entityPlayer.getHeldItem(hand);
+        if (this.isItemValidForEntity(itemStack.getItem()) && this.isAnySpaceForItemPickup(itemStack)) {
+            putIntoInventory(itemStack);
+            return true;
+        }
 
-            if (ConfigValues.isDebugSettingsEnabled) {
-                // Test / Debug Code Following
-                if (itemStack.getItem() == ModItems.itemDebug) {
-                    this.setHealth(0);
-                    this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
-                    return true;
-                } else if (itemStack.getItem() == Items.ARROW) {
-                    String[] printQueue = new String[this.inventorySize];
-                    for (int slot = 0; slot < inventory.length; slot++) {
-                        if (inventory[slot] != null)
-                            printQueue[slot] = (inventory[slot].getItem().getItemStackDisplayName(inventory[slot]) + "x" + inventory[slot].stackSize);
-                        else printQueue[slot] = (slot + " is null");
-                    }
-                    if (!worldObj.isRemote)
-                        entityPlayer.addChatMessage(new TextComponentString(Arrays.toString(printQueue)));
-                    LogHelper.info(Arrays.toString(printQueue));
-                    return true;
-                } else if (itemStack.getItem() == Items.BLAZE_ROD) {
-                    entityAIPlantSapling.startExecuting();
-                    return true;
-                } else if (itemStack.getItem() == Items.DIAMOND_AXE) {
-                    for (int slot = 0; slot < inventory.length; slot++) inventory[slot] = null;
-                    this.setHeldItem(EnumHand.MAIN_HAND, null);
-                    return true;
-                } else if (itemStack.getItem() == Items.WOODEN_AXE) {
-                    Boolean alreadyChanged = false;
-                    for (int slot = 0; slot < inventory.length; slot++) {
-                        if (inventory[slot] != null) {
-                            if (alreadyChanged) inventory[slot] = null;
-                            else {
-                                inventory[slot].stackSize -= 1;
-                                if (inventory[slot].stackSize == 0) inventory[slot] = null;
-                                alreadyChanged = true;
-                            }
+        if (ConfigValues.isDebugSettingsEnabled) {
+            // Test / Debug Code Following
+            if (itemStack.getItem() == ModItems.itemDebug) {
+                this.setHealth(0);
+                this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
+                return true;
+            } else if (itemStack.getItem() == Items.ARROW) {
+                String[] printQueue = new String[this.inventorySize];
+                for (int slot = 0; slot < inventory.length; slot++) {
+                    if (inventory[slot] != null)
+                        printQueue[slot] = (inventory[slot].getItem().getItemStackDisplayName(inventory[slot]) + "x" + inventory[slot].getCount());
+                    else printQueue[slot] = (slot + " is null");
+                }
+                if (!world.isRemote)
+                    entityPlayer.sendMessage(new TextComponentString(Arrays.toString(printQueue)));
+                LogHelper.info(Arrays.toString(printQueue));
+                return true;
+            } else if (itemStack.getItem() == Items.BLAZE_ROD) {
+                if (!world.isRemote) entityAIPlantSapling.startExecuting();
+                return true;
+            } else if (itemStack.getItem() == Items.DIAMOND_AXE) {
+                for (int slot = 0; slot < inventory.length; slot++) inventory[slot] = null;
+                this.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
+                return true;
+            } else if (itemStack.getItem() == Items.WOODEN_AXE) {
+                Boolean alreadyChanged = false;
+                for (int slot = 0; slot < inventory.length; slot++) {
+                    if (inventory[slot] != null) {
+                        if (alreadyChanged) inventory[slot] = null;
+                        else {
+                            inventory[slot].shrink(1);
+                            if (inventory[slot].getCount() == 0) inventory[slot] = null;
+                            alreadyChanged = true;
                         }
                     }
-                    this.setHeldItem(EnumHand.MAIN_HAND, this.getRandomSlot());
-                    return true;
-                } else if (itemStack.getItem() == Items.PAPER) {
-                    String[] printQueue = new String[this.inventorySize];
-                    for (int slot = 0; slot < inventory.length; slot++) {
-                        if (inventory[slot] != null)
-                            printQueue[slot] = (inventory[slot].getItem().getItemStackDisplayName(inventory[slot]) + "x" + inventory[slot].stackSize);
-                        else printQueue[slot] = (slot + " is null");
+                }
+                this.setHeldItem(EnumHand.MAIN_HAND, this.getRandomSlot());
+                return true;
+            } else if (itemStack.getItem() == Items.PAPER) {
+                String[] printQueue = new String[this.inventorySize];
+                for (int slot = 0; slot < inventory.length; slot++) {
+                    if (inventory[slot] != null)
+                        printQueue[slot] = (inventory[slot].getItem().getItemStackDisplayName(inventory[slot]) + "x" + inventory[slot].getCount());
+                    else printQueue[slot] = (slot + " is null");
+                }
+                if (!world.isRemote) {
+                    entityPlayer.sendMessage(new TextComponentString("Health: " + this.getHealth()));
+                    entityPlayer.sendMessage(new TextComponentString("Last Placed: " + entityAIPlantSapling.getTimeSinceLastPlacement() + '/' + ConfigValues.fendinainMob_maxTimeToWaitToPlant + " (Max)"));
+                    LogHelper.info("Health: " + this.getHealth());
+                    LogHelper.info("Last Placed: " + entityAIPlantSapling.getTimeSinceLastPlacement() + '/' + ConfigValues.fendinainMob_maxTimeToWaitToPlant + " (Max)");
+                    for (Object object : this.getActivePotionEffects()) {
+                        PotionEffect potionEffect = (PotionEffect) object;
+                        LogHelper.info("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration());
+                        entityPlayer.sendMessage(new TextComponentString("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration()));
                     }
-                    if (!worldObj.isRemote) {
-                        entityPlayer.addChatMessage(new TextComponentString("Health: " + this.getHealth()));
-                        entityPlayer.addChatMessage(new TextComponentString("Last Placed: " + entityAIPlantSapling.getTimeSinceLastPlacement() + '/' + ConfigValues.fendinainMob_maxTimeToWaitToPlant + " (Max)"));
-                        LogHelper.info("Health: " + this.getHealth());
-                        LogHelper.info("Last Placed: " + entityAIPlantSapling.getTimeSinceLastPlacement() + '/' + ConfigValues.fendinainMob_maxTimeToWaitToPlant + " (Max)");
-                        for (Object object : this.getActivePotionEffects()) {
-                            PotionEffect potionEffect = (PotionEffect) object;
-                            LogHelper.info("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration());
-                            entityPlayer.addChatMessage(new TextComponentString("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration()));
-                        }
-                        entityPlayer.addChatMessage(new TextComponentString("Inventory: " + Arrays.toString(printQueue)));
-                        LogHelper.info("Inventory: " + Arrays.toString(printQueue));
-                        entityPlayer.addChatMessage(new TextComponentString("Percent Full: " + this.getPercentageOfInventoryFull()));
-                        LogHelper.info("Percent Full: " + this.getPercentageOfInventoryFull());
-                        int timesKilled;
-                        if (entityPlayer.getEntityData().hasKey("fendirainMobOne"))
-                            timesKilled = entityPlayer.getEntityData().getInteger("fendirainMobOne");
-                        else timesKilled = 0;
-                        entityPlayer.addChatMessage(new TextComponentString("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s)."));
-                        LogHelper.info("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s).");
-                    }
-                    return true;
-                }  // End Test / Debug Code
-            }
+                    entityPlayer.sendMessage(new TextComponentString("Inventory: " + Arrays.toString(printQueue)));
+                    LogHelper.info("Inventory: " + Arrays.toString(printQueue));
+                    entityPlayer.sendMessage(new TextComponentString("Percent Full: " + this.getPercentageOfInventoryFull()));
+                    LogHelper.info("Item to Place: " + getItemToPlace().getItem().getUnlocalizedName());
+                    entityPlayer.sendMessage(new TextComponentString("Item to Place: " + this.getItemToPlace().getItem().getUnlocalizedName()));
+                    LogHelper.info("Percent Full: " + this.getPercentageOfInventoryFull());
+                    int timesKilled;
+                    if (entityPlayer.getEntityData().hasKey("fendirainMobOne"))
+                        timesKilled = entityPlayer.getEntityData().getInteger("fendirainMobOne");
+                    else timesKilled = 0;
+                    entityPlayer.sendMessage(new TextComponentString("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s)."));
+                    LogHelper.info("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s).");
+                }
+                return true;
+            }  // End Test / Debug Code
         }
         return false;
     }
@@ -277,26 +268,26 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     public void putIntoInventory(ItemStack itemStack) {
-        if ((itemStack != null && itemStack.stackSize > 0) && (itemStack.getItem() instanceof ItemBlock && ModCompatibility.saplings.contains(itemStack.getItem()))) {
+        if ((itemStack != null && itemStack.getCount() > 0) && (itemStack.getItem() instanceof ItemBlock && ModCompatibility.saplings.contains(itemStack.getItem()))) {
             for (int slot = 0; slot < inventory.length; slot++) {
                 if (inventory[slot] == null) {
                     int amountToAdd;
-                    if (this.getInventoryStackLimit() < itemStack.stackSize)
+                    if (this.getInventoryStackLimit() < itemStack.getCount())
                         amountToAdd = this.getInventoryStackLimit();
-                    else amountToAdd = itemStack.stackSize;
+                    else amountToAdd = itemStack.getCount();
                     inventory[slot] = itemStack.copy();
-                    inventory[slot].stackSize = amountToAdd;
-                    itemStack.stackSize -= amountToAdd;
+                    inventory[slot].setCount(amountToAdd);
+                    itemStack.shrink(amountToAdd);
                 } else if (inventory[slot].getUnlocalizedName().matches(itemStack.getUnlocalizedName())) {
-                    int freeSpace = this.getInventoryStackLimit() - this.inventory[slot].stackSize, amountToAdd;
-                    if (freeSpace < itemStack.stackSize) amountToAdd = freeSpace;
-                    else amountToAdd = itemStack.stackSize;
-                    this.inventory[slot].stackSize += amountToAdd;
-                    itemStack.stackSize -= amountToAdd;
+                    int freeSpace = this.getInventoryStackLimit() - this.inventory[slot].getCount(), amountToAdd;
+                    if (freeSpace < itemStack.getCount()) amountToAdd = freeSpace;
+                    else amountToAdd = itemStack.getCount();
+                    this.inventory[slot].grow(amountToAdd);
+                    itemStack.shrink(amountToAdd);
                 }
-                if (itemStack.stackSize == 0) break;
+                if (itemStack.getCount() == 0) break;
             }
-            if (this.getHeldItem(EnumHand.MAIN_HAND) == null)
+            if (this.getHeldItem(EnumHand.MAIN_HAND).isEmpty())
                 this.setHeldItem(EnumHand.MAIN_HAND, this.getRandomSlot());
         }
     }
@@ -354,6 +345,14 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     @Override
+    public boolean isEmpty() {
+        for (ItemStack anInventory : inventory) {
+            if (anInventory != null) return false;
+        }
+        return true;
+    }
+
+    @Override
     public ItemStack getStackInSlot(int slot) {
         return this.inventory[slot];
     }
@@ -362,13 +361,13 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     public ItemStack decrStackSize(int slot, int amount) {
         ItemStack itemstack;
         if (this.inventory[slot] != null) {
-            if (this.inventory[slot].stackSize <= amount) {
+            if (this.inventory[slot].getCount() <= amount) {
                 itemstack = this.inventory[slot];
                 this.inventory[slot] = null;
                 return itemstack;
             } else {
                 itemstack = this.inventory[slot].splitStack(amount);
-                if (this.inventory[slot].stackSize == 0) this.inventory[slot] = null;
+                if (this.inventory[slot].getCount() == 0) this.inventory[slot] = null;
                 return itemstack;
             }
         } else return null;
@@ -383,8 +382,8 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     @Override
     public void setInventorySlotContents(int slot, ItemStack item) {
         this.inventory[slot] = item;
-        if (item != null && item.stackSize > this.getInventoryStackLimit())
-            item.stackSize = this.getInventoryStackLimit();
+        if (item.getCount() > this.getInventoryStackLimit())
+            item.setCount(this.getInventoryStackLimit());
     }
 
     @Override
@@ -398,7 +397,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer entityPlayer) {
+    public boolean isUsableByPlayer(EntityPlayer player) {
         return false;
     }
 
@@ -446,12 +445,12 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
             NBTTagCompound nbtTagCompound1 = nbttaglist.getCompoundTagAt(i);
             int j = nbtTagCompound1.getByte("Slot") & 255;
             if (j >= 0 && j < this.inventory.length)
-                this.inventory[j] = ItemStack.loadItemStackFromNBT(nbtTagCompound1);
+                this.inventory[j] = new ItemStack(nbtTagCompound1);
         }
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbtTagCompound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
         super.writeToNBT(nbtTagCompound);
         NBTTagList nbttaglist = new NBTTagList();
         for (int i = 0; i < this.inventory.length; ++i) {
@@ -463,6 +462,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
             }
         }
         nbtTagCompound.setTag("Items", nbttaglist);
+        return nbtTagCompound;
     }
 
     public ItemStack getItemToPlace() {
@@ -484,13 +484,13 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
             }
         }
         if (!items.isEmpty()) return items.get(rand.nextInt(items.size()));
-        else return null;
+        else return ItemStack.EMPTY;
     }
 
     public boolean isAnySpaceForItemPickup(ItemStack item) {
         if (item != null) {
             for (ItemStack itemStack : inventory)
-                if (itemStack == null || itemStack.getUnlocalizedName().matches(item.getUnlocalizedName()) && itemStack.stackSize != this.getInventoryStackLimit())
+                if (itemStack == null || itemStack.getUnlocalizedName().matches(item.getUnlocalizedName()) && itemStack.getCount() != this.getInventoryStackLimit())
                     return true;
         }
         return false;
@@ -502,19 +502,19 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         return false;
     }
 
-    public boolean isValidForPickup(Item item) {
-        return item instanceof ItemBlock && ModCompatibility.saplings.contains(item);
+    public boolean isItemValidForEntity(Item item) {
+        return item != null && item instanceof ItemBlock && ModCompatibility.saplings.contains(item);
     }
 
     public void removeItemFromInventory(ItemStack itemStack, int amount, boolean resetCurrentSapling) {
         for (int slot = inventory.length - 1; slot >= 0; slot--) {
             if (inventory[slot] != null && inventory[slot].getUnlocalizedName().matches(itemStack.getUnlocalizedName())) {
-                if (inventory[slot].stackSize >= amount) {
-                    inventory[slot].stackSize -= amount;
+                if (inventory[slot].getCount() >= amount) {
+                    inventory[slot].shrink(amount);
                     amount = 0;
-                    if (inventory[slot].stackSize <= 0) inventory[slot] = null;
+                    if (inventory[slot].getCount() <= 0) inventory[slot] = null;
                 } else {
-                    amount -= inventory[slot].stackSize;
+                    amount -= inventory[slot].getCount();
                     inventory[slot] = null;
                 }
                 if (resetCurrentSapling) this.setHeldItem(EnumHand.MAIN_HAND, this.getRandomSlot());
@@ -527,7 +527,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         int maxSize = this.maxStackSize * this.inventorySize, inventoryAmount = 0;
         boolean slotNull = false;
         for (ItemStack itemStack : inventory) {
-            if (itemStack != null) inventoryAmount += itemStack.stackSize;
+            if (itemStack != null) inventoryAmount += itemStack.getCount();
             else slotNull = true;
         }
         if (inventoryAmount > 0) {

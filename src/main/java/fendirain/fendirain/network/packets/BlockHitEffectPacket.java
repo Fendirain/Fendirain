@@ -38,6 +38,7 @@ public class BlockHitEffectPacket implements IMessage {
         @Override
         public IMessage onMessage(BlockHitEffectPacket message, MessageContext ctx) {
             //Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(BlockPos.fromLong(message.blockPos), message.enumFacing);
+            //.getClientHandler().handleBlockBreakAnim(new SPacketBlockBreakAnim());
             Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(BlockPos.fromLong(message.blockPos), EnumFacing.NORTH);
             Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(BlockPos.fromLong(message.blockPos), EnumFacing.EAST);
             Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(BlockPos.fromLong(message.blockPos), EnumFacing.SOUTH);

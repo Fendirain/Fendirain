@@ -32,7 +32,7 @@ public class WorldGenCustom extends WorldGenerator {
 
     public boolean generate(World world, Random rand, BlockPos blockPos, int numberOfBlocks) {
         if (world.getBlockState(blockPos).getBlock().isReplaceableOreGen(world.getBlockState(blockPos), world, blockPos, target)) {
-            world.setBlockState(blockPos, this.block.getStateFromMeta(this.blockMeta), 2);
+            world.setBlockState(blockPos, this.block.getDefaultState(), 2);
             int lastDirection = -1;
             while (numberOfBlocks > 1) {
                 int randomInt = rand.nextInt(6);
@@ -58,7 +58,7 @@ public class WorldGenCustom extends WorldGenerator {
                         break;
                 }
                 if (world.getBlockState(blockPos).getBlock().isReplaceableOreGen(world.getBlockState(blockPos), world, blockPos, this.target))
-                    world.setBlockState(blockPos, this.block.getStateFromMeta(this.blockMeta), 2);
+                    world.setBlockState(blockPos, this.block.getDefaultState(), 2);
                 lastDirection = randomInt;
                 numberOfBlocks--;
             }

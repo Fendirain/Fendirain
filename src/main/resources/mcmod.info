@@ -12,7 +12,7 @@
    "logoFile": "assets/fendirain/textures/logo/logo.png",
    "screenshots": [],
    "parent": "",
-   "requiredMods": [ "Forge" ],
+   "requiredMods": [],
    "dependencies": [],
    "dependants": [],
    "useDependencyInformation": true

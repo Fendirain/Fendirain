@@ -1,11 +1,26 @@
-### Java template
-# Package Files #
-*.jar
-/Fendirain.iml
-/Fendirain.ipr
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
 
-# other #
-/run
-/Fendirain.iws
-/.idea
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
 
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+/run2/
+/runserver/
+/gradle/
+/gradle.properties

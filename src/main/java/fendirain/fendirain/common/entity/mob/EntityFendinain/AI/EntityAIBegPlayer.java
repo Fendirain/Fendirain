@@ -28,10 +28,10 @@ public class EntityAIBegPlayer extends EntityAIBase {
         if (!pathFinder.noPath()) {
             return false;
         }
-        if (entity.worldObj != null) {
-            EntityPlayer player = entity.worldObj.getClosestPlayerToEntity(entity, 8);
-            if (player != null && player.getHeldItem(EnumHand.MAIN_HAND) != null) { //TODO Allow Left hand
-                if (entity.getEntitySenses().canSee(player) && entity.isValidForPickup(player.getHeldItem(EnumHand.MAIN_HAND).getItem()) && entity.isAnySpaceForItemPickup(player.getHeldItem(EnumHand.MAIN_HAND)) && !player.isInWater()) {
+        if (entity.world != null) {
+            EntityPlayer player = entity.world.getClosestPlayerToEntity(entity, 8);
+            if (player != null) { //TODO Allow Left hand
+                if (entity.getEntitySenses().canSee(player) && entity.isItemValidForEntity(player.getHeldItem(EnumHand.MAIN_HAND).getItem()) && entity.isAnySpaceForItemPickup(player.getHeldItem(EnumHand.MAIN_HAND)) && !player.isInWater()) {
                     targetEntity = player;
                     randInt = rand.nextInt(4);
                     return true;
@@ -43,13 +43,13 @@ public class EntityAIBegPlayer extends EntityAIBase {
 
     @Override
     public boolean continueExecuting() {
-        if (entity.worldObj != null) {
-            if (targetEntity != null && targetEntity.getHeldItem(EnumHand.MAIN_HAND) != null) { //TODO Allow Left hand
-                if (entity.isValidForPickup(targetEntity.getHeldItem(EnumHand.MAIN_HAND).getItem()) && entity.isAnySpaceForItemPickup(targetEntity.getHeldItem(EnumHand.MAIN_HAND)) && !targetEntity.isInWater() && !(entity.getDistanceToEntity(targetEntity) > 8))
+        if (entity.world != null) {
+            if (targetEntity != null) { //TODO Allow Left hand
+                if (entity.isItemValidForEntity(targetEntity.getHeldItem(EnumHand.MAIN_HAND).getItem()) && entity.isAnySpaceForItemPickup(targetEntity.getHeldItem(EnumHand.MAIN_HAND)) && !targetEntity.isInWater() && !(entity.getDistanceToEntity(targetEntity) > 8))
                     return true;
             }
         }
-        if (entity.worldObj != null && targetEntity != null) {
+        if (entity.world != null && targetEntity != null) {
             switch (randInt) {
                 case 0:
                     pathFinder.tryMoveToXYZ(targetEntity.posX + (rand.nextInt(12) + 8), targetEntity.posY, targetEntity.posZ + (rand.nextInt(12) + 8), this.speed);

@@ -22,7 +22,7 @@ public class DestroyItemPacket implements IMessage {
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        itemStack = ItemStack.loadItemStackFromNBT(ByteBufUtils.readTag(buf));
+        itemStack = new ItemStack(ByteBufUtils.readTag(buf));
     }
 
     @Override
@@ -33,7 +33,7 @@ public class DestroyItemPacket implements IMessage {
     public static class Handler implements IMessageHandler<DestroyItemPacket, IMessage> {
         @Override
         public IMessage onMessage(DestroyItemPacket message, MessageContext ctx) {
-            Minecraft.getMinecraft().thePlayer.renderBrokenItemStack(message.itemStack);
+            Minecraft.getMinecraft().player.renderBrokenItemStack(message.itemStack);
             return null;
         }
     }

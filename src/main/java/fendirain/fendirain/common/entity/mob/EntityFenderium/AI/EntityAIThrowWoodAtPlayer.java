@@ -31,8 +31,8 @@ public class EntityAIThrowWoodAtPlayer extends EntityAIBase {
     @Override
     public boolean shouldExecute() {
         if (alreadyExecuting) return false;
-        if (entity.worldObj != null && entity.getPercentageOfInventoryFull() >= 50) {
-            EntityPlayer player = entity.worldObj.getClosestPlayerToEntity(entity, 8);
+        if (entity.world != null && entity.getPercentageOfInventoryFull() >= 50) {
+            EntityPlayer player = entity.world.getClosestPlayerToEntity(entity, 8);
             if (player != null) {
                 if (entity.getEntitySenses().canSee(player)) {
                     targetEntity = player;
@@ -70,12 +70,12 @@ public class EntityAIThrowWoodAtPlayer extends EntityAIBase {
 
     @Override
     public void updateTask() {
-        World world = entity.worldObj;
+        World world = entity.world;
         if (!world.isRemote) {
             if (entity.getDistanceToEntity(targetEntity) <= 4) {
                 ItemStack[] itemStacks = entity.getEntityInventory();
                 for (ItemStack itemStack : itemStacks) {
-                    if (itemStack != null && itemStack.stackSize > 0) {
+                    if (itemStack != null && itemStack.getCount() > 0) {
                         EntityItem entityItem = entity.entityDropItem(itemStack, 1);
                         entityItem.setPickupDelay(80);
                     }

@@ -1,4 +1,4 @@
-
+fend
 # Keys
 keys.fendirain.category=Fendirain
 
@@ -17,8 +17,8 @@ tile.fendirain:blockFendi.name=Fendi
 itemGroup.fendirain=Fendirain
 
 # Mobs
-entity.fendirain.fendirain:fendinain.name=Fendinain
-entity.fendirain.fendirain:fenderium.name=Fenderium
+entity.fendirain:fendinain.name=Fendinain
+entity.fendirain:fenderium.name=Fenderium
 
 # Tooltips
 general.tooltip=General Settings

@@ -1,6 +1,5 @@
 package fendirain.fendirain.utility.helper;
 
-import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 
@@ -26,19 +25,6 @@ public class BlockTools {
     }
 
     public static int getBlockMeta(IBlockState iBlockState) {
-        if (iBlockState.getBlock() instanceof BlockLeaves) {
-            if (iBlockState.getBlock() instanceof BlockNewLeaf) {
-                return ((BlockPlanks.EnumType) iBlockState.getProperties().get(BlockNewLeaf.VARIANT)).getMetadata();
-            } else if (iBlockState.getBlock() instanceof BlockOldLeaf) {
-                return ((BlockPlanks.EnumType) iBlockState.getProperties().get(BlockOldLeaf.VARIANT)).getMetadata();
-            }
-        } else if (iBlockState.getBlock() instanceof BlockLog) {
-            if (iBlockState.getBlock() instanceof BlockNewLog) {
-                return ((BlockPlanks.EnumType) iBlockState.getProperties().get(BlockNewLog.VARIANT)).getMetadata();
-            } else if (iBlockState.getBlock() instanceof BlockOldLog) {
-                return ((BlockPlanks.EnumType) iBlockState.getProperties().get(BlockOldLog.VARIANT)).getMetadata();
-            }
-        }
-        return -1;
+        return iBlockState.getBlock().damageDropped(iBlockState);
     }
 }

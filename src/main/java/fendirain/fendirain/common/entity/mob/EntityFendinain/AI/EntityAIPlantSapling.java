@@ -24,18 +24,18 @@ public class EntityAIPlantSapling extends EntityAIBase {
 
     @Override
     public boolean shouldExecute() {
-        return this.entity.worldObj.getGameRules().getBoolean("mobGriefing") && timeSinceLastPlacement > minTimeToWaitToPlant && (timeSinceLastPlacement > maxTimeToWaitToPlant || new Random().nextInt(600) == 0) && entity.isItemToPlace();
+        return this.entity.world.getGameRules().getBoolean("mobGriefing") && timeSinceLastPlacement > minTimeToWaitToPlant && (timeSinceLastPlacement > maxTimeToWaitToPlant || new Random().nextInt(600) == 0) && entity.isItemToPlace();
     }
 
     @Override
     public void startExecuting() {
         ItemStack itemToPlace = entity.getItemToPlace();
-        if (itemToPlace != null) {
-            World world = entity.worldObj;
-            int posX = (int) entity.posX, posY = (int) entity.posY, posZ = (int) entity.posZ;
+        if (itemToPlace != null && entity.isItemValidForEntity(itemToPlace.getItem())) {
+            World world = entity.world;
+            double posX = entity.posX, posY = entity.posY, posZ = entity.posZ;
             Block blockToPlaceOn = world.getBlockState(new BlockPos(posX, posY - 1, posZ)).getBlock();
-            if (BlockSapling.getBlockFromItem(itemToPlace.getItem()).canPlaceBlockAt(world, new BlockPos(posX, posY, posZ)) && (blockToPlaceOn == Blocks.GLASS || blockToPlaceOn == Blocks.DIRT || blockToPlaceOn == Blocks.FARMLAND)) {
-                if (world.setBlockState(new BlockPos(posX, posY, posZ), BlockSapling.getBlockFromItem(itemToPlace.getItem()).getStateFromMeta(itemToPlace.getItemDamage()), 3)) {
+            if (BlockSapling.getBlockFromItem(itemToPlace.getItem()).canPlaceBlockAt(world, new BlockPos(posX, posY, posZ)) && (blockToPlaceOn == Blocks.GRASS || blockToPlaceOn == Blocks.DIRT || blockToPlaceOn == Blocks.FARMLAND)) {
+                if (world.setBlockState(new BlockPos(posX, posY, posZ), BlockSapling.getBlockFromItem(itemToPlace.getItem()).getDefaultState(), 3)) {
                     entity.removeItemFromInventory(itemToPlace, 1, true);
                     timeSinceLastPlacement = 0;
                 }

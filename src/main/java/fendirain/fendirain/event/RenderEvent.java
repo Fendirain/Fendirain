@@ -3,7 +3,6 @@ package fendirain.fendirain.event;
 import fendirain.fendirain.common.item.ItemDebug;
 import fendirain.fendirain.utility.helper.BlockTools;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -35,11 +34,11 @@ public class RenderEvent implements IResourceManagerReloadListener {
 
     @SubscribeEvent
     public void renderEvent(RenderWorldLastEvent renderWorldLastEvent) {
-        EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
-        World world = entityPlayer.worldObj;
+        EntityPlayer entityPlayer = Minecraft.getMinecraft().player;
+        World world = entityPlayer.world;
 
         // Temp code for debugging
-        if (entityPlayer.getHeldItem(EnumHand.MAIN_HAND) != null && (entityPlayer.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemDebug)) {
+        if (entityPlayer.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemDebug) {
             Item item = entityPlayer.getHeldItem(EnumHand.MAIN_HAND).getItem();
             Set<BlockPos> blockPosSet = ((ItemDebug) item).getBlocks();
             if (!blockPosSet.isEmpty()) {
@@ -53,7 +52,7 @@ public class RenderEvent implements IResourceManagerReloadListener {
                     GlStateManager.depthMask(false);
                     BlockPos blockpos = rayTraceResult.getBlockPos();
                     Block block = world.getBlockState(blockpos).getBlock();
-                    if (block.getMaterial(world.getBlockState(blockPos)) != Material.AIR && world.getWorldBorder().contains(blockpos)) {
+                    if (!block.isAir(world.getBlockState(blockPos), world, blockPos) && world.getWorldBorder().contains(blockpos)) {
                         //block.setBlockBoundsBasedOnState(world, blockpos);
                         double d0 = entityPlayer.lastTickPosX + (entityPlayer.posX - entityPlayer.lastTickPosX) * (double) renderWorldLastEvent.getPartialTicks();
                         double d1 = entityPlayer.lastTickPosY + (entityPlayer.posY - entityPlayer.lastTickPosY) * (double) renderWorldLastEvent.getPartialTicks();

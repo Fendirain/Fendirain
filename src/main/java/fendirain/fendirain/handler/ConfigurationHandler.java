@@ -44,7 +44,9 @@ public class ConfigurationHandler {
             Minecraft.getMinecraft().crashed(new CrashReport("fendinainMob_minTimeToWaitToPlant is not lower than or equal too fendinainMob_maxTimeToWaitToPlant, Please correct.", new CannotProceedException()));
 
         // FenderiumAxe
+        ConfigValues.fenderiumAxe_disableRightClickFunction = configuration.getBoolean("FenderiumAxe_DisableRightClickFunction", CATEGORY_ITEM, false, "If true, the right-click abilty of the axe will be disabled.");
         ConfigValues.fenderiumAxe_dropItemPerLog = configuration.getBoolean("FenderiumAxe_DropItemPerLog", CATEGORY_ITEM, false, "If true, The Fenderium Axe right-click ability will cause logs to be dropped as broken instead as one ItemStack at the end.");
+        ConfigValues.fenderiumAxe_blockBreakSpeed = configuration.getInt("FenderiumAxe_BlockBreakSpeed", CATEGORY_ITEM, -10, Integer.MIN_VALUE, -1, "The lower the value, The slower logs will be broken with the right click function.");
 
         if (configuration.hasChanged()) configuration.save();
     }

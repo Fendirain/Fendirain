@@ -14,9 +14,10 @@ public class TileFendiBlock extends TileFendirain {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbtTagCompound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
         super.writeToNBT(nbtTagCompound);
         nbtTagCompound.setInteger("currentAmount", currentAmount);
+        return nbtTagCompound;
     }
 
     public void addToCurrentAmount(int amountToAdd) {

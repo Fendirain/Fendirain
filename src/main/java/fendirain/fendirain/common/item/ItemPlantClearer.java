@@ -31,7 +31,7 @@ public class ItemPlantClearer extends ItemFendirain {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStack, World world, EntityPlayer entityPlayer, EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer entityPlayer, EnumHand hand) {
         EnumActionResult enumActionResult = EnumActionResult.FAIL;
         if (!world.isRemote && !alreadyWorking && EnumHand.MAIN_HAND.equals(hand)) {
             if (!entityPlayer.isSneaking()) {
@@ -48,7 +48,7 @@ public class ItemPlantClearer extends ItemFendirain {
                     }
                 }
                 @SuppressWarnings("unchecked")
-                List<EntityItem> items = entityPlayer.worldObj.getEntitiesWithinAABB(EntityItem.class, entityPlayer.getEntityBoundingBox().expand(range, range, range));
+                List<EntityItem> items = entityPlayer.world.getEntitiesWithinAABB(EntityItem.class, entityPlayer.getEntityBoundingBox().expand(range, range, range));
                 items.stream().filter(item -> (int) item.getDistanceToEntity(entityPlayer) <= range && ModCompatibility.saplings.contains(item.getEntityItem().getItem()) || (item.getEntityItem().getItem() instanceof ItemBlock && Block.getBlockFromItem(item.getEntityItem().getItem()) instanceof BlockLog) || item.getEntityItem().getItem() instanceof ItemSeeds || item.getEntityItem().getItem() == Items.APPLE).forEach(Entity::setDead);
             } else {
                 alreadyWorking = true;
@@ -63,13 +63,13 @@ public class ItemPlantClearer extends ItemFendirain {
                         }
                     }
                 }
-                List<EntityItem> items = entityPlayer.worldObj.getEntitiesWithinAABB(EntityItem.class, entityPlayer.getEntityBoundingBox().expand(range, range, range));
+                List<EntityItem> items = entityPlayer.world.getEntitiesWithinAABB(EntityItem.class, entityPlayer.getEntityBoundingBox().expand(range, range, range));
                 items.stream().filter(item -> (int) item.getDistanceToEntity(entityPlayer) <= range && ModCompatibility.saplings.contains(item.getEntityItem().getItem()) || (item.getEntityItem().getItem() instanceof ItemBlock && Block.getBlockFromItem(item.getEntityItem().getItem()) instanceof BlockLog) || item.getEntityItem().getItem() == Items.APPLE).forEach(Entity::setDead);
             }
             enumActionResult = EnumActionResult.PASS;
         }
         alreadyWorking = false;
-        return new ActionResult<>(enumActionResult, itemStack);
+        return new ActionResult<>(enumActionResult, entityPlayer.getHeldItem(hand));
     }
 
     public boolean onDroppedByPlayer(ItemStack item, EntityPlayer player) {

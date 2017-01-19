@@ -48,7 +48,6 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         super(world);
         this.setSize(.39F, .99F);
         entityAIChopTrees = new EntityAIChopTrees(this, rand, 1.0F, ConfigValues.fenderiumMob_waitPerTreeOrLog, ConfigValues.fenderiumMob_timePerBreak * 20);
-        //((PathNavigateGround) this.getNavigator()).setAvoidsWater(true);
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, entityAIChopTrees);
         this.tasks.addTask(2, new EntityAIWander(this, 1.0F));
@@ -69,86 +68,83 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
             this.entityAIChopTrees.setTimeToWaitUntilNextRun(this.entityAIChopTrees.getTimeToWaitUntilNextRun() - 1);
     }
 
-    @Override
-    protected boolean processInteract(EntityPlayer entityPlayer, EnumHand hand, ItemStack itemStack) {
-        if (itemStack != null) {
-            if (ConfigValues.isDebugSettingsEnabled) {
-                // Test / Debug Code Following
-                if (itemStack.getItem() == ModItems.itemDebug) {
-                    this.setHealth(0);
-                    this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
-                    return true;
-                } else if (itemStack.getItem() == Items.ARROW) {
-                    String[] printQueue = new String[this.inventorySize];
-                    for (int slot = 0; slot < inventory.length; slot++) {
-                        if (inventory[slot] != null)
-                            printQueue[slot] = (inventory[slot].getItem().getItemStackDisplayName(inventory[slot]) + "x" + inventory[slot].stackSize);
-                        else printQueue[slot] = (slot + " is null");
-                    }
-                    if (!worldObj.isRemote) {
-                        entityPlayer.addChatMessage(new TextComponentString(Arrays.toString(printQueue)));
-                        LogHelper.info(Arrays.toString(printQueue));
-                    }
-                    return true;
-                } else if (itemStack.getItem() == Items.BLAZE_ROD) {
-                    if (entityAIChopTrees.isAlreadyExecuting())
-                        this.addPotionEffect(new PotionEffect(MobEffects.HASTE, 99999, 9));
-                    else entityAIChopTrees.setTimeToWaitUntilNextRun(0);
-                    return true;
-                } else if (itemStack.getItem() == Items.DIAMOND_AXE) {
-                    for (int slot = 0; slot < inventory.length; slot++) inventory[slot] = null;
-                    this.setHeldItem(EnumHand.MAIN_HAND, null);
-                    return true;
-                } else if (itemStack.getItem() == Items.NETHER_STAR) {
-                    for (int slot = 0; slot < inventory.length; slot++)
-                        inventory[slot] = new ItemStack(Item.getItemFromBlock(Blocks.LOG), this.getInventoryStackLimit());
-                    return true;
-                } else if (itemStack.getItem() == Items.WOODEN_AXE) {
-                    Boolean alreadyChanged = false;
-                    for (int slot = 0; slot < inventory.length; slot++) {
-                        if (inventory[slot] != null) {
-                            if (alreadyChanged) inventory[slot] = null;
-                            else {
-                                inventory[slot].stackSize -= 1;
-                                if (inventory[slot].stackSize == 0) inventory[slot] = null;
-                                alreadyChanged = true;
-                            }
+    protected boolean processInteract(EntityPlayer entityPlayer, EnumHand hand) {
+        ItemStack itemStack = entityPlayer.getHeldItem(hand);
+        if (ConfigValues.isDebugSettingsEnabled) {
+            // Test / Debug Code Following
+            if (itemStack.getItem() == ModItems.itemDebug) {
+                this.setHealth(0);
+                this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
+                return true;
+            } else if (itemStack.getItem() == Items.ARROW) {
+                String[] printQueue = new String[this.inventorySize];
+                for (int slot = 0; slot < inventory.length; slot++) {
+                    if (inventory[slot] != null)
+                        printQueue[slot] = (inventory[slot].getItem().getItemStackDisplayName(inventory[slot]) + "x" + inventory[slot].getCount());
+                    else printQueue[slot] = (slot + " is null");
+                }
+                if (!world.isRemote) {
+                    entityPlayer.sendMessage(new TextComponentString(Arrays.toString(printQueue)));
+                    LogHelper.info(Arrays.toString(printQueue));
+                }
+                return true;
+            } else if (itemStack.getItem() == Items.BLAZE_ROD) {
+                if (entityAIChopTrees.isAlreadyExecuting())
+                    this.addPotionEffect(new PotionEffect(MobEffects.HASTE, 99999, 9));
+                else entityAIChopTrees.setTimeToWaitUntilNextRun(0);
+                return true;
+            } else if (itemStack.getItem() == Items.DIAMOND_AXE) {
+                for (int slot = 0; slot < inventory.length; slot++) inventory[slot] = null;
+                this.setHeldItem(EnumHand.MAIN_HAND, null);
+                return true;
+            } else if (itemStack.getItem() == Items.NETHER_STAR) {
+                for (int slot = 0; slot < inventory.length; slot++)
+                    inventory[slot] = new ItemStack(Item.getItemFromBlock(Blocks.LOG), this.getInventoryStackLimit());
+                return true;
+            } else if (itemStack.getItem() == Items.WOODEN_AXE) {
+                Boolean alreadyChanged = false;
+                for (int slot = 0; slot < inventory.length; slot++) {
+                    if (inventory[slot] != null) {
+                        if (alreadyChanged) inventory[slot] = null;
+                        else {
+                            inventory[slot].shrink(1);
+                            if (inventory[slot].getCount() == 0) inventory[slot] = null;
+                            alreadyChanged = true;
                         }
                     }
-                    return true;
-                } else if (itemStack.getItem() == Items.PAPER) {
-                    String[] printQueue = new String[this.inventorySize];
-                    for (int slot = 0; slot < inventory.length; slot++) {
-                        if (inventory[slot] != null)
-                            printQueue[slot] = (inventory[slot].getItem().getItemStackDisplayName(inventory[slot]) + "x" + inventory[slot].stackSize);
-                        else printQueue[slot] = (slot + " is null");
+                }
+                return true;
+            } else if (itemStack.getItem() == Items.PAPER) {
+                String[] printQueue = new String[this.inventorySize];
+                for (int slot = 0; slot < inventory.length; slot++) {
+                    if (inventory[slot] != null)
+                        printQueue[slot] = (inventory[slot].getItem().getItemStackDisplayName(inventory[slot]) + "x" + inventory[slot].getCount());
+                    else printQueue[slot] = (slot + " is null");
+                }
+                if (!world.isRemote) {
+                    entityPlayer.sendMessage(new TextComponentString("Health: " + this.getHealth()));
+                    entityPlayer.sendMessage(new TextComponentString("Wait Time: " + entityAIChopTrees.getTimeToWaitUntilNextRun()));
+                    entityPlayer.sendMessage(new TextComponentString("Currently Chopping: " + entityAIChopTrees.isAlreadyExecuting()));
+                    LogHelper.info("Health: " + this.getHealth());
+                    LogHelper.info("Wait Time: " + entityAIChopTrees.getTimeToWaitUntilNextRun());
+                    LogHelper.info("Currently Chopping: " + entityAIChopTrees.isAlreadyExecuting());
+                    for (PotionEffect potionEffect : this.getActivePotionEffects()) {
+                        LogHelper.info("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration());
+                        entityPlayer.sendMessage(new TextComponentString("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration()));
                     }
-                    if (!worldObj.isRemote) {
-                        entityPlayer.addChatMessage(new TextComponentString("Health: " + this.getHealth()));
-                        entityPlayer.addChatMessage(new TextComponentString("Wait Time: " + entityAIChopTrees.getTimeToWaitUntilNextRun()));
-                        entityPlayer.addChatMessage(new TextComponentString("Currently Chopping: " + entityAIChopTrees.isAlreadyExecuting()));
-                        LogHelper.info("Health: " + this.getHealth());
-                        LogHelper.info("Wait Time: " + entityAIChopTrees.getTimeToWaitUntilNextRun());
-                        LogHelper.info("Currently Chopping: " + entityAIChopTrees.isAlreadyExecuting());
-                        for (Object object : this.getActivePotionEffects()) {
-                            PotionEffect potionEffect = (PotionEffect) object;
-                            LogHelper.info("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration());
-                            entityPlayer.addChatMessage(new TextComponentString("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration()));
-                        }
-                        entityPlayer.addChatMessage(new TextComponentString("Inventory: " + Arrays.toString(printQueue)));
-                        LogHelper.info("Inventory: " + Arrays.toString(printQueue));
-                        entityPlayer.addChatMessage(new TextComponentString("Percent Full: " + this.getPercentageOfInventoryFull()));
-                        LogHelper.info("Percent Full: " + this.getPercentageOfInventoryFull());
-                        int timesKilled;
-                        if (entityPlayer.getEntityData().hasKey("fendirainMobTwo"))
-                            timesKilled = entityPlayer.getEntityData().getInteger("fendirainMobTwo");
-                        else timesKilled = 0;
-                        entityPlayer.addChatMessage(new TextComponentString("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s)."));
-                        LogHelper.info("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s).");
-                    }
-                    return true;
-                } // End Test / Debug Code
-            }
+                    entityPlayer.sendMessage(new TextComponentString("Inventory: " + Arrays.toString(printQueue)));
+                    LogHelper.info("Inventory: " + Arrays.toString(printQueue));
+                    entityPlayer.sendMessage(new TextComponentString("Percent Full: " + this.getPercentageOfInventoryFull()));
+                    LogHelper.info("Percent Full: " + this.getPercentageOfInventoryFull());
+                    int timesKilled;
+                    if (entityPlayer.getEntityData().hasKey("fendirainMobTwo"))
+                        timesKilled = entityPlayer.getEntityData().getInteger("fendirainMobTwo");
+                    else timesKilled = 0;
+                    entityPlayer.sendMessage(new TextComponentString("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s)."));
+                    LogHelper.info("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s).");
+                }
+                return true;
+            } // End Test / Debug Code
         }
         return false;
     }
@@ -168,7 +164,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
 
     @Override
     public boolean getCanSpawnHere() {
-        Block block = worldObj.getBlockState(new BlockPos(this).down()).getBlock();
+        Block block = world.getBlockState(new BlockPos(this).down()).getBlock();
         return super.getCanSpawnHere() && (block != Blocks.LEAVES || block != Blocks.LEAVES2);
     }
 
@@ -219,24 +215,24 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     }
 
     public void putIntoInventory(ItemStack itemStack) {
-        if ((itemStack != null && itemStack.stackSize > 0) && (itemStack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemStack.getItem()) instanceof BlockLog)) {
+        if ((itemStack != null && itemStack.getCount() > 0) && (itemStack.getItem() instanceof ItemBlock && Block.getBlockFromItem(itemStack.getItem()) instanceof BlockLog)) {
             for (int slot = 0; slot < inventory.length; slot++) {
                 if (inventory[slot] == null) {
                     int amountToAdd;
-                    if (this.getInventoryStackLimit() < itemStack.stackSize)
+                    if (this.getInventoryStackLimit() < itemStack.getCount())
                         amountToAdd = this.getInventoryStackLimit();
-                    else amountToAdd = itemStack.stackSize;
+                    else amountToAdd = itemStack.getCount();
                     inventory[slot] = itemStack.copy();
-                    inventory[slot].stackSize = amountToAdd;
-                    itemStack.stackSize -= amountToAdd;
+                    inventory[slot].grow(amountToAdd);
+                    itemStack.shrink(amountToAdd);
                 } else if (inventory[slot].getUnlocalizedName().matches(itemStack.getUnlocalizedName())) {
-                    int freeSpace = this.getInventoryStackLimit() - this.inventory[slot].stackSize, amountToAdd;
-                    if (freeSpace < itemStack.stackSize) amountToAdd = freeSpace;
-                    else amountToAdd = itemStack.stackSize;
-                    this.inventory[slot].stackSize += amountToAdd;
-                    itemStack.stackSize -= amountToAdd;
+                    int freeSpace = this.getInventoryStackLimit() - this.inventory[slot].getCount(), amountToAdd;
+                    if (freeSpace < itemStack.getCount()) amountToAdd = freeSpace;
+                    else amountToAdd = itemStack.getCount();
+                    this.inventory[slot].grow(amountToAdd);
+                    itemStack.shrink(amountToAdd);
                 }
-                if (itemStack.stackSize == 0) break;
+                if (itemStack.getCount() == 0) break;
             }
         }
     }
@@ -248,7 +244,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     public boolean isAnySpaceForItemPickup(ItemStack itemToPickup) {
         if (itemToPickup != null) {
             for (ItemStack itemStack : inventory)
-                if (itemStack == null || itemStack.getUnlocalizedName().matches(itemToPickup.getUnlocalizedName()) && itemStack.stackSize != this.getInventoryStackLimit())
+                if (itemStack == null || itemStack.getUnlocalizedName().matches(itemToPickup.getUnlocalizedName()) && itemStack.getCount() != this.getInventoryStackLimit())
                     return true;
         }
         return false;
@@ -261,14 +257,14 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     public void removeItemFromInventory(ItemStack itemStack, int amount) {
         for (int slot = inventory.length - 1; slot >= 0; slot--) {
             if (inventory[slot] != null && inventory[slot].getUnlocalizedName().matches(itemStack.getUnlocalizedName())) {
-                if (inventory[slot].stackSize >= amount) {
-                    inventory[slot].stackSize -= amount;
+                if (inventory[slot].getCount() >= amount) {
+                    inventory[slot].shrink(amount);
                     amount = 0;
-                    if (inventory[slot].stackSize <= 0) {
+                    if (inventory[slot].getCount() <= 0) {
                         inventory[slot] = null;
                     }
                 } else {
-                    amount -= inventory[slot].stackSize;
+                    amount -= inventory[slot].getCount();
                     inventory[slot] = null;
                 }
                 if (amount == 0) {
@@ -303,6 +299,14 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     }
 
     @Override
+    public boolean isEmpty() {
+        for (ItemStack anInventory : inventory) {
+            if (anInventory != null) return false;
+        }
+        return true;
+    }
+
+    @Override
     public ItemStack getStackInSlot(int slot) {
         return inventory[slot];
     }
@@ -311,13 +315,13 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     public ItemStack decrStackSize(int slot, int amount) {
         ItemStack itemstack;
         if (this.inventory[slot] != null) {
-            if (this.inventory[slot].stackSize <= amount) {
+            if (this.inventory[slot].getCount() <= amount) {
                 itemstack = this.inventory[slot];
                 this.inventory[slot] = null;
                 return itemstack;
             } else {
                 itemstack = this.inventory[slot].splitStack(amount);
-                if (this.inventory[slot].stackSize == 0) this.inventory[slot] = null;
+                if (this.inventory[slot].getCount() == 0) this.inventory[slot] = null;
                 return itemstack;
             }
         } else return null;
@@ -332,8 +336,8 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     @Override
     public void setInventorySlotContents(int slot, ItemStack item) {
         this.inventory[slot] = item;
-        if (item != null && item.stackSize > this.getInventoryStackLimit())
-            item.stackSize = this.getInventoryStackLimit();
+        if (item.getCount() > this.getInventoryStackLimit())
+            item.setCount(this.getInventoryStackLimit());
     }
 
     @Override
@@ -347,7 +351,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     }
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer entityPlayer) {
+    public boolean isUsableByPlayer(EntityPlayer player) {
         return false;
     }
 
@@ -393,7 +397,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         int maxSize = this.maxStackSize * this.inventorySize, inventoryAmount = 0;
         boolean slotNull = false;
         for (ItemStack itemStack : inventory) {
-            if (itemStack != null) inventoryAmount += itemStack.stackSize;
+            if (itemStack != null) inventoryAmount += itemStack.getCount();
             else slotNull = true;
         }
         if (inventoryAmount > 0) {
@@ -412,13 +416,13 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
             NBTTagCompound nbtTagCompound1 = nbttaglist.getCompoundTagAt(i);
             int j = nbtTagCompound1.getByte("Slot") & 255;
             if (j >= 0 && j < this.inventory.length)
-                this.inventory[j] = ItemStack.loadItemStackFromNBT(nbtTagCompound1);
+                this.inventory[j] = new ItemStack(nbtTagCompound1);
         }
         entityAIChopTrees.readFromNBT(nbtTagCompound.getCompoundTag("entityAIChopTrees"));
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbtTagCompound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
         super.writeToNBT(nbtTagCompound);
         NBTTagList nbtTagList = new NBTTagList();
         for (int i = 0; i < this.inventory.length; ++i) {
@@ -431,6 +435,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
         }
         nbtTagCompound.setTag("Items", nbtTagList);
         nbtTagCompound.setTag("entityAIChopTrees", entityAIChopTrees.writeToNBT());
+        return nbtTagCompound;
     }
 
     public int getMaxRange() {

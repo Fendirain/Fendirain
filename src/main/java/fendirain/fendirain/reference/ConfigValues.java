@@ -16,5 +16,7 @@ public class ConfigValues {
     public static int fenderiumMob_timePerBreak;
 
     // FenderiumAxe
+    public static boolean fenderiumAxe_disableRightClickFunction;
     public static boolean fenderiumAxe_dropItemPerLog;
+    public static int fenderiumAxe_blockBreakSpeed;
 }

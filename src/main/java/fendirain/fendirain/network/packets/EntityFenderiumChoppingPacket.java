@@ -44,7 +44,7 @@ public class EntityFenderiumChoppingPacket implements IMessage {
     public static class Handler implements IMessageHandler<EntityFenderiumChoppingPacket, IMessage> {
         @Override
         public IMessage onMessage(EntityFenderiumChoppingPacket message, MessageContext ctx) {
-            EntityFenderiumMob entity = (EntityFenderiumMob) Minecraft.getMinecraft().theWorld.getEntityByID(message.entityID);
+            EntityFenderiumMob entity = (EntityFenderiumMob) Minecraft.getMinecraft().world.getEntityByID(message.entityID);
             if (entity != null) {
                 entity.setIsChopping(message.isChopping);
                 if (message.blockPos != -1) entity.setCurrentlyBreakingPos(BlockPos.fromLong(message.blockPos));
