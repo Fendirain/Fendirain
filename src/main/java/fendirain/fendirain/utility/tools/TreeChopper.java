@@ -317,6 +317,7 @@ public class TreeChopper {
         private int i = 1;
         private boolean spawnBreakParticles = true;
         private int logsToDrop = 0;
+        private int blockMissing = 0; // If 5 blocks happen to be missing in a row, It will iterate over the whole list to clear any other missing blocks, and then continue.
 
         BreakBlocksQueue(Set<BlockPos> blockPosSet, BlockPos closestPos, EntityPlayer entityPlayer) {
             if (!blockPosSet.isEmpty()) {
@@ -360,9 +361,19 @@ public class TreeChopper {
                             entityItem.setDefaultPickupDelay();
                             world.spawnEntity(entityItem);
                         } else logsToDrop++;
+                        blockMissing = 0;
+                        System.out.println("Running");
                         i = ConfigValues.fenderiumAxe_blockBreakSpeed;
-                    }
+                    } else blockMissing++;
                     blockPosIterator.remove();
+                    if (blockMissing >= 5) { // If 5 blocks
+                        while (blockPosIterator.hasNext())
+                            if (world.getBlockState(blockPosIterator.next()).getBlock() != mainBlock)
+                                blockPosIterator.remove();
+                        blockMissing = 0;
+                        if (blockPosSet.isEmpty()) finish();
+                        else blockPosIterator = blockPosSet.iterator();
+                    }
                     if (blockPosSet.isEmpty()) finish();
                 }
             } else i++;
@@ -388,7 +399,7 @@ public class TreeChopper {
         private final Set<Long> searchedBlocks;
         private final Set<BlockPos> blocksToSearch;
 
-        public GetTreeBlocks(boolean useLeavesToCheck, int iterationsPerTick) {
+        GetTreeBlocks(boolean useLeavesToCheck, int iterationsPerTick) {
             this.iterationsPerTick = iterationsPerTick;
             this.useLeavesToCheck = useLeavesToCheck;
             this.fullBlocks = new LinkedHashSet<>();
@@ -402,7 +413,7 @@ public class TreeChopper {
         public void findAllBlocks(TickEvent.WorldTickEvent worldTickEvent) {
             int currentIteration = 0;
             int maxRange = 14;
-            while (currentIteration <= (blocksToSearch.size() < iterationsPerTick ? blocksToSearch.size() : iterationsPerTick)) {
+            while (currentIteration <= (blocksToSearch.size() < iterationsPerTick ? blocksToSearch.size() : iterationsPerTick) && blocksToSearch.stream().findFirst().isPresent()) {
                 BlockPos blockPos = blocksToSearch.stream().findFirst().get();
                 blocksToSearch.remove(blockPos);
                 fullBlocks.add(blockPos);

@@ -1,6 +1,7 @@
 package fendirain.fendirain.common.entity.mob.EntityFenderium.AI;
 
 import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
+import fendirain.fendirain.common.item.ItemFenderiumAxe;
 import fendirain.fendirain.network.PacketHandler;
 import fendirain.fendirain.network.packets.EntityFenderiumChoppingPacket;
 import fendirain.fendirain.reference.ConfigValues;
@@ -48,7 +49,7 @@ public class EntityAIChopTrees extends EntityAIBase {
     @Override
     public boolean shouldExecute() {
         if (reloaded) return true;
-        if ((!this.entity.world.getGameRules().getBoolean("mobGriefing") && ConfigValues.isMobGriefingGameRuleFollowed) || alreadyExecuting || timeToWaitUntilNextRun > 0) {
+        if ((!this.entity.world.getGameRules().getBoolean("mobGriefing") && ConfigValues.isMobGriefingGameRuleFollowed) || alreadyExecuting || timeToWaitUntilNextRun > 0 || !(entity.getHeldItemMainhand().getItem() instanceof ItemFenderiumAxe)) {
             return false;
         }
         if ((timeToWaitUntilNextRun == 0 || rand.nextInt(1000) == 1)) {

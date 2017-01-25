@@ -92,7 +92,7 @@ public class ModelFenderiumMob extends ModelFendirain {
     public void renderFenderium(EntityFenderiumMob entityFenderiumMob, float time, float walkSpeed, float otherAngle, float rotationYaw, float rotationPitch, float scale) {
         this.mainBody.render(scale);
         setRotationAngles(time, walkSpeed, otherAngle, rotationYaw, rotationPitch, scale, entityFenderiumMob);
-        if (true || entityFenderiumMob.isCurrentlyChopping()) {
+        /*if (entityFenderiumMob.isCurrentlyChopping()) { // TODO Fix arm animation - HA, Like that will happen
             if (this.leftArm2.rotateAngleX == 0) {
                 this.leftArm2.rotateAngleX = -2.5F;
                 lowerArm = false;
@@ -100,7 +100,7 @@ public class ModelFenderiumMob extends ModelFendirain {
             this.leftArm2.rotateAngleX = lowerArm ? this.leftArm2.rotateAngleX + 0.1F : this.leftArm2.rotateAngleX - 0.1F;
             if (this.leftArm2.rotateAngleX <= -3.5) lowerArm = true;
             else if (this.leftArm2.rotateAngleX >= -2.5) lowerArm = false;
-        } else this.leftArm2.rotateAngleX = 0.0F;
+        } else this.leftArm2.rotateAngleX = 0.0F;*/
     }
 
     @Override
@@ -109,8 +109,8 @@ public class ModelFenderiumMob extends ModelFendirain {
         this.head.rotateAngleX = rotationPitch / (180F / (float) Math.PI);
         this.rightArm1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 2.0F * walkSpeed * 0.5F;
         this.rightArm1.rotateAngleZ = 0.0F;
-        EntityFenderiumMob entityFenderiumMob = (EntityFenderiumMob) entity;
-        if (false || !entityFenderiumMob.isCurrentlyChopping()) {
+        /* EntityFenderiumMob entityFenderiumMob = (EntityFenderiumMob) entity; // TODO Fix arm animation - HA, Like that will happen
+        if (!entityFenderiumMob.isCurrentlyChopping()) {
             this.leftArm1.rotateAngleX = MathHelper.cos(time * 0.6662F + (float) Math.PI) * 2.0F * walkSpeed * 0.5F;
             this.leftArm1.rotateAngleZ = 0.0F;
             this.leftLeg1.rotateAngleX = MathHelper.cos(time * 0.6662F) * 1.4F * walkSpeed;
@@ -120,6 +120,6 @@ public class ModelFenderiumMob extends ModelFendirain {
         } else if (this.leftLeg1.rotateAngleX != 0 || this.rightLeg1.rotateAngleX != 0) {
             this.leftLeg1.rotateAngleX = 0.0F;
             this.rightLeg1.rotateAngleX = 0.0F;
-        }
+        }*/
     }
 }

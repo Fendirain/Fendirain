@@ -46,7 +46,6 @@ public class EntityFenderiumChoppingPacket implements IMessage {
         public IMessage onMessage(EntityFenderiumChoppingPacket message, MessageContext ctx) {
             EntityFenderiumMob entity = (EntityFenderiumMob) Minecraft.getMinecraft().world.getEntityByID(message.entityID);
             if (entity != null) {
-                entity.setIsChopping(message.isChopping);
                 if (message.blockPos != -1) entity.setCurrentlyBreakingPos(BlockPos.fromLong(message.blockPos));
                 else entity.setCurrentlyBreakingPos(null);
                 entity.setCurrentlyBreakingProgress(message.currentProgress);

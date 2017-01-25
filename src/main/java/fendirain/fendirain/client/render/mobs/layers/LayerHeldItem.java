@@ -46,8 +46,8 @@ public class LayerHeldItem implements LayerRenderer<EntityLivingBase> {
             GlStateManager.pushMatrix();
             ModelFenderiumMob model = (ModelFenderiumMob) this.livingEntityRenderer.getMainModel();
             model.leftArm2.postRender(0F);
-            if (true || ((EntityFenderiumMob) entityLivingBase).isCurrentlyChopping())
-                GlStateManager.translate(.0F, -1.5F, .0F);
+            /*if (((EntityFenderiumMob) entityLivingBase).isCurrentlyChopping()) // TODO Fix arm animation - HA, Like that will happen
+                GlStateManager.translate(.0F, -1.5F, .0F);*/
             //GlStateManager.translate(.27F, 1F, -.2F);
             GlStateManager.translate(.27F, 1F, -.2F);
             GlStateManager.scale(.45F, .45F, .45F);

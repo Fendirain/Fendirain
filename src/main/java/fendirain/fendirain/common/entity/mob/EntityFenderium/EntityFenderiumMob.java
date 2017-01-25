@@ -63,7 +63,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
 
     @Override
     public void onLivingUpdate() {
-        //super.onLivingUpdate();
+        super.onLivingUpdate();
         if (!entityAIChopTrees.isAlreadyExecuting() && !(entityAIChopTrees.getTimeToWaitUntilNextRun() <= 0))
             this.entityAIChopTrees.setTimeToWaitUntilNextRun(this.entityAIChopTrees.getTimeToWaitUntilNextRun() - 1);
     }
@@ -74,7 +74,8 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
             // Test / Debug Code Following
             if (itemStack.getItem() == ModItems.itemDebug) {
                 this.setHealth(0);
-                this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
+                if (this.getDeathSound() != null)
+                    this.playSound(this.getDeathSound(), this.getSoundVolume(), this.getSoundPitch());
                 return true;
             } else if (itemStack.getItem() == Items.ARROW) {
                 String[] printQueue = new String[this.inventorySize];
@@ -95,7 +96,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                 return true;
             } else if (itemStack.getItem() == Items.DIAMOND_AXE) {
                 for (int slot = 0; slot < inventory.length; slot++) inventory[slot] = null;
-                this.setHeldItem(EnumHand.MAIN_HAND, null);
+                this.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
                 return true;
             } else if (itemStack.getItem() == Items.NETHER_STAR) {
                 for (int slot = 0; slot < inventory.length; slot++)

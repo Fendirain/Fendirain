@@ -48,7 +48,6 @@ public class Fendirain {
     @Mod.EventHandler
     public void init(@SuppressWarnings("UnusedParameters") FMLInitializationEvent initializationEvent) {
         // Register Gui's, Tile Entity's, Crafting recipes, other event handlers.
-
         proxy.registerRenderInit();
         MinecraftForge.EVENT_BUS.register(new KeyInputEventHandler());
         ModRecipes.init();

@@ -27,23 +27,24 @@ public class ItemDebug extends ItemFendirain {
 
     @Override
     public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos blockPos, EnumHand enumHand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if (worldIn.getBlockState(blockPos).getBlock().isWood(worldIn, blockPos)) {
-            BlockPos blockPos1 = TreeChecker.isTree(worldIn, blockPos);
-            ItemStack itemStack = playerIn.getHeldItem(enumHand);
-            if (playerIn.isSneaking()) {
-                if (blockPos1 != null && !worldIn.isRemote) {
-                    TreeChopper treeChopper = new TreeChopper(playerIn, blockPos, blockPos1, true, itemStack);
-                    treeChopper.breakAllBlocks(Integer.MAX_VALUE);
-                }
-            } else {
-                String response = "Block at \"" + blockPos.toString() + "\" is " + ((blockPos1 != null) ? "contained in a tree" : "not contained in a tree") + ".";
-                playerIn.sendMessage(new TextComponentString(response));
-                    LogHelper.info(response);
+        if (!worldIn.isRemote) {
+            if (worldIn.getBlockState(blockPos).getBlock().isWood(worldIn, blockPos)) {
+                BlockPos blockPos1 = TreeChecker.isTree(worldIn, blockPos);
+                ItemStack itemStack = playerIn.getHeldItem(enumHand);
+                if (playerIn.isSneaking()) {
                     if (blockPos1 != null) {
-                        this.blockPosSet = new TreeChopper(playerIn, blockPos, blockPos1, true, itemStack).getCurrentTree();
+                        TreeChopper treeChopper = new TreeChopper(playerIn, blockPos, blockPos1, true, itemStack);
+                        treeChopper.breakAllBlocks(Integer.MAX_VALUE);
                     }
+                } else {
+                    String response = "Block at \"" + blockPos.toString() + "\" is " + ((blockPos1 != null) ? "contained in a tree" : "not contained in a tree") + ".";
+                    playerIn.sendMessage(new TextComponentString(response));
+                    LogHelper.info(response);
+                    if (blockPos1 != null)
+                        this.blockPosSet = new TreeChopper(playerIn, blockPos, blockPos1, true, itemStack).getCurrentTree();
                 }
-            return EnumActionResult.SUCCESS;
+                return EnumActionResult.SUCCESS;
+            }
         }
         return EnumActionResult.PASS;
     }

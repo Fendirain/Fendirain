@@ -38,7 +38,7 @@ public class ItemFenderiumAxe extends ItemAxe {
     private float axeProgress = 0;
 
     public ItemFenderiumAxe() {
-        super(ModItems.fendi, 0.0F, 0.0F);
+        super(ModItems.fendi, 5.0F, -3.0F);
         GameRegistry.register(this, new ResourceLocation(Reference.MOD_PREFIX + "itemFenderiumAxe"));
         this.setUnlocalizedName("itemFenderiumAxe");
         this.setCreativeTab(CreativeTabFendirain.FENDIRAIN_TAB);
