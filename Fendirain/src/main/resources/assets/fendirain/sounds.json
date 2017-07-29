@@ -1,0 +1,17 @@
+{
+  "mob.fendirain.hurt": {
+    "category": "neutral",
+    "sounds": [
+      "fendirain:mob/fendirain/fendirainhurt",
+      "fendirain:mob/fendirain/fendirainhurt1",
+      "fendirain:mob/fendirain/fendirainhurt2",
+      "fendirain:mob/fendirain/fendirainhurt3",
+      "fendirain:mob/fendirain/fendirainhurt4"
+    ]
+  },
+  "mob.fenderium.hurt": {
+    "category": "neutral",
+    "sounds": [
+    ]
+  }
+}

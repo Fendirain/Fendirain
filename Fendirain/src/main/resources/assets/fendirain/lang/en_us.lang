@@ -1,0 +1,28 @@
+fend
+# Keys
+keys.fendirain.category=Fendirain
+
+# Items
+item.itemSpawnEggFendirain.name=Spawn
+item.fendirain:itemFendiPiece.name=Fendi Piece
+item.fendirain:itemPlantClearer.name=Plant Clearer
+item.fendirain:itemFenderiumAxe.name=Fenderium Axe
+item.fendirain:itemDebug.name=Debug Item
+
+# Blocks
+tile.fendirain:blockOreFendi.name=Fendi Ore
+tile.fendirain:blockFendi.name=Fendi
+
+# Creative Tabs
+itemGroup.fendirain=Fendirain
+
+# Mobs
+entity.fendirain:fendinain.name=Fendinain
+entity.fendirain:fenderium.name=Fenderium
+
+# Tooltips
+general.tooltip=General Settings
+world.tooltip=World Settings
+developer.tooltip=Developer Tools (Game-breaking stuff)
+mob.tooltip=Mob Settings
+item.tooltip=Item Settings
