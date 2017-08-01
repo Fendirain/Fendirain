@@ -1,6 +1,0 @@
-{
-  "parent": "item/handheld",
-  "textures": {
-    "layer0": "fendirain:items/itemfenderiumaxe_charging_2"
-  }
-}

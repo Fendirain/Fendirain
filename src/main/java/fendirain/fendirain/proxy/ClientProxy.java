@@ -26,7 +26,7 @@ public class ClientProxy extends CommonProxy {
         RenderingRegistry.registerEntityRenderingHandler(EntityFenderiumMob.class, RenderFenderium::new);
 
         this.setCustomModelResourceLocation(ModItems.itemFendiPiece);
-        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_charging_1".toLowerCase());
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_1".toLowerCase());
         this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_2".toLowerCase());
         this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_3".toLowerCase());
         this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_4".toLowerCase());
