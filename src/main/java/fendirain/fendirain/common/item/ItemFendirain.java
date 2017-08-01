@@ -12,7 +12,7 @@ public class ItemFendirain extends Item {
         super();
         this.setCreativeTab(CreativeTabFendirain.FENDIRAIN_TAB);
         if (shouldRegister()) {
-            this.setRegistryName(Reference.MOD_ID, itemName);
+            this.setRegistryName(Reference.MOD_ID, itemName.toLowerCase());
             ForgeRegistries.ITEMS.register(this);
         }
     }

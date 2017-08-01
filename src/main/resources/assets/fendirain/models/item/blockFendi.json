@@ -1,5 +1,5 @@
 {
-  "parent": "fendirain:block/blockFendi",
+  "parent": "fendirain:block/blockfendi",
   "display": {
     "gui": {
       "rotation": [30, 45, 0],

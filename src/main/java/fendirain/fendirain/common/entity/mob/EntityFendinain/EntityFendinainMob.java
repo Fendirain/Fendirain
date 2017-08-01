@@ -34,6 +34,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,14 +81,14 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     }
 
     private void addNewSpawnInventory() {
-        String biome = this.world.getBiome(new BlockPos(this.posX, this.posY, this.posZ)).getBiomeName();
+        Biome biome = this.world.getBiome(new BlockPos(this.posX, this.posY, this.posZ));
         int amountOfSaplings = rand.nextInt(this.getInventoryStackLimit()) + 1;
         // Adds the proper type of saplings for the biome it's spawned in. Done this way for future compatibility with mods. May be changed later.
-        ArrayList<String> saplings = new ArrayList<>();
+        ArrayList<Biome> saplings = new ArrayList<>();
         // Mixed Oak or Spruce
-        saplings.add(Biomes.EXTREME_HILLS.getBiomeName());
-        saplings.add(Biomes.EXTREME_HILLS_EDGE.getBiomeName());
-        saplings.add(Biomes.EXTREME_HILLS_WITH_TREES.getBiomeName());
+        saplings.add(Biomes.EXTREME_HILLS);
+        saplings.add(Biomes.EXTREME_HILLS_EDGE);
+        saplings.add(Biomes.EXTREME_HILLS_WITH_TREES);
         if (saplings.contains(biome)) {
             if (rand.nextInt(2) == 0) {
                 // Oak Saplings
@@ -99,8 +100,8 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
         } else {
             saplings.clear();
             // Mixed Birch or Oak
-            saplings.add(Biomes.FOREST.getBiomeName());
-            saplings.add(Biomes.FOREST_HILLS.getBiomeName());
+            saplings.add(Biomes.FOREST);
+            saplings.add(Biomes.FOREST_HILLS);
             if (saplings.contains(biome)) {
                 if (rand.nextInt(10) == 0) {
                     this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.BIRCH.getMetadata()));
@@ -109,42 +110,42 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                 }
             } else {
                 saplings.clear();
-                saplings.add(Biomes.PLAINS.getBiomeName());
+                saplings.add(Biomes.PLAINS);
                 if (saplings.contains(biome)) {
-                    if (biome.matches(Biomes.PLAINS.getBiomeName()))
+                    if (biome == Biomes.PLAINS)
                         this.putIntoInventory(new ItemStack(Blocks.SAPLING, (amountOfSaplings > 2) ? amountOfSaplings / 2 : 1, BlockPlanks.EnumType.OAK.getMetadata())); // Since its planes, It should start with less.
                 } else {
                     saplings.clear();
-                    saplings.add(Biomes.COLD_TAIGA.getBiomeName());
-                    saplings.add(Biomes.COLD_TAIGA_HILLS.getBiomeName());
-                    saplings.add(Biomes.TAIGA.getBiomeName());
-                    saplings.add(Biomes.TAIGA_HILLS.getBiomeName());
+                    saplings.add(Biomes.COLD_TAIGA);
+                    saplings.add(Biomes.COLD_TAIGA_HILLS);
+                    saplings.add(Biomes.TAIGA);
+                    saplings.add(Biomes.TAIGA_HILLS);
                     //saplings.add(Biomes.megaTaiga.getBiomeName()); // TODO Correct
                     //saplings.add(Biomes.megaTaigaHills.getBiomeName());
                     if (saplings.contains(biome)) {
                         this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.SPRUCE.getMetadata()));
                     } else {
                         saplings.clear();
-                        saplings.add(Biomes.BIRCH_FOREST.getBiomeName());
-                        saplings.add(Biomes.BIRCH_FOREST_HILLS.getBiomeName());
+                        saplings.add(Biomes.BIRCH_FOREST);
+                        saplings.add(Biomes.BIRCH_FOREST_HILLS);
                         if (saplings.contains(biome)) {
                             this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.BIRCH.getMetadata()));
                         } else {
                             saplings.clear();
-                            saplings.add(Biomes.JUNGLE.getBiomeName());
-                            saplings.add(Biomes.JUNGLE_EDGE.getBiomeName());
-                            saplings.add(Biomes.JUNGLE_HILLS.getBiomeName());
+                            saplings.add(Biomes.JUNGLE);
+                            saplings.add(Biomes.JUNGLE_EDGE);
+                            saplings.add(Biomes.JUNGLE_HILLS);
                             if (saplings.contains(biome)) {
                                 this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.JUNGLE.getMetadata()));
                             } else {
                                 saplings.clear();
-                                saplings.add(Biomes.SAVANNA.getBiomeName());
-                                saplings.add(Biomes.SAVANNA_PLATEAU.getBiomeName());
+                                saplings.add(Biomes.SAVANNA);
+                                saplings.add(Biomes.SAVANNA_PLATEAU);
                                 if (saplings.contains(biome)) {
                                     this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.ACACIA.getMetadata()));
                                 } else {
                                     saplings.clear();
-                                    saplings.add(Biomes.ROOFED_FOREST.getBiomeName());
+                                    saplings.add(Biomes.ROOFED_FOREST);
                                     if (saplings.contains(biome)) {
                                         this.putIntoInventory(new ItemStack(Blocks.SAPLING, amountOfSaplings, BlockPlanks.EnumType.DARK_OAK.getMetadata()));
                                     }

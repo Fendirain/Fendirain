@@ -30,7 +30,7 @@ public class BlockFendi extends BlockContainer {
 
     public BlockFendi() {
         super(Material.ROCK);
-        this.setRegistryName(Reference.MOD_ID, "blockFendi");
+        this.setRegistryName(Reference.MOD_ID, "blockFendi".toLowerCase());
         ForgeRegistries.BLOCKS.register(this);
         this.setHardness(2.0F);
         this.setResistance(5.0F);

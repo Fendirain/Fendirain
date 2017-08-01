@@ -9,7 +9,6 @@ import fendirain.fendirain.init.ModBlocks;
 import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.init.ModRenderer;
 import fendirain.fendirain.reference.ConfigValues;
-import fendirain.fendirain.reference.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.IReloadableResourceManager;
@@ -27,16 +26,16 @@ public class ClientProxy extends CommonProxy {
         RenderingRegistry.registerEntityRenderingHandler(EntityFenderiumMob.class, RenderFenderium::new);
 
         this.setCustomModelResourceLocation(ModItems.itemFendiPiece);
-        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_1");
-        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_2");
-        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_3");
-        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_4");
-        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_5");
-        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_6");
-        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_7");
-        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_8");
-        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_9");
-        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Default");
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_charging_1".toLowerCase());
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_2".toLowerCase());
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_3".toLowerCase());
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_4".toLowerCase());
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_5".toLowerCase());
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_6".toLowerCase());
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_7".toLowerCase());
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_8".toLowerCase());
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Charging_9".toLowerCase());
+        this.setCustomModelResourceLocation(ModItems.itemFenderiumAxe, "itemFenderiumAxe_Default".toLowerCase());
         this.setCustomModelResourceLocation(Item.getItemFromBlock(ModBlocks.blockFendi));
         this.setCustomModelResourceLocation(Item.getItemFromBlock(ModBlocks.blockOreFendi));
         if (ConfigValues.isDebugSettingsEnabled) {
@@ -47,11 +46,12 @@ public class ClientProxy extends CommonProxy {
 
     private void setCustomModelResourceLocation(Item item) {
         ResourceLocation location = item.getRegistryName();
-        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(location, "inventory"));
+        if (location != null)
+            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(location, "inventory"));
     }
 
     private void setCustomModelResourceLocation(Item item, String location) {
-        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(Reference.MOD_ID + location, "inventory"));
+        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(location, "inventory"));
     }
 
     @Override

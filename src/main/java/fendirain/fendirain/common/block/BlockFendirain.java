@@ -13,7 +13,7 @@ public class BlockFendirain extends Block {
         super(Material.ROCK);
         this.setCreativeTab(CreativeTabFendirain.FENDIRAIN_TAB);
         if (shouldRegister()) {
-            this.setRegistryName(Reference.MOD_ID, blockName);
+            this.setRegistryName(Reference.MOD_ID, blockName.toLowerCase());
             ForgeRegistries.BLOCKS.register(this);
         }
         registerItemForm();

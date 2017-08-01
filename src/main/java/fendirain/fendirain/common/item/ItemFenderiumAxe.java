@@ -39,7 +39,7 @@ public class ItemFenderiumAxe extends ItemAxe {
 
     public ItemFenderiumAxe() {
         super(ModItems.fendi, 5.0F, -3.0F);
-        this.setRegistryName(Reference.MOD_ID, "itemFenderiumAxe");
+        this.setRegistryName(Reference.MOD_ID, "itemFenderiumAxe".toLowerCase());
         ForgeRegistries.ITEMS.register(this);
         this.setUnlocalizedName("itemFenderiumAxe");
         this.setCreativeTab(CreativeTabFendirain.FENDIRAIN_TAB);
