@@ -5,15 +5,17 @@ import fendirain.fendirain.creativetab.CreativeTabFendirain;
 import fendirain.fendirain.reference.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class BlockFendirain extends Block {
 
     public BlockFendirain(String blockName) {
         super(Material.ROCK);
         this.setCreativeTab(CreativeTabFendirain.FENDIRAIN_TAB);
-        if (shouldRegister()) GameRegistry.register(this, new ResourceLocation(Reference.MOD_PREFIX + blockName));
+        if (shouldRegister()) {
+            this.setRegistryName(Reference.MOD_ID, blockName);
+            ForgeRegistries.BLOCKS.register(this);
+        }
         registerItemForm();
     }
 
@@ -22,7 +24,9 @@ public class BlockFendirain extends Block {
     }
 
     private void registerItemForm() {
-        GameRegistry.register(new ItemBlockFendirain(this), getRegistryName());
+        ItemBlockFendirain itemBlockFendirain = new ItemBlockFendirain(this);
+        itemBlockFendirain.setRegistryName(this.getRegistryName());
+        ForgeRegistries.ITEMS.register(itemBlockFendirain);
     }
 
     @Override

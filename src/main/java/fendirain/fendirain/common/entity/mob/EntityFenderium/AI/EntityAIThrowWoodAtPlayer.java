@@ -46,7 +46,7 @@ public class EntityAIThrowWoodAtPlayer extends EntityAIBase {
     }
 
     @Override
-    public boolean continueExecuting() {
+    public boolean shouldContinueExecuting() {
         return entity.getPercentageOfInventoryFull() >= 50;
     }
 
@@ -97,7 +97,7 @@ public class EntityAIThrowWoodAtPlayer extends EntityAIBase {
                 }*/
             }
         }
-        if (targetEntity != null && pathFinder.noPath() && entity.getDistanceToEntity(targetEntity) > 4 && continueExecuting())
+        if (targetEntity != null && pathFinder.noPath() && entity.getDistanceToEntity(targetEntity) > 4 && shouldContinueExecuting())
             startExecuting();
     }
 

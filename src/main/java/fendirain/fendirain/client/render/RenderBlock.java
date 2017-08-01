@@ -14,11 +14,11 @@ public class RenderBlock extends TileEntitySpecialRenderer {
 
     public RenderBlock(ModelFendirain modelBase, String texture) {
         this.model = modelBase;
-        this.texture = new ResourceLocation(Reference.MOD_ID + ":" + texture);
+        this.texture = new ResourceLocation(Reference.MOD_ID, texture);
     }
 
     @Override
-    public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float var2, int var3) {
+    public void render(TileEntity tileEntity, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
         GL11.glPushMatrix();
         GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F, (float) z + 0.5F);
         GL11.glRotatef(180, 0F, 0F, 1F);

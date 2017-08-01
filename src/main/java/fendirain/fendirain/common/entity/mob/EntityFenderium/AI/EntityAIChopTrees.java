@@ -64,12 +64,12 @@ public class EntityAIChopTrees extends EntityAIBase {
                         if (entity.isItemValidForBreaking(world, blockPos, world.getBlockState(blockPos).getBlock()) && entity.isAnySpaceForItemPickup(new ItemStack(world.getBlockState(blockPos).getBlock(), 1))) {
                             Vec3d blockVec = new Vec3d(x, y, z).subtract(entity.getPositionVector());
                             Vec3d lookVec = entity.getLookVec();
-                            double degree = Math.acos(((blockVec.xCoord * lookVec.xCoord) + (blockVec.yCoord * lookVec.yCoord) + (blockVec.zCoord * lookVec.zCoord)) / (Math.sqrt((blockVec.xCoord * blockVec.xCoord) + (blockVec.yCoord * blockVec.yCoord) + (blockVec.zCoord * blockVec.zCoord)) * Math.sqrt((lookVec.xCoord * lookVec.xCoord) + (lookVec.yCoord * lookVec.yCoord) + (lookVec.zCoord * lookVec.zCoord)))) * 180 / Math.PI;
+                            double degree = Math.acos(((blockVec.x * lookVec.x) + (blockVec.y * lookVec.y) + (blockVec.z * lookVec.z)) / (Math.sqrt((blockVec.x * blockVec.x) + (blockVec.y * blockVec.y) + (blockVec.z * blockVec.z)) * Math.sqrt((lookVec.x * lookVec.x) + (lookVec.y * lookVec.y) + (lookVec.z * lookVec.z)))) * 180 / Math.PI;
                             if (degree < 80 && TreeChecker.isTree(world, blockPos) != null) {
                                 double dist = entity.getDistance(x, y, z);
                                 Path path = pathFinder.getPathToXYZ(x, y, z);
                                 if (path == null || path.getFinalPathPoint() == null) break;
-                                BlockPos blockPos1 = new BlockPos(path.getFinalPathPoint().xCoord, path.getFinalPathPoint().yCoord, path.getFinalPathPoint().zCoord);
+                                BlockPos blockPos1 = new BlockPos(path.getFinalPathPoint().x, path.getFinalPathPoint().y, path.getFinalPathPoint().z);
                                 boolean canReach = BlockTools.compareTo(blockPos, blockPos1) <= 2;
                                 if (canReach && (closest == null || currentDist == -1 || dist < currentDist)) {
                                     currentDist = dist;
@@ -89,7 +89,7 @@ public class EntityAIChopTrees extends EntityAIBase {
     }
 
     @Override
-    public boolean continueExecuting() {
+    public boolean shouldContinueExecuting() {
         if (treeChopper == null) return false;
         if (entity.world.getBlockState(treeChopper.getMainBlockPos()).getBlock() != treeChopper.getMainBlock())
             treeChopper.setMainBlockPosToClosest();

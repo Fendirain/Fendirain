@@ -1,10 +1,10 @@
 package fendirain.fendirain.common.entity.mob.EntityFenderium;
 
+import fendirain.fendirain.Fendirain;
 import fendirain.fendirain.common.entity.mob.EntityFenderium.AI.EntityAIChopTrees;
 import fendirain.fendirain.common.entity.mob.EntityFenderium.AI.EntityAIThrowWoodAtPlayer;
 import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.reference.ConfigValues;
-import fendirain.fendirain.utility.helper.LogHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLog;
 import net.minecraft.entity.EntityCreature;
@@ -63,7 +63,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
 
     @Override
     public void onLivingUpdate() {
-        //super.onLivingUpdate();
+        super.onLivingUpdate();
         if (!entityAIChopTrees.isAlreadyExecuting() && !(entityAIChopTrees.getTimeToWaitUntilNextRun() <= 0))
             this.entityAIChopTrees.setTimeToWaitUntilNextRun(this.entityAIChopTrees.getTimeToWaitUntilNextRun() - 1);
     }
@@ -86,7 +86,7 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                 }
                 if (!world.isRemote) {
                     entityPlayer.sendMessage(new TextComponentString(Arrays.toString(printQueue)));
-                    LogHelper.info(Arrays.toString(printQueue));
+                    Fendirain.logHelper.info(Arrays.toString(printQueue));
                 }
                 return true;
             } else if (itemStack.getItem() == Items.BLAZE_ROD) {
@@ -126,23 +126,23 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
                     entityPlayer.sendMessage(new TextComponentString("Health: " + this.getHealth()));
                     entityPlayer.sendMessage(new TextComponentString("Wait Time: " + entityAIChopTrees.getTimeToWaitUntilNextRun()));
                     entityPlayer.sendMessage(new TextComponentString("Currently Chopping: " + entityAIChopTrees.isAlreadyExecuting()));
-                    LogHelper.info("Health: " + this.getHealth());
-                    LogHelper.info("Wait Time: " + entityAIChopTrees.getTimeToWaitUntilNextRun());
-                    LogHelper.info("Currently Chopping: " + entityAIChopTrees.isAlreadyExecuting());
+                    Fendirain.logHelper.info("Health: " + this.getHealth());
+                    Fendirain.logHelper.info("Wait Time: " + entityAIChopTrees.getTimeToWaitUntilNextRun());
+                    Fendirain.logHelper.info("Currently Chopping: " + entityAIChopTrees.isAlreadyExecuting());
                     for (PotionEffect potionEffect : this.getActivePotionEffects()) {
-                        LogHelper.info("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration());
+                        Fendirain.logHelper.info("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration());
                         entityPlayer.sendMessage(new TextComponentString("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration()));
                     }
                     entityPlayer.sendMessage(new TextComponentString("Inventory: " + Arrays.toString(printQueue)));
-                    LogHelper.info("Inventory: " + Arrays.toString(printQueue));
+                    Fendirain.logHelper.info("Inventory: " + Arrays.toString(printQueue));
                     entityPlayer.sendMessage(new TextComponentString("Percent Full: " + this.getPercentageOfInventoryFull()));
-                    LogHelper.info("Percent Full: " + this.getPercentageOfInventoryFull());
+                    Fendirain.logHelper.info("Percent Full: " + this.getPercentageOfInventoryFull());
                     int timesKilled;
                     if (entityPlayer.getEntityData().hasKey("fendirainMobTwo"))
                         timesKilled = entityPlayer.getEntityData().getInteger("fendirainMobTwo");
                     else timesKilled = 0;
                     entityPlayer.sendMessage(new TextComponentString("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s)."));
-                    LogHelper.info("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s).");
+                    Fendirain.logHelper.info("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s).");
                 }
                 return true;
             } // End Test / Debug Code
@@ -283,8 +283,8 @@ public class EntityFenderiumMob extends EntityCreature implements IInventory {
     public void onDeath(DamageSource damageSource) {
         super.onDeath(damageSource);
         if (entityAIChopTrees.isAlreadyExecuting()) this.entityAIChopTrees.resetTask();
-        if (damageSource.getEntity() != null && damageSource.getEntity() instanceof EntityPlayer) {
-            EntityPlayer entityPlayer = (EntityPlayer) damageSource.getEntity();
+        if (damageSource.getTrueSource() != null && damageSource.getTrueSource() instanceof EntityPlayer) {
+            EntityPlayer entityPlayer = (EntityPlayer) damageSource.getTrueSource();
             if (!entityPlayer.capabilities.isCreativeMode || entityPlayer.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemHoe) {
                 NBTTagCompound nbtTagCompound = entityPlayer.getEntityData();
                 if (nbtTagCompound.hasKey("fendirainMobTwo"))

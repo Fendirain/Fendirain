@@ -23,10 +23,13 @@ public class Fendirain {
     @SidedProxy(clientSide = Reference.CLIENT_PROXY_CLASS, serverSide = Reference.SERVER_PROXY_CLASS)
     public static IProxy proxy;
 
+    public static LogHelper logHelper;
+
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent preInitializationEvent) {
         // Network Handling, Configuration, Initialize items, blocks, and entities.
+        logHelper = new LogHelper(preInitializationEvent.getModLog());
 
         ConfigurationHandler.init(preInitializationEvent.getSuggestedConfigurationFile());
 
@@ -41,8 +44,7 @@ public class Fendirain {
         ModWorldGenerator.init();
         ModEntities.init();
         proxy.registerRenderPreInit();
-
-        LogHelper.info("Pre-Initialization Complete");
+        logHelper.info("Pre-Initialization Complete");
     }
 
     @Mod.EventHandler
@@ -51,7 +53,7 @@ public class Fendirain {
         proxy.registerRenderInit();
         MinecraftForge.EVENT_BUS.register(new KeyInputEventHandler());
         ModRecipes.init();
-        LogHelper.info("Initialization Complete");
+        logHelper.info("Initialization Complete");
     }
 
     @SuppressWarnings("UnusedParameters")
@@ -60,6 +62,6 @@ public class Fendirain {
         // Finish up initialization, Run things after other mods initialization.
         proxy.registerEvents();
         ModCompatibility.postInit();
-        LogHelper.info("Post-Initialization Complete");
+        logHelper.info("Post-Initialization Complete");
     }
 }

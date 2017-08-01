@@ -1,7 +1,7 @@
 package fendirain.fendirain.client.handler;
 
+import fendirain.fendirain.Fendirain;
 import fendirain.fendirain.reference.Key;
-import fendirain.fendirain.utility.helper.LogHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 
@@ -16,6 +16,6 @@ public class KeyInputEventHandler {
     @SubscribeEvent
     public void handleKeyInputEvent(InputEvent.KeyInputEvent keyInputEvent) {
         Key key = getPressedKeyBinding();
-        if (key != Key.UNKNOWN) LogHelper.info(key);
+        if (key != Key.UNKNOWN) Fendirain.logHelper.info(key);
     }
 }

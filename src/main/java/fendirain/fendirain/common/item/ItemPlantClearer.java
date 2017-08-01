@@ -49,7 +49,7 @@ public class ItemPlantClearer extends ItemFendirain {
                 }
                 @SuppressWarnings("unchecked")
                 List<EntityItem> items = entityPlayer.world.getEntitiesWithinAABB(EntityItem.class, entityPlayer.getEntityBoundingBox().expand(range, range, range));
-                items.stream().filter(item -> (int) item.getDistanceToEntity(entityPlayer) <= range && ModCompatibility.saplings.contains(item.getEntityItem().getItem()) || (item.getEntityItem().getItem() instanceof ItemBlock && Block.getBlockFromItem(item.getEntityItem().getItem()) instanceof BlockLog) || item.getEntityItem().getItem() instanceof ItemSeeds || item.getEntityItem().getItem() == Items.APPLE).forEach(Entity::setDead);
+                items.stream().filter(item -> (int) item.getDistanceToEntity(entityPlayer) <= range && ModCompatibility.saplings.contains(item.getItem().getItem()) || (item.getItem().getItem() instanceof ItemBlock && Block.getBlockFromItem(item.getItem().getItem()) instanceof BlockLog) || item.getItem().getItem() instanceof ItemSeeds || item.getItem().getItem() == Items.APPLE).forEach(Entity::setDead);
             } else {
                 alreadyWorking = true;
                 int range = 20;
@@ -64,7 +64,7 @@ public class ItemPlantClearer extends ItemFendirain {
                     }
                 }
                 List<EntityItem> items = entityPlayer.world.getEntitiesWithinAABB(EntityItem.class, entityPlayer.getEntityBoundingBox().expand(range, range, range));
-                items.stream().filter(item -> (int) item.getDistanceToEntity(entityPlayer) <= range && ModCompatibility.saplings.contains(item.getEntityItem().getItem()) || (item.getEntityItem().getItem() instanceof ItemBlock && Block.getBlockFromItem(item.getEntityItem().getItem()) instanceof BlockLog) || item.getEntityItem().getItem() == Items.APPLE).forEach(Entity::setDead);
+                items.stream().filter(item -> (int) item.getDistanceToEntity(entityPlayer) <= range && ModCompatibility.saplings.contains(item.getItem().getItem()) || (item.getItem().getItem() instanceof ItemBlock && Block.getBlockFromItem(item.getItem().getItem()) instanceof BlockLog) || item.getItem().getItem() == Items.APPLE).forEach(Entity::setDead);
             }
             enumActionResult = EnumActionResult.PASS;
         }

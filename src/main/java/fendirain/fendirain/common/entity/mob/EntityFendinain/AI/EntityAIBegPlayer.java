@@ -40,7 +40,7 @@ public class EntityAIBegPlayer extends EntityAIBase {
     }
 
     @Override
-    public boolean continueExecuting() {
+    public boolean shouldContinueExecuting() {
         if (entity.world != null) {
             if (targetEntity != null) { //TODO Allow Left hand
                 if (entity.isItemValidForEntity(targetEntity.getHeldItem(EnumHand.MAIN_HAND).getItem()) && entity.isAnySpaceForItemPickup(targetEntity.getHeldItem(EnumHand.MAIN_HAND)) && !targetEntity.isInWater() && !(entity.getDistanceToEntity(targetEntity) > 8))
@@ -96,7 +96,7 @@ public class EntityAIBegPlayer extends EntityAIBase {
             randInt = newInt;
             startExecuting();
         }
-        if (targetEntity != null && entity.getDistanceToEntity(targetEntity) > 2 && continueExecuting())
+        if (targetEntity != null && entity.getDistanceToEntity(targetEntity) > 2 && shouldContinueExecuting())
             startExecuting();
     }
 

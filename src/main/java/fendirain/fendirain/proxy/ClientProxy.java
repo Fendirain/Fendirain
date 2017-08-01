@@ -51,7 +51,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void setCustomModelResourceLocation(Item item, String location) {
-        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(Reference.MOD_PREFIX + location, "inventory"));
+        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(Reference.MOD_ID + location, "inventory"));
     }
 
     @Override

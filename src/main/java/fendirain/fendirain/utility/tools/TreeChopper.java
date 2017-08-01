@@ -1,12 +1,12 @@
 package fendirain.fendirain.utility.tools;
 
+import fendirain.fendirain.Fendirain;
 import fendirain.fendirain.common.entity.mob.EntityFenderium.EntityFenderiumMob;
 import fendirain.fendirain.common.item.ItemFenderiumAxe;
 import fendirain.fendirain.network.PacketHandler;
 import fendirain.fendirain.network.packets.BlockHitEffectPacket;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.utility.helper.BlockTools;
-import fendirain.fendirain.utility.helper.LogHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockLog;
@@ -87,7 +87,7 @@ public class TreeChopper {
         if (closestBlock == null) closestBlock = mainBlockPos;
 
         amountBroken = blocksToBreak.size();
-        LogHelper.info(amountBroken);
+        Fendirain.logHelper.info(amountBroken);
         if (amountBroken > 0) entity.playSound(SoundEvents.BLOCK_WOOD_HIT, 6, .2F);
         MinecraftForge.EVENT_BUS.register(new BreakBlocksQueue(blocksToBreak, closestBlock, (EntityPlayer) entity));
         currentTree.removeAll(blocksToBreak);
@@ -102,7 +102,7 @@ public class TreeChopper {
             EntityItem entityItem = new EntityItem(world, logToBreak.getX(), logToBreak.getY(), logToBreak.getZ());
             ItemStack itemStack = mainBlock.getPickBlock(world.getBlockState(mainBlockPos), null, world, mainBlockPos, null);
             itemStack.setCount(1);
-            entityItem.setEntityItemStack(itemStack);
+            entityItem.setItem(itemStack);
             entityItem.setDefaultPickupDelay();
             world.spawnEntity(entityItem);
         }
@@ -357,7 +357,7 @@ public class TreeChopper {
                             EntityItem entityItem = new EntityItem(world);
                             entityItem.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                             itemStack.setCount(1);
-                            entityItem.setEntityItemStack(itemStack);
+                            entityItem.setItem(itemStack);
                             entityItem.setDefaultPickupDelay();
                             world.spawnEntity(entityItem);
                         } else logsToDrop++;
@@ -384,7 +384,7 @@ public class TreeChopper {
                 EntityItem entityItem = new EntityItem(world);
                 entityItem.setPosition(closestPos.getX(), closestPos.getY(), closestPos.getZ());
                 itemStack.setCount(logsToDrop);
-                entityItem.setEntityItemStack(itemStack);
+                entityItem.setItem(itemStack);
                 entityItem.setPickupDelay(20);
                 world.spawnEntity(entityItem);
             }

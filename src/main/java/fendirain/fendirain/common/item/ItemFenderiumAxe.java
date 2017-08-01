@@ -1,5 +1,6 @@
 package fendirain.fendirain.common.item;
 
+import fendirain.fendirain.Fendirain;
 import fendirain.fendirain.creativetab.CreativeTabFendirain;
 import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.network.PacketHandler;
@@ -7,7 +8,6 @@ import fendirain.fendirain.network.packets.DestroyItemPacket;
 import fendirain.fendirain.network.packets.FenderiumAxeProgressPacket;
 import fendirain.fendirain.reference.ConfigValues;
 import fendirain.fendirain.reference.Reference;
-import fendirain.fendirain.utility.helper.LogHelper;
 import fendirain.fendirain.utility.tools.TreeChecker;
 import fendirain.fendirain.utility.tools.TreeChopper;
 import net.minecraft.block.Block;
@@ -27,7 +27,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -39,7 +39,8 @@ public class ItemFenderiumAxe extends ItemAxe {
 
     public ItemFenderiumAxe() {
         super(ModItems.fendi, 5.0F, -3.0F);
-        GameRegistry.register(this, new ResourceLocation(Reference.MOD_PREFIX + "itemFenderiumAxe"));
+        this.setRegistryName(Reference.MOD_ID, "itemFenderiumAxe");
+        ForgeRegistries.ITEMS.register(this);
         this.setUnlocalizedName("itemFenderiumAxe");
         this.setCreativeTab(CreativeTabFendirain.FENDIRAIN_TAB);
         this.addPropertyOverride(new ResourceLocation("pull"), new IItemPropertyGetter() {
@@ -128,7 +129,7 @@ public class ItemFenderiumAxe extends ItemAxe {
             lastUsed++;
             if (lastUsed > 2400) {
                 treeChopper = null;
-                LogHelper.info(entityIn.getDisplayName() + " had their FenderiumAxe reset the currently loaded tree (Was 2+ Minutes since last use).");
+                Fendirain.logHelper.info(entityIn.getDisplayName() + " had their FenderiumAxe reset the currently loaded tree (Was 2+ Minutes since last use).");
             }
         }
     }

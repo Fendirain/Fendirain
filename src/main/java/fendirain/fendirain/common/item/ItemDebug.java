@@ -1,7 +1,7 @@
 package fendirain.fendirain.common.item;
 
+import fendirain.fendirain.Fendirain;
 import fendirain.fendirain.reference.ConfigValues;
-import fendirain.fendirain.utility.helper.LogHelper;
 import fendirain.fendirain.utility.tools.TreeChecker;
 import fendirain.fendirain.utility.tools.TreeChopper;
 import net.minecraft.entity.player.EntityPlayer;
@@ -39,7 +39,7 @@ public class ItemDebug extends ItemFendirain {
                 } else {
                     String response = "Block at \"" + blockPos.toString() + "\" is " + ((blockPos1 != null) ? "contained in a tree" : "not contained in a tree") + ".";
                     playerIn.sendMessage(new TextComponentString(response));
-                    LogHelper.info(response);
+                    Fendirain.logHelper.info(response);
                     if (blockPos1 != null)
                         this.blockPosSet = new TreeChopper(playerIn, blockPos, blockPos1, true, itemStack).getCurrentTree();
                 }

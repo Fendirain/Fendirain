@@ -1,12 +1,12 @@
 package fendirain.fendirain.common.entity.mob.EntityFendinain;
 
+import fendirain.fendirain.Fendirain;
 import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAIBegPlayer;
 import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAICollectSaplings;
 import fendirain.fendirain.common.entity.mob.EntityFendinain.AI.EntityAIPlantSapling;
 import fendirain.fendirain.init.ModCompatibility;
 import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.reference.ConfigValues;
-import fendirain.fendirain.utility.helper.LogHelper;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -192,7 +192,7 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                 }
                 if (!world.isRemote)
                     entityPlayer.sendMessage(new TextComponentString(Arrays.toString(printQueue)));
-                LogHelper.info(Arrays.toString(printQueue));
+                Fendirain.logHelper.info(Arrays.toString(printQueue));
                 return true;
             } else if (itemStack.getItem() == Items.BLAZE_ROD) {
                 if (!world.isRemote) entityAIPlantSapling.startExecuting();
@@ -225,25 +225,25 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
                 if (!world.isRemote) {
                     entityPlayer.sendMessage(new TextComponentString("Health: " + this.getHealth()));
                     entityPlayer.sendMessage(new TextComponentString("Last Placed: " + entityAIPlantSapling.getTimeSinceLastPlacement() + '/' + ConfigValues.fendinainMob_maxTimeToWaitToPlant + " (Max)"));
-                    LogHelper.info("Health: " + this.getHealth());
-                    LogHelper.info("Last Placed: " + entityAIPlantSapling.getTimeSinceLastPlacement() + '/' + ConfigValues.fendinainMob_maxTimeToWaitToPlant + " (Max)");
+                    Fendirain.logHelper.info("Health: " + this.getHealth());
+                    Fendirain.logHelper.info("Last Placed: " + entityAIPlantSapling.getTimeSinceLastPlacement() + '/' + ConfigValues.fendinainMob_maxTimeToWaitToPlant + " (Max)");
                     for (Object object : this.getActivePotionEffects()) {
                         PotionEffect potionEffect = (PotionEffect) object;
-                        LogHelper.info("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration());
+                        Fendirain.logHelper.info("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration());
                         entityPlayer.sendMessage(new TextComponentString("Potion: " + potionEffect.getEffectName() + " - " + potionEffect.getAmplifier() + " - " + potionEffect.getDuration()));
                     }
                     entityPlayer.sendMessage(new TextComponentString("Inventory: " + Arrays.toString(printQueue)));
-                    LogHelper.info("Inventory: " + Arrays.toString(printQueue));
+                    Fendirain.logHelper.info("Inventory: " + Arrays.toString(printQueue));
                     entityPlayer.sendMessage(new TextComponentString("Percent Full: " + this.getPercentageOfInventoryFull()));
-                    LogHelper.info("Item to Place: " + getItemToPlace().getItem().getUnlocalizedName());
+                    Fendirain.logHelper.info("Item to Place: " + getItemToPlace().getItem().getUnlocalizedName());
                     entityPlayer.sendMessage(new TextComponentString("Item to Place: " + this.getItemToPlace().getItem().getUnlocalizedName()));
-                    LogHelper.info("Percent Full: " + this.getPercentageOfInventoryFull());
+                    Fendirain.logHelper.info("Percent Full: " + this.getPercentageOfInventoryFull());
                     int timesKilled;
                     if (entityPlayer.getEntityData().hasKey("fendirainMobOne"))
                         timesKilled = entityPlayer.getEntityData().getInteger("fendirainMobOne");
                     else timesKilled = 0;
                     entityPlayer.sendMessage(new TextComponentString("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s)."));
-                    LogHelper.info("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s).");
+                    Fendirain.logHelper.info("Killed by: \"" + entityPlayer.getName() + "\" " + timesKilled + " time(s).");
                 }
                 return true;
             }  // End Test / Debug Code
@@ -254,8 +254,8 @@ public class EntityFendinainMob extends EntityCreature implements IInventory {
     @Override
     public void onDeath(DamageSource damageSource) {
         super.onDeath(damageSource);
-        if (damageSource.getEntity() != null && damageSource.getEntity() instanceof EntityPlayer) {
-            EntityPlayer entityPlayer = (EntityPlayer) damageSource.getEntity();
+        if (damageSource.getTrueSource() != null && damageSource.getTrueSource() instanceof EntityPlayer) {
+            EntityPlayer entityPlayer = (EntityPlayer) damageSource.getTrueSource();
             if (!entityPlayer.capabilities.isCreativeMode || entityPlayer.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemHoe) {
                 NBTTagCompound nbtTagCompound = entityPlayer.getEntityData();
                 // Named as "fendirainMobOne" for simplicity in the future if I decide to change the mobs name.

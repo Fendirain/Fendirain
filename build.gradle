@@ -4,7 +4,7 @@ buildscript {
         maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -29,7 +29,7 @@ compileJava {
 }
 
 minecraft {
-    version = config.mc_version + "-" + config.forge_version + "-" + config.mc_version
+    version = config.mc_version + "-" + config.forge_version
     runDir = "run"
 
     replaceIn "reference/Reference.java"

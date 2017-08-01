@@ -6,7 +6,6 @@ import fendirain.fendirain.creativetab.CreativeTabFendirain;
 import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.reference.Reference;
 import net.minecraft.block.BlockContainer;
-import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,13 +14,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -32,7 +30,8 @@ public class BlockFendi extends BlockContainer {
 
     public BlockFendi() {
         super(Material.ROCK);
-        GameRegistry.register(this, new ResourceLocation(Reference.MOD_PREFIX + "blockFendi"));
+        this.setRegistryName(Reference.MOD_ID, "blockFendi");
+        ForgeRegistries.BLOCKS.register(this);
         this.setHardness(2.0F);
         this.setResistance(5.0F);
         this.setUnlocalizedName("blockFendi");
@@ -47,7 +46,7 @@ public class BlockFendi extends BlockContainer {
         axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.125F, 0.125F, 0.800F, 0.885F, 0.885F, 0.885F));
         axisAlignedBBArrayList.add(getBoundingBox(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.800F, 0.125F, 0.125F, 0.885F, 0.885F, 0.885F));
         //noinspection unchecked
-        collidingBoxes.addAll(axisAlignedBBArrayList.stream().filter(aAxisAlignedBB -> aAxisAlignedBB != null && axisAlignedBB.intersectsWith(aAxisAlignedBB)).collect(Collectors.toList()));
+        collidingBoxes.addAll(axisAlignedBBArrayList.stream().filter(aAxisAlignedBB -> aAxisAlignedBB != null && axisAlignedBB.intersects(aAxisAlignedBB)).collect(Collectors.toList()));
     }
 
     private static AxisAlignedBB getBoundingBox(int x, int y, int z, double x1, double y1, double z1, double x2, double y2, double z2) {
@@ -55,13 +54,15 @@ public class BlockFendi extends BlockContainer {
     }
 
     private void registerItemForm() {
-        GameRegistry.register(new ItemBlockFendirain(this), getRegistryName());
+        ItemBlockFendirain itemBlockFendirain = new ItemBlockFendirain(this);
+        itemBlockFendirain.setRegistryName(this.getRegistryName());
+        ForgeRegistries.ITEMS.register(itemBlockFendirain);
     }
 
-    @Override
+    /*@Override
     public boolean isOpaqueCube(IBlockState iBlockState) {
         return false;
-    }
+    }*/
 
     @Override
     public EnumBlockRenderType getRenderType(IBlockState iBlockState) {
@@ -72,10 +73,10 @@ public class BlockFendi extends BlockContainer {
         return new AxisAlignedBB((double) blockPos.getX() + 0.125F, (double) blockPos.getY() + 0.125F, (double) blockPos.getZ() + 0.125F, (double) blockPos.getX() + 0.885F, (double) blockPos.getY() + 0.885F, (double) blockPos.getZ() + 0.885F);
     }
 
-    @Override
+   /* @Override
     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
         return false;
-    }
+    }*/
 
     @Override
     public String getUnlocalizedName() {
@@ -91,10 +92,10 @@ public class BlockFendi extends BlockContainer {
         return new TileFendiBlock();
     }
 
-    @Override
+    /*@Override
     public EnumPushReaction getMobilityFlag(IBlockState iBlockState) {
         return EnumPushReaction.BLOCK;
-    }
+    }*/
 
     @Override
     public boolean canDropFromExplosion(Explosion explosion) {
@@ -118,7 +119,7 @@ public class BlockFendi extends BlockContainer {
 
     @Override
     public boolean canPlaceBlockAt(World world, BlockPos blockPos) {
-        return world.getBlockState(blockPos).getBlock().isReplaceable(world, blockPos) && world.getBlockState(blockPos.down()).getBlock().isFullBlock(world.getBlockState(blockPos));
+        return world.getBlockState(blockPos).getBlock().isReplaceable(world, blockPos) && world.getBlockState(blockPos.down()).getBlock().isNormalCube(world.getBlockState(blockPos), world, blockPos);
     }
 
     @Override

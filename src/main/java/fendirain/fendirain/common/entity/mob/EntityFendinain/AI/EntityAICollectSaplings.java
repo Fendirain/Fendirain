@@ -35,7 +35,7 @@ public class EntityAICollectSaplings extends EntityAIBase {
             for (EntityItem item : items) {
                 if (!item.isDead && item.onGround) {
                     double dist = item.getDistanceToEntity(entity);
-                    if (dist < closestDistance && entity.getEntitySenses().canSee(item) && (entity.isItemValidForEntity(item.getEntityItem().getItem()) && entity.isAnySpaceForItemPickup(item.getEntityItem())) && !item.isInWater()) {
+                    if (dist < closestDistance && entity.getEntitySenses().canSee(item) && (entity.isItemValidForEntity(item.getItem().getItem()) && entity.isAnySpaceForItemPickup(item.getItem())) && !item.isInWater()) {
                         closest = item;
                         closestDistance = dist;
                     }
@@ -58,7 +58,7 @@ public class EntityAICollectSaplings extends EntityAIBase {
     public void updateTask() {
         if (!entity.world.isRemote) {
             if (targetItem != null && entity.getDistanceToEntity(targetItem) < 1.0) {
-                ItemStack itemStack = targetItem.getEntityItem();
+                ItemStack itemStack = targetItem.getItem();
                 int beforePickupSize = itemStack.getCount();
                 entity.putIntoInventory(itemStack);
                 if (beforePickupSize != itemStack.getCount()) {
