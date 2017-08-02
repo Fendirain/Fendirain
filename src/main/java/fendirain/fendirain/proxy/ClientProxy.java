@@ -9,6 +9,7 @@ import fendirain.fendirain.init.ModBlocks;
 import fendirain.fendirain.init.ModItems;
 import fendirain.fendirain.init.ModRenderer;
 import fendirain.fendirain.reference.ConfigValues;
+import fendirain.fendirain.reference.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.IReloadableResourceManager;
@@ -51,7 +52,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     private void setCustomModelResourceLocation(Item item, String location) {
-        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(location, "inventory"));
+        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(Reference.MOD_ID + ":" + location, "inventory"));
     }
 
     @Override

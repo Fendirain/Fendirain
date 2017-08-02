@@ -362,7 +362,6 @@ public class TreeChopper {
                             world.spawnEntity(entityItem);
                         } else logsToDrop++;
                         blockMissing = 0;
-                        System.out.println("Running");
                         i = ConfigValues.fenderiumAxe_blockBreakSpeed;
                     } else blockMissing++;
                     blockPosIterator.remove();
